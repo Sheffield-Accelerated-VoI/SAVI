@@ -149,8 +149,8 @@ shinyUI(fluidPage(
       # coming from the function output$summary in server.R
       tabPanel("Downloads",downloadButton('downloadSummary', 'Download EVPI values'),
                br(),br(),#,tableOutput("summary")
-               #radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
-               #              inline = TRUE),
+               radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
+                             inline = TRUE),
                downloadButton('downloadReport', 'Download report')
       )
       ))

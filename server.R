@@ -147,10 +147,10 @@ shinyServer(function(input, output) {
   # Functions that make the reports
   
   output$downloadReport <- downloadHandler(
-    filename = function() {"my-report.pdf"
-                           #paste('my-report', sep = '.', switch(
-                           #  input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
-                           #))
+    filename = function() {#"my-report.pdf"
+                           paste('my-report', sep = '.', switch(
+                             input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
+                           ))
     },
     
     content = function(file) {
@@ -163,10 +163,10 @@ shinyServer(function(input, output) {
       #file.copy(src, 'report.Rmd')
       
       library(rmarkdown)
-      out <- render('report2.Rmd', pdf_document()
-                    #switch(
-                    #input$format,
-                    #PDF = pdf_document(), HTML = html_document(), Word = word_document())
+      out <- render('report2.Rmd', #pdf_document()
+                    switch(
+                    input$format,
+                    PDF = pdf_document(), HTML = html_document(), Word = word_document())
       )
       file.copy(out, file)
     }

@@ -2,8 +2,9 @@
 title: "Value of Information Report"
 author: "Author"
 date: "29th September 2014"
-output: rmarkdown::default
+output: docx
 tables: true
+
 ---
 # Introduction
 
@@ -13,14 +14,15 @@ Some text here.
 \begin{footnotesize}
 
 ```{r, results='asis', echo=TRUE}
-library(xtable)
-options(xtable.comment = FALSE)
-options(xtable.booktabs = TRUE)
+#library(xtable)
+#options(xtable.comment = FALSE)
+#options(xtable.booktabs = TRUE)
 EVPI <- cbind(pEVPI)
 colnames(EVPI) <- "Partial\ EVPI"
-if(input$format == "PDF") {
-xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
-} else {print(EVPI)}
+#if(input$format == "PDF") {
+#xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
+#} else {print(EVPI)}
+print(EVPI)
 ```
 
 \end{footnotesize}

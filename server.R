@@ -4,58 +4,57 @@ library(knitr)
 library(rmarkdown)
 
 
-
 shinyServer(function(input, output, session) {
   
-#   dInput <- function() read.csv("parameters.csv")
-#   dInput2 <- function() read.csv("costs.csv")
-#   dInput3 <- function() read.csv("effects.csv")
-#   
+  dInput <- function() read.csv("parameters.csv")
+  dInput2 <- function() read.csv("costs.csv")
+  dInput3 <- function() read.csv("effects.csv")
+  
   
   
 #  Function that imports the data file
-    dInput <<- reactive({
-      in.file = input$file1
-      
-      if (is.null(in.file))
-        return(NULL)
-      
-      if (input$rownames) {
-        read.csv(in.file$datapath, header=input$header, #sep=input$sep,
-                 row.names=1)#, dec=input$dec)
-      } else {
-        read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
-      }
-    })
-    
-    dInput2 <<- reactive({
-      in.file = input$file2
-      
-      if (is.null(in.file))
-        return(NULL)
-      
-      if (input$rownames) {
-        read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
-                 row.names=1)#, dec=input$dec2)
-      } else {
-        read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
-      }
-    })
-    
-    dInput3 <<- reactive({
-      in.file = input$file3
-      
-      if (is.null(in.file))
-        return(NULL)
-      
-      if (input$rownames) {
-        read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
-                 row.names=1)#, dec=input$dec3)
-      } else {
-        read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
-      }
-    })
-  
+#     dInput <<- reactive({
+#       in.file = input$file1
+#       
+#       if (is.null(in.file))
+#         return(NULL)
+#       
+#       if (input$rownames) {
+#         read.csv(in.file$datapath, header=input$header, #sep=input$sep,
+#                  row.names=1)#, dec=input$dec)
+#       } else {
+#         read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
+#       }
+#     })
+#     
+#     dInput2 <<- reactive({
+#       in.file = input$file2
+#       
+#       if (is.null(in.file))
+#         return(NULL)
+#       
+#       if (input$rownames) {
+#         read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
+#                  row.names=1)#, dec=input$dec2)
+#       } else {
+#         read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
+#       }
+#     })
+#     
+#     dInput3 <<- reactive({
+#       in.file = input$file3
+#       
+#       if (is.null(in.file))
+#         return(NULL)
+#       
+#       if (input$rownames) {
+#         read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
+#                  row.names=1)#, dec=input$dec3)
+#       } else {
+#         read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
+#       }
+#     })
+#   
   
   # Function that render the data file and passes it to ui.R
   output$view <- renderTable({
@@ -156,13 +155,13 @@ shinyServer(function(input, output, session) {
     },
     
     content = function(file) {
-      #src <- normalizePath('report.Rmd')
+      #src <- normalizePath('report2.Rmd')
       
       # temporarily switch to the temp dir, in case you do not have write
       # permission to the current working directory
       #owd <- setwd(tempdir())
       #on.exit(setwd(owd))
-      #file.copy(src, 'report.Rmd')
+      #file.copy(src, 'report2.Rmd')
       
       library(rmarkdown)
       out <- render('report2.Rmd', #pdf_document()
@@ -171,17 +170,12 @@ shinyServer(function(input, output, session) {
                     PDF = pdf_document(), HTML = html_document(), Word = word_document_local())
       )
       file.copy(out, file)
-#       
-#       out2 <- render('plots.Rmd', pdf_document()
-#                     switch(
-#                     input$format,
-#                     PDF = pdf_document(), HTML = html_document(), Word = word_document_local())
-#       )
-#       
-#       file.copy(out2, file)
     }
   )
-  
+
+
+#output: rmarkdown::default
+#tables: true
 #   output$report <- downloadHandler(
 #     filename = 'myreport.pdf',
 #     content = function(file) {

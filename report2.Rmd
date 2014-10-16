@@ -12,7 +12,7 @@ Some text here.
 # Tables
 \begin{footnotesize}
 
-```{r, results='asis', echo=FALSE}
+```{r, results='asis', echo=TRUE}
 library(xtable)
 options(xtable.comment = FALSE)
 options(xtable.booktabs = TRUE)
@@ -24,6 +24,10 @@ xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
 ```
 
 \end{footnotesize}
+
+if(input$format == "PDF") {
+xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
+} else {print(EVPI)}
 
 
 # Figures

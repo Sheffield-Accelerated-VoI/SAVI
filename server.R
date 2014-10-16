@@ -148,25 +148,35 @@ shinyServer(function(input, output) {
 
   ## Function that makes the reports
   
-  output$report <- downloadHandler(
-    filename == function() {paste('my-report', sep = '.', switch(
-      input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
-    ))
-    },
-    content = function(file) {
-      library(rmarkdown)
-      #knit('report.Rnw')
-      #system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
-      #out = knit2pdf('report.Rnw', clean = TRUE)
-      out <- render('report2.Rmd', switch(
-                    input$format,
-                    PDF = pdf_document(), HTML = html_document(), Word = word_document())
-      )
-      file.copy(out, file)
-    }#,
-    # contentType = 'application/pdf'
-  )
-  
+#   output$report <- downloadHandler(
+#     filename == function() {paste('my-report', sep = '.', switch(
+#       input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
+#     ))
+#     },
+#     content = function(file) {
+#       library(rmarkdown)
+#       #knit('report.Rnw')
+#       #system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
+#       #out = knit2pdf('report.Rnw', clean = TRUE)
+#       out <- render('report2.Rmd', switch(
+#                     input$format,
+#                     PDF = pdf_document(), HTML = html_document(), Word = word_document())
+#       )
+#       file.copy(out, file)
+#     }#,
+#     # contentType = 'application/pdf'
+#   )
+output$report <- downloadHandler(
+  filename = 'myreport.pdf',
+  content = function(file) {
+    knit('report.Rnw')
+    system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
+    #out = knit2pdf('report.Rnw', clean = TRUE)
+    out <- "report.pdf"
+    file.copy(out, file) # move pdf to file for downloading
+  },
+  contentType = 'application/pdf'
+)
   
 })
 

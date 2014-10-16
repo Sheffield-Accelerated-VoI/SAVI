@@ -107,7 +107,8 @@ shinyServer(function(input, output) {
       write.csv(partialEVPI(), file)
     })
   
-  # Functions that make plots
+  ## Functions that make plots
+  
   output$plots1 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
     make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, main=input$main, xlab=input$xlab, 
@@ -144,42 +145,23 @@ shinyServer(function(input, output) {
                   col2=input$color4)
   })
 
-  # Functions that make the reports
-  
-  output$downloadReport <- downloadHandler(
-    filename = function() {"my-report.pdf"
-      #paste('my-report', sep = '.', switch(
-      #  input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
-      #))
-    },
-    
-    content = function(file) {
-      #src <- normalizePath('report.Rmd')
-      
-      # temporarily switch to the temp dir, in case you do not have write
-      # permission to the current working directory
-      #owd <- setwd(tempdir())
-      #on.exit(setwd(owd))
-      #file.copy(src, 'report.Rmd')
-      
-      library(rmarkdown)
-      out <- render('report2.Rmd', pdf_document()
-                    #switch(
-        #input$format,
-        #PDF = pdf_document(), HTML = html_document(), Word = word_document())
-      )
-      file.copy(out, file)
-    }
-  )
+  ## Function that makes the reports
   
   output$report <- downloadHandler(
-    filename = 'myreport.pdf',
+    library(rmarkdown)
+    filename == function() {paste('my-report', sep = '.', switch(
+      input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
+    ))
+    }
     content = function(file) {
-      knit('report.Rnw')
-      system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
+      #knit('report.Rnw')
+      #system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
       #out = knit2pdf('report.Rnw', clean = TRUE)
-      out <- "report.pdf"
-      file.copy(out, file) # move pdf to file for downloading
+      out <- render('report2.Rmd', switch(
+                    input$format,
+                    PDF = pdf_document(), HTML = html_document(), Word = word_document())
+      )
+      file.copy(out, file)
     },
     contentType = 'application/pdf'
   )

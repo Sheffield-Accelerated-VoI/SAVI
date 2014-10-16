@@ -5,7 +5,7 @@ date: "29th September 2014"
 output: rmarkdown::default
 tables: true
 ---
-# Introduction # this is the markdown file
+# Introduction
 
 Some text here.
 
@@ -13,13 +13,12 @@ Some text here.
 \begin{footnotesize}
 
 ```{r, results='asis', echo=FALSE}
-#library(xtable)
-#options(xtable.comment = FALSE)
-#options(xtable.booktabs = TRUE)
+library(xtable)
+options(xtable.comment = FALSE)
+options(xtable.booktabs = TRUE)
 EVPI <- cbind(pEVPI)
 colnames(EVPI) <- "Partial\ EVPI"
-EVPI
-#xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
+xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
 ```
 
 \end{footnotesize}

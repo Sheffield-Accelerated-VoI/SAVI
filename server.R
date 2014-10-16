@@ -12,48 +12,47 @@ shinyServer(function(input, output) {
   
   
   # Function that imports the data file
-  # comment out while testing
-#   dInput <- reactive({
-#     in.file = input$file1
-#     
-#     if (is.null(in.file))
-#       return(NULL)
-#     
-#     if (input$rownames) {
-#       read.csv(in.file$datapath, header=input$header, #sep=input$sep,
-#                row.names=1)#, dec=input$dec)
-#     } else {
-#       read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
-#     }
-#   })
-#   
-#   dInput2 <- reactive({
-#     in.file = input$file2
-#     
-#     if (is.null(in.file))
-#       return(NULL)
-#     
-#     if (input$rownames) {
-#       read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
-#                row.names=1)#, dec=input$dec2)
-#     } else {
-#       read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
-#     }
-#   })
-#   
-#   dInput3 <- reactive({
-#     in.file = input$file3
-#     
-#     if (is.null(in.file))
-#       return(NULL)
-#     
-#     if (input$rownames) {
-#       read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
-#                row.names=1)#, dec=input$dec3)
-#     } else {
-#       read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
-#     }
-#   })
+  #   dInput <- reactive({
+  #     in.file = input$file1
+  #     
+  #     if (is.null(in.file))
+  #       return(NULL)
+  #     
+  #     if (input$rownames) {
+  #       read.csv(in.file$datapath, header=input$header, #sep=input$sep,
+  #                row.names=1)#, dec=input$dec)
+  #     } else {
+  #       read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
+  #     }
+  #   })
+  #   
+  #   dInput2 <- reactive({
+  #     in.file = input$file2
+  #     
+  #     if (is.null(in.file))
+  #       return(NULL)
+  #     
+  #     if (input$rownames) {
+  #       read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
+  #                row.names=1)#, dec=input$dec2)
+  #     } else {
+  #       read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
+  #     }
+  #   })
+  #   
+  #   dInput3 <- reactive({
+  #     in.file = input$file3
+  #     
+  #     if (is.null(in.file))
+  #       return(NULL)
+  #     
+  #     if (input$rownames) {
+  #       read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
+  #                row.names=1)#, dec=input$dec3)
+  #     } else {
+  #       read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
+  #     }
+  #   })
   
   
   # Function that render the data file and passes it to ui.R
@@ -108,8 +107,7 @@ shinyServer(function(input, output) {
       write.csv(partialEVPI(), file)
     })
   
-  ## Functions that make plots
-  
+  # Functions that make plots
   output$plots1 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
     make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, main=input$main, xlab=input$xlab, 
@@ -140,72 +138,51 @@ shinyServer(function(input, output) {
   output$plots4way = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
     make.4way.plot(dInput2(), dInput3(), ceac.obj, lambda=input$lambda2, main=input$main1, 
-                  xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
-                  main2=input$main4, xlab2=input$xlab4, 
-                  ylab2=input$ylab4,
-                  col2=input$color4)
+                   xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
+                   main2=input$main4, xlab2=input$xlab4, 
+                   ylab2=input$ylab4,
+                   col2=input$color4)
   })
-
-  ## Function that makes the reports
+  
+  # Functions that make the reports
+  
+  output$downloadReport <- downloadHandler(
+    filename = function() {"my-report.pdf"
+                           #paste('my-report', sep = '.', switch(
+                           #  input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
+                           #))
+    },
+    
+    content = function(file) {
+      #src <- normalizePath('report.Rmd')
+      
+      # temporarily switch to the temp dir, in case you do not have write
+      # permission to the current working directory
+      #owd <- setwd(tempdir())
+      #on.exit(setwd(owd))
+      #file.copy(src, 'report.Rmd')
+      
+      library(rmarkdown)
+      out <- render('report2.Rmd', pdf_document()
+                    #switch(
+                    #input$format,
+                    #PDF = pdf_document(), HTML = html_document(), Word = word_document())
+      )
+      file.copy(out, file)
+    }
+  )
   
 #   output$report <- downloadHandler(
-#     filename == function() {paste('my-report', sep = '.', switch(
-#       input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
-#     ))
-#     },
+#     filename = 'myreport.pdf',
 #     content = function(file) {
-#       library(rmarkdown)
-#       #knit('report.Rnw')
-#       #system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
+#       knit('report.Rnw')
+#       system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
 #       #out = knit2pdf('report.Rnw', clean = TRUE)
-#       out <- render('report2.Rmd', switch(
-#                     input$format,
-#                     PDF = pdf_document(), HTML = html_document(), Word = word_document())
-#       )
-#       file.copy(out, file)
-#     }#,
-#     # contentType = 'application/pdf'
+#       out <- "report.pdf"
+#       file.copy(out, file) # move pdf to file for downloading
+#     },
+#     contentType = 'application/pdf'
 #   )
-
-
-output$downloadReport <- downloadHandler(
-  filename = function() {"my-report.pdf"
-                         #paste('my-report', sep = '.', switch(
-                         #  input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
-                         #))
-  },
   
-  content = function(file) {
-    #src <- normalizePath('report.Rmd')
-    
-    # temporarily switch to the temp dir, in case you do not have write
-    # permission to the current working directory
-    #owd <- setwd(tempdir())
-    #on.exit(setwd(owd))
-    #file.copy(src, 'report.Rmd')
-    
-    library(rmarkdown)
-    out <- render('report2.Rmd', pdf_document()
-                  #switch(
-                  #input$format,
-                  #PDF = pdf_document(), HTML = html_document(), Word = word_document())
-    )
-    file.copy(out, file)
-  }
-)
-
-# 
-# output$report <- downloadHandler(
-#   filename = 'myreport.pdf',
-#   content = function(file) {
-#     knit('report.Rnw')
-#     system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
-#     #out = knit2pdf('report.Rnw', clean = TRUE)
-#     out <- "report.pdf"
-#     file.copy(out, file) # move pdf to file for downloading
-#   },
-#   contentType = 'application/pdf'
-# )
   
 })
-

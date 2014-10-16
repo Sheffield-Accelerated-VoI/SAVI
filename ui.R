@@ -11,7 +11,7 @@ shinyUI(fluidPage(
                p(HTML("WWelcome to this early draft version!")),
                p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
                       black;'>WARNING: THIS IS AN EARLY DRAFT WEB-BASED IMPLIMENTATION. USE AT YOUR OWN RISK.</div>
-                     </b>")),br(),
+                      </b>")),br(),
                
                p(HTML("For more information see Mark Strong's website  
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
@@ -21,7 +21,7 @@ shinyUI(fluidPage(
       
       
       
-      tabPanel("Import files",	 	# Button to import parameter data
+      tabPanel("Import files",   	# Button to import parameter data
                h3("Parameter importation"),
                p(HTML("To run the application, import your data set using the 
                       import buttons below. You data must
@@ -149,9 +149,9 @@ shinyUI(fluidPage(
       # coming from the function output$summary in server.R
       tabPanel("Downloads",downloadButton('downloadSummary', 'Download EVPI values'),
                br(),br(),#,tableOutput("summary")
-               radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
-                             inline = TRUE),
-               downloadButton('report', 'Download report')
+               #radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
+               #              inline = TRUE),
+               downloadButton('downloadReport', 'Download report')
       )
       ))
 ))

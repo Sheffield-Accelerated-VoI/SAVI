@@ -270,7 +270,7 @@ evpi.gam.SE.bias <- function(NB, input.parameters, regression.model, S=1000)
 
 word_document_local <- function (fig_width = 5, fig_height = 4, fig_caption = FALSE, 
                                  highlight = "default", reference_docx = "default", pandoc_args = NULL) {
-  knitr <- knitr_options(opts_chunk = list(dev = "win.metafile", dpi = 600, 
+  knitr <- knitr_options(opts_chunk = list(dev = "postscript", dpi = 600, 
                                            fig.width = fig_width, fig.height = fig_height))
   args <- c()
   if (!is.null(highlight)) 

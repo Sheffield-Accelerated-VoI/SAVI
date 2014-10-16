@@ -18,7 +18,9 @@ options(xtable.comment = FALSE)
 options(xtable.booktabs = TRUE)
 EVPI <- cbind(pEVPI)
 colnames(EVPI) <- "Partial\ EVPI"
+if(input$format == "PDF") {
 xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
+} else {print(EVPI)}
 ```
 
 \end{footnotesize}

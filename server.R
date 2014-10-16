@@ -3,56 +3,58 @@ library(mgcv)
 library(knitr)
 library(rmarkdown)
 
-shinyServer(function(input, output) {
+
+
+shinyServer(function(input, output, session) {
   
-  dInput <- function() read.csv("parameters.csv")
-  dInput2 <- function() read.csv("costs.csv")
-  dInput3 <- function() read.csv("effects.csv")
+#   dInput <- function() read.csv("parameters.csv")
+#   dInput2 <- function() read.csv("costs.csv")
+#   dInput3 <- function() read.csv("effects.csv")
+#   
   
   
-  
-  # Function that imports the data file
-  #   dInput <- reactive({
-  #     in.file = input$file1
-  #     
-  #     if (is.null(in.file))
-  #       return(NULL)
-  #     
-  #     if (input$rownames) {
-  #       read.csv(in.file$datapath, header=input$header, #sep=input$sep,
-  #                row.names=1)#, dec=input$dec)
-  #     } else {
-  #       read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
-  #     }
-  #   })
-  #   
-  #   dInput2 <- reactive({
-  #     in.file = input$file2
-  #     
-  #     if (is.null(in.file))
-  #       return(NULL)
-  #     
-  #     if (input$rownames) {
-  #       read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
-  #                row.names=1)#, dec=input$dec2)
-  #     } else {
-  #       read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
-  #     }
-  #   })
-  #   
-  #   dInput3 <- reactive({
-  #     in.file = input$file3
-  #     
-  #     if (is.null(in.file))
-  #       return(NULL)
-  #     
-  #     if (input$rownames) {
-  #       read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
-  #                row.names=1)#, dec=input$dec3)
-  #     } else {
-  #       read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
-  #     }
-  #   })
+#  Function that imports the data file
+    dInput <<- reactive({
+      in.file = input$file1
+      
+      if (is.null(in.file))
+        return(NULL)
+      
+      if (input$rownames) {
+        read.csv(in.file$datapath, header=input$header, #sep=input$sep,
+                 row.names=1)#, dec=input$dec)
+      } else {
+        read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
+      }
+    })
+    
+    dInput2 <<- reactive({
+      in.file = input$file2
+      
+      if (is.null(in.file))
+        return(NULL)
+      
+      if (input$rownames) {
+        read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
+                 row.names=1)#, dec=input$dec2)
+      } else {
+        read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
+      }
+    })
+    
+    dInput3 <<- reactive({
+      in.file = input$file3
+      
+      if (is.null(in.file))
+        return(NULL)
+      
+      if (input$rownames) {
+        read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
+                 row.names=1)#, dec=input$dec3)
+      } else {
+        read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
+      }
+    })
   
   
   # Function that render the data file and passes it to ui.R
@@ -191,6 +193,22 @@ shinyServer(function(input, output) {
 #     },
 #     contentType = 'application/pdf'
 #   )
-  
+
+
+# output$text1 <- renderText({
+#   # if (is.null(dInput())) {paste("No parameters available for selection")} else                         
+#   {checkboxGroupInput("parameter", NULL, colnames_inputs, selected = NULL)}
+#   # need to set this up in a loop so will print over and over again
+# })
+
+# output$text1 <- checkboxGroupInput("parameter", "Parameters", c("a", "b", "c"), selected = NULL)
+
+output$selection1 <- renderPrint({input$parameters})
+# output$cnames <- reactive(if (exists(dInput())) {colnames(dInput())} else {print("HELP!")}) 
+
+observe({
+
+  updateCheckboxGroupInput(session, "parameters", label = input$Add)
+})
   
 })

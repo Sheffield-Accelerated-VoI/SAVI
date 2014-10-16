@@ -1,4 +1,11 @@
-shinyUI(fluidPage(
+# dInput <<- function() {
+# a <- cbind(1)
+# colnames(a) <- "No inputs selected"
+# a
+# }
+
+
+fluidPage(
   # Application title
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   
@@ -145,6 +152,33 @@ shinyUI(fluidPage(
                plotOutput("plots4")
       ),
       
+      tabPanel("EVPPI", 
+               p(HTML("Here you can define subsets of parameters to add to your EVPPI. Choose a subset of parameters
+                      using the tick boxes and press the Add button to add the combination to the analysis.
+                      You can add as many combinations as you wish. Press the Calculate EVPPI button
+                      when you have finished your selections.")),
+               br(),
+               sidebarLayout(
+                 sidebarPanel(
+                   h3("Select Parameters for EVPPI"),
+                   textOutput("selection"),
+                   checkboxGroupInput("parameters", NULL, 
+                                      c("a","b","c"), 
+                                      selected = NULL),
+                   br(),
+                   submitButton("Add")),
+                
+                 mainPanel(
+                   h3("selected parameter combinations"),
+                   fluidRow(verbatimTextOutput("selection1")),
+                   br(),
+                   actionButton("calculate1", "Calculate EVPPI"),
+                   br(),
+                   actionButton("clear1",label="Clear Selection")))       
+               ),
+      
+      
+      
       # Numerical summary of the dataset,
       # coming from the function output$summary in server.R
       tabPanel("Downloads",downloadButton('downloadSummary', 'Download EVPI values'),
@@ -154,4 +188,4 @@ shinyUI(fluidPage(
                downloadButton('downloadReport', 'Download report')
       )
       ))
-))
+)

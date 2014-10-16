@@ -1,9 +1,5 @@
 ## calculator functions
-
 ## more comments https://github.com/Sheffield-Accelerated-VoI/SAVI.git
-
-## make a change we want to roll back 
-## want to get rid of this line
 
 createINB <- function(costs, effects, lambda = 20000, incremental = FALSE) {
   ## this function creates the INB matrix

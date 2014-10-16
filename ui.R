@@ -151,7 +151,7 @@ shinyUI(fluidPage(
                br(),br(),#,tableOutput("summary")
                radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
                              inline = TRUE),
-               downloadButton('downloadReport', 'Download report')
+               downloadButton('report', 'Download report')
       )
       ))
 ))

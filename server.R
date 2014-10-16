@@ -166,17 +166,46 @@ shinyServer(function(input, output) {
 #     }#,
 #     # contentType = 'application/pdf'
 #   )
-output$report <- downloadHandler(
-  filename = 'myreport.pdf',
-  content = function(file) {
-    knit('report.Rnw')
-    system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
-    #out = knit2pdf('report.Rnw', clean = TRUE)
-    out <- "report.pdf"
-    file.copy(out, file) # move pdf to file for downloading
+
+
+output$downloadReport <- downloadHandler(
+  filename = function() {"my-report.pdf"
+                         #paste('my-report', sep = '.', switch(
+                         #  input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
+                         #))
   },
-  contentType = 'application/pdf'
+  
+  content = function(file) {
+    #src <- normalizePath('report.Rmd')
+    
+    # temporarily switch to the temp dir, in case you do not have write
+    # permission to the current working directory
+    #owd <- setwd(tempdir())
+    #on.exit(setwd(owd))
+    #file.copy(src, 'report.Rmd')
+    
+    library(rmarkdown)
+    out <- render('report2.Rmd', pdf_document()
+                  #switch(
+                  #input$format,
+                  #PDF = pdf_document(), HTML = html_document(), Word = word_document())
+    )
+    file.copy(out, file)
+  }
 )
+
+# 
+# output$report <- downloadHandler(
+#   filename = 'myreport.pdf',
+#   content = function(file) {
+#     knit('report.Rnw')
+#     system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
+#     #out = knit2pdf('report.Rnw', clean = TRUE)
+#     out <- "report.pdf"
+#     file.copy(out, file) # move pdf to file for downloading
+#   },
+#   contentType = 'application/pdf'
+# )
   
 })
 

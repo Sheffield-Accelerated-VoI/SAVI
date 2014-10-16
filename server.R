@@ -166,9 +166,17 @@ shinyServer(function(input, output) {
       out <- render('report2.Rmd', #pdf_document()
                     switch(
                     input$format,
-                    PDF = pdf_document(), HTML = html_document(), Word = word_document())
+                    PDF = pdf_document(), HTML = html_document(), Word = word_document_local())
       )
       file.copy(out, file)
+#       
+#       out2 <- render('plots.Rmd', pdf_document()
+#                     switch(
+#                     input$format,
+#                     PDF = pdf_document(), HTML = html_document(), Word = word_document_local())
+#       )
+#       
+#       file.copy(out2, file)
     }
   )
   

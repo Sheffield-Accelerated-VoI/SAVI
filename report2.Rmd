@@ -1,0 +1,59 @@
+---
+title: "Value of Information Report"
+author: "Author"
+date: "29th September 2014"
+output: rmarkdown::default
+tables: true
+---
+# Introduction # this is the markdown file
+
+Some text here.
+
+# Tables
+\begin{footnotesize}
+
+```{r, results='asis', echo=FALSE}
+library(xtable)
+options(xtable.comment = FALSE)
+options(xtable.booktabs = TRUE)
+EVPI <- cbind(pEVPI)
+colnames(EVPI) <- "Partial\ EVPI"
+xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
+```
+
+\end{footnotesize}
+
+
+# Figures
+
+
+```{r, fig.cap = 'Results', echo=FALSE, fig.width=8, fig.height=8}
+make.4way.plot(dI2, dI3, ceac.obj, lambda=input$lambda2, main=input$main1, 
+                  xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
+                  main2=input$main4, xlab2=input$xlab4, 
+                  ylab2=input$ylab4,
+                  col2=input$color4)
+```
+
+
+
+```{r, fig.cap = 'Cost-effectiveness plane', echo=FALSE, fig.width=4, fig.height=4}
+plot(inc_effects, inc_costs,  main=paste("lambda =", input$lambda), , cex.main=0.8, xlab=input$xlab, 
+  ylab=input$ylab, col=input$color, pty="s",
+	ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects))
+abline(1, input$lambda2, lty=2)
+abline(h=0)
+abline(v=0)
+```
+
+
+```{r, fig.cap = 'CEAC', echo=FALSE, fig.width=4, fig.height=4}
+make.CEACplot(ceac.obj, lambda=input$lambda2, main=input$main2, xlab=input$xlab2, ylab=input$ylab2,
+                  col=input$color2)
+abline(v=0)
+```
+
+```{r, fig.cap = 'EVPI (on health scale) with respect to lambda', echo=FALSE, fig.width=4, fig.height=4}
+    make.EVPIplot(dI2, dI3, main=input$main4, xlab=input$xlab4, ylab=input$ylab4,
+                  col=input$color4, input$incremental, costscale = FALSE)
+```

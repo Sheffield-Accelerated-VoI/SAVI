@@ -148,12 +148,12 @@ shinyServer(function(input, output) {
   ## Function that makes the reports
   
   output$report <- downloadHandler(
-    library(rmarkdown)
     filename == function() {paste('my-report', sep = '.', switch(
       input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
     ))
-    }
+    },
     content = function(file) {
+      library(rmarkdown)
       #knit('report.Rnw')
       #system("pdflatex -synctex=1 -interaction=nonstopmode report.tex")
       #out = knit2pdf('report.Rnw', clean = TRUE)

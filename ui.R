@@ -15,15 +15,23 @@ fluidPage(
     tabsetPanel(
       tabPanel("Getting started",
                h3("Basic user guide"),
-               p(HTML("WWelcome to this early draft version!")),
+               p(HTML("Welcome to this early draft version!")),
                p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
                       black;'>WARNING: THIS IS AN EARLY DRAFT WEB-BASED IMPLIMENTATION. USE AT YOUR OWN RISK.</div>
                       </b>")),br(),
                
                p(HTML("For more information see Mark Strong's website  
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
-                      target='_blank'>here</a>")),
-               p(HTML("Some more text can go here"))
+                      target='_blank'>here</a>")),br(),
+               p(HTML("Please add some information about your model")),
+               textInput("t1",label = h5("Name of your model")),
+               textInput("t2",label = h5("Number of strategies compared in the model (including basecase)")),
+               textInput("t3",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run")),
+               textInput("t4",label = h5("Number of Monte Carlo iterations used in PSA")),
+               selectInput("s1",label = h5("Is your model an individual level simulation?"))
+               textInput("t5",label = h5("If yes, how many individuals were run per PSA sample"),choices = list("yes","no"),selected = "no"),
+               textInput("t6",label = h5("Name of your model")),
+               textInput("t7",label = h5("Name of your model"))
                ),
       
       

@@ -26,23 +26,24 @@ fluidPage(
                p(HTML("For more information see Mark Strong's website  
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
                       target='_blank'>here</a>")),br(),
+               
                p(HTML("Please add some information about your model")),
                textInput("t1",label = h5("Name of your model")),
-               textInput("t2",label = h5("Number of strategies compared in the model (including basecase)")),
-               textInput("t3",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run")),
-               textInput("t4",label = h5("Number of Monte Carlo iterations used in PSA")),
+               numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
+               textInput("t2",label = h5("Name of strategy considered to be current/standard care")),
+               textInput("t3",label = h5("Names of other strategies")),
+               numericInput("n2",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
+               numericInput("n3",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
                selectInput("s1",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
-               textInput("t5",label = h5("If yes, how many individuals were run per PSA sample")),
-               textInput("t6",label = h5("Definition of effectiveness measure")),
-               textInput("t7",label = h5("Definition of cost measure")),
-               textInput("t8",label = h5("Units used for costs")),
-               textInput("t9",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness")),
-               textInput("t10",label = h5("Name of strategy considered to be current/standard care")),
-               textInput("t11",label = h5("Names of other strategies")),
-               textInput("t12",label = h5("Name of jurisdiction (e.g. country, region, city")),
-               textInput("t13",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year")),
-               textInput("t14",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant"))
-               ),
+               numericInput("n4",label = h5("If yes, how many individuals were run per PSA sample?"),value = 1000, min = 0, step = 100),
+               textInput("t4",label = h5("Definition of effectiveness measure")),
+               textInput("t5",label = h5("Definition of cost measure")),
+               textInput("t6",label = h5("Units used for costs")),
+               numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
+               textInput("t7",label = h5("Name of jurisdiction (e.g. country, region, city)")),
+               numericInput("n6",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 100, min = 0, step = 10),
+               numericInput("n7",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 5, min = 1)
+      ),
 
       
       

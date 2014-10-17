@@ -156,16 +156,16 @@ shinyServer(function(input, output, session) {
     },
     
     content = function(file) {
-      #src <- normalizePath('report2.Rmd')
+      #src <- normalizePath('report.Rmd')
       
       # temporarily switch to the temp dir, in case you do not have write
       # permission to the current working directory
       #owd <- setwd(tempdir())
       #on.exit(setwd(owd))
-      #file.copy(src, 'report2.Rmd')
+      #file.copy(src, 'report.Rmd')
       
       library(rmarkdown)
-      out <- render('report2.Rmd', #pdf_document()
+      out <- render('report.Rmd', #pdf_document()
                     switch(
                     input$format,
                     PDF = pdf_document(), HTML = html_document(), Word = word_document_local())

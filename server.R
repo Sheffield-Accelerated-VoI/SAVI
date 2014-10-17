@@ -14,48 +14,48 @@ shinyServer(function(input, output, session) {
   
   
 #  Function that imports the data file
-#     dInput <<- reactive({
-#       in.file = input$file1
-#       
-#       if (is.null(in.file))
-#         return(NULL)
-#       
-#       if (input$rownames) {
-#         read.csv(in.file$datapath, header=input$header, #sep=input$sep,
-#                  row.names=1)#, dec=input$dec)
-#       } else {
-#         read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
-#       }
-#     })
-#     
-#     dInput2 <<- reactive({
-#       in.file = input$file2
-#       
-#       if (is.null(in.file))
-#         return(NULL)
-#       
-#       if (input$rownames) {
-#         read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
-#                  row.names=1)#, dec=input$dec2)
-#       } else {
-#         read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
-#       }
-#     })
-#     
-#     dInput3 <<- reactive({
-#       in.file = input$file3
-#       
-#       if (is.null(in.file))
-#         return(NULL)
-#       
-#       if (input$rownames) {
-#         read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
-#                  row.names=1)#, dec=input$dec3)
-#       } else {
-#         read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
-#       }
-#     })
-#   
+     dInput <<- reactive({
+       in.file = input$file1
+       
+       if (is.null(in.file))
+         return(NULL)
+       
+       if (input$rownames) {
+         read.csv(in.file$datapath, header=input$header, #sep=input$sep,
+                  row.names=1)#, dec=input$dec)
+       } else {
+         read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
+       }
+     })
+     
+     dInput2 <<- reactive({
+       in.file = input$file2
+       
+       if (is.null(in.file))
+         return(NULL)
+       
+       if (input$rownames) {
+         read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
+                  row.names=1)#, dec=input$dec2)
+       } else {
+         read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
+       }
+     })
+     
+     dInput3 <<- reactive({
+       in.file = input$file3
+       
+       if (is.null(in.file))
+         return(NULL)
+       
+       if (input$rownames) {
+         read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
+                  row.names=1)#, dec=input$dec3)
+       } else {
+         read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
+       }
+     })
+   
   
   # Function that render the data file and passes it to ui.R
   output$view <- renderTable({
@@ -80,7 +80,7 @@ shinyServer(function(input, output, session) {
   })
   
   
-  # Function that calculates the single partial EVPI outputs to be sent to the main panel in ui.R
+# Function that calculates the single partial EVPI outputs to be sent to the main panel in ui.R
   
   partialEVPI <- reactive({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
@@ -109,11 +109,22 @@ shinyServer(function(input, output, session) {
       write.csv(partialEVPI(), file)
     })
   
+  # Functions that make reactive text to accompany plots
+  output$textCEplane <- renderText({
+    paste("This graph shows the standardised cost-effectiveness plane per person based on",input$n3,"model runs,
+      in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
+      The mean incremental cost of",input$t3,"versus",input$t2,"is X",input$t6,". This suggests that 
+      strategy 1 is more/less costly over the",input$n7,"year time horizon. There is some uncertainty due to model 
+      parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
+      The probability that",input$t3,"is cost saving (i.e. cheaper over the",input$n7,"year time horizon) compared 
+      to",input$t2,"is XX%.")
+    })                         ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+  
   # Functions that make plots
   output$plots1 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, main=input$main, xlab=input$xlab, 
-                     ylab=input$ylab, col=input$color)
+    make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, main=input$main, xlab=input$t4, 
+                     ylab=input$t5, col="red")
   })
   
   output$plots2 = renderPlot({

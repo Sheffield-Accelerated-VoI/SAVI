@@ -39,11 +39,14 @@ fluidPage(
                textInput("t4",label = h5("Definition of effectiveness measure")),
                textInput("t5",label = h5("Definition of cost measure")),
                textInput("t6",label = h5("Units used for costs")),
-               numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
+               #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
+               #think might be more flexible to set lambda with slider than define it to begin with.
                textInput("t7",label = h5("Name of jurisdiction (e.g. country, region, city)")),
-               numericInput("n6",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 100, min = 0, step = 10),
-               numericInput("n7",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 5, min = 1)
-      ),
+               numericInput("n6",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 0, min = 0, step = 10),
+               numericInput("n7",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 1, min = 1),
+               br(),
+               submitButton("Submit")
+               ),
 
       
       
@@ -119,24 +122,15 @@ fluidPage(
       
       
       tabPanel("PSA Results",
-               p("This graph shows the standardised cost-effectiveness plane per person based on,input$n3, model runs
-                in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-                The mean incremental cost of strategy one vs. strategy 0 is X (currency units).  This suggests that 
-                strategy 1 is more/less costly over the $ time horizon$.  There is some uncertainty due to model 
-                parameters, with the 95% CI for the incremental cost ranging from (lower credible interval, upper CI).  
-                The probability that strategy 1 is cost saving (i.e. cheaper over the $horizon$) compared to strategy 0 is XX%."),br(),
+               textOutput("textCEplane"),br(),
                
         sidebarLayout(
           sidebarPanel(
             h4("CE plane"),
             textInput("main",strong("Graphic title:"), "CE plane"),
-            textInput("xlab",strong("X axis label:"), "Effects"),
-            textInput("ylab",strong("Y axis label:"), "Costs"),
-            textInput("color","Color:","red"),
-            h4("Specify lambda"),
-            sliderInput('lambda2', label="", 500, 60000, 10000, 500, width="600px")),
+            sliderInput('lambda2', label = h4("Specify lambda"), 0, 60000, 20000, 1000, width="500px")),
             
-          mainPanel(plotOutput("plots1", width="600px", height="600px")))
+          mainPanel(plotOutput("plots1", width="500px", height="500px")))
                
       ),
       
@@ -150,7 +144,7 @@ fluidPage(
                textInput("ylab",strong("Y axis label:"), "Costs"),
                textInput("color","Color:","red"),
                h4("Specify lambda"),
-               sliderInput('lambda2', label="", 500, 60000, 10000, 500, width="600px"),
+               sliderInput('lambda2', label="", 500, 60000, 20000, 1000, width="600px"),
                #sliderInput('lambda2', label="", -6, 6, 4, 0.1),
                plotOutput("plots4way", width="600px", height="600px"),    
                

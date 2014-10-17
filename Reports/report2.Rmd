@@ -27,11 +27,6 @@ print(EVPI)
 
 \end{footnotesize}
 
-```{r, results='asis', echo=TRUE}
-if(input$format == "PDF") {
-xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
-} else {print(EVPI)}
-```
 
 # Figures
 

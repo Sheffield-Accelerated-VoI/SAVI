@@ -1,5 +1,6 @@
 ## calculator functions
 ## more comments https://github.com/Sheffield-Accelerated-VoI/SAVI.git
+##add test comment
 
 createINB <- function(costs, effects, lambda = 20000, incremental = FALSE) {
   ## this function creates the INB matrix

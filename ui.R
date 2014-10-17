@@ -31,11 +31,11 @@ fluidPage(
                textInput("t1",label = h5("Name of your model")),
                numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
                textInput("t2",label = h5("Name of strategy considered to be current/standard care")),
-               textInput("t3",label = h5("Names of other strategies")),
+               textInput("t3",label = h5("Names of other strategies")),#Need some way of adding more than one name to box
                numericInput("n2",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
                numericInput("n3",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
                selectInput("s1",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
-               numericInput("n4",label = h5("If yes, how many individuals were run per PSA sample?"),value = 1000, min = 0, step = 100),
+               numericInput("n4",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
                textInput("t4",label = h5("Definition of effectiveness measure")),
                textInput("t5",label = h5("Definition of cost measure")),
                textInput("t6",label = h5("Units used for costs")),
@@ -118,11 +118,26 @@ fluidPage(
       ),
       
       
-      tabPanel("Results", 
-               h3("Specify lambda"),
-               sliderInput('lambda', label="", 0, 60000, 10000, 1000),
-               h3("Partial EVPI for single parameters"),
-               tableOutput("summary")
+      tabPanel("PSA Results",
+               p("This graph shows the standardised cost-effectiveness plane per person based on,input$n3, model runs
+                in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
+                The mean incremental cost of strategy one vs. strategy 0 is X (currency units).  This suggests that 
+                strategy 1 is more/less costly over the $ time horizon$.  There is some uncertainty due to model 
+                parameters, with the 95% CI for the incremental cost ranging from (lower credible interval, upper CI).  
+                The probability that strategy 1 is cost saving (i.e. cheaper over the $horizon$) compared to strategy 0 is XX%."),br(),
+               
+        sidebarLayout(
+          sidebarPanel(
+            h4("CE plane"),
+            textInput("main",strong("Graphic title:"), "CE plane"),
+            textInput("xlab",strong("X axis label:"), "Effects"),
+            textInput("ylab",strong("Y axis label:"), "Costs"),
+            textInput("color","Color:","red"),
+            h4("Specify lambda"),
+            sliderInput('lambda2', label="", 500, 60000, 10000, 500, width="600px")),
+            
+          mainPanel(plotOutput("plots1", width="600px", height="600px")))
+               
       ),
       
       # Graphic
@@ -137,18 +152,7 @@ fluidPage(
                h4("Specify lambda"),
                sliderInput('lambda2', label="", 500, 60000, 10000, 500, width="600px"),
                #sliderInput('lambda2', label="", -6, 6, 4, 0.1),
-               plotOutput("plots4way", width="600px", height="600px"),
-               
-               
-               h4("CE plane"),
-               textInput("main",strong("Graphic title:"), "CE plane"),
-               textInput("xlab",strong("X axis label:"), "Effects"),
-               textInput("ylab",strong("Y axis label:"), "Costs"),
-               textInput("color","Color:","red"),
-               h4("Specify lambda"),
-               sliderInput('lambda2', label="", 500, 60000, 10000, 500, width="600px"),
-               #sliderInput('lambda2', label="", -6, 6, 4, 0.1),
-               plotOutput("plots1", width="600px", height="600px"),
+               plotOutput("plots4way", width="600px", height="600px"),    
                
                h3("CEAC"),
                textInput("main2",strong("Graphic title:"), "CEAC"),
@@ -172,7 +176,12 @@ fluidPage(
                plotOutput("plots4")
       ),
       
-      tabPanel("EVPPI", 
+      tabPanel("EVPPI",
+               h3("Specify lambda"),
+               sliderInput('lambda', label="", 0, 60000, 20000, 1000),
+               h3("Partial EVPI for single parameters"),
+               tableOutput("summary"),
+               br(),
                p(HTML("Here you can define subsets of parameters to add to your EVPPI. Choose a subset of parameters
                       using the tick boxes and press the Add button to add the combination to the analysis.
                       You can add as many combinations as you wish. Press the Calculate EVPPI button
@@ -182,7 +191,7 @@ fluidPage(
                  sidebarPanel(
                    h3("Select Parameters for EVPPI"),
                    textOutput("selection"),
-                   checkboxGroupInput("parameters", NULL, 
+                   checkboxGroupInput("parameters", NULL, #Might be worth trying renderUI function
                                       c("a","b","c"), 
                                       selected = NULL),
                    br(),

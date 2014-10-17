@@ -6,9 +6,9 @@ library(rmarkdown)
 
 shinyServer(function(input, output, session) {
   
-  dInput <- function() read.csv("..//Data//parameters.csv")
-  dInput2 <- function() read.csv("..//Data//costs.csv")
-  dInput3 <- function() read.csv("..//Data//effects.csv")
+  dInput <- function() read.csv("parameters.csv")
+  dInput2 <- function() read.csv("costs.csv")
+  dInput3 <- function() read.csv("effects.csv")
   
   
   
@@ -164,7 +164,7 @@ shinyServer(function(input, output, session) {
       #file.copy(src, 'report2.Rmd')
       
       library(rmarkdown)
-      out <- render('..//Reports//report2.Rmd', #pdf_document()
+      out <- render('report2.Rmd', #pdf_document()
                     switch(
                     input$format,
                     PDF = pdf_document(), HTML = html_document(), Word = word_document_local())

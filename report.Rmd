@@ -1,8 +1,8 @@
 ---
 title: "Value of Information Report"
 author: "Author"
-date: "29th September 2014"
-output: docx
+date: "today"
+output: pdf
 tables: true
 
 ---

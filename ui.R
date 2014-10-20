@@ -121,65 +121,77 @@ fluidPage(
       
       
       tabPanel("PSA Results",
+               h1("Cost-Effectiveness Plane"),
                textOutput("textCEplane1"),
                textOutput("textCEplane2"),
                textOutput("textCEplane3"),
                h6("Reference"),
-               p("Section 5.1 in Briggs, Claxton, Sculpher. Decision Modelling for Health Economic Evaluation 
-                (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (17 Aug 2006).  ISBN-13: 
+               p("Section 5.1 in Briggs, Claxton & Sculpher. Decision Modelling for Health Economic Evaluation 
+                (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (2006).  ISBN-13: 
                 978-0198526629"),
                br(),
                
         sidebarLayout(
-          sidebarPanel(
-            h4("CE plane"),
-            sliderInput("lambda2", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
-            submitButton("Change"),
-            br(),
-            p(strong("Strategies Compared"),textOutput("textCEplane4")),
-            br(),
-            textOutput("textCEplane5")),
+              sidebarPanel(
+                          sliderInput("lambda2", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+                          submitButton("Change"),
+                          br(),
+                          br(),
+                          p(strong("Strategies Compared"),textOutput("textCEplane4")),
+                          br(),
+                          p(strong("Summary")),
+                          textOutput("textCEplane5")),
           
-          mainPanel(plotOutput("plots1", width="500px", height="500px"))),
+              mainPanel(
+                          plotOutput("plots1", width="500px", height="500px"))),
         
             h3("Table of Key Statistics"),
-            tableOutput("tableCEplane")
+            tableOutput("tableCEplane"),
+            br(),
+            br(),
+            h1("Cost-Effectiveness Acceptability Curve (CEAC)"),
+            textOutput("textCEAC1"),
+            h6("Reference"),
+            p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
+            Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),
+            br(),
+        
+        sidebarLayout(
+              sidebarPanel(
+                          sliderInput("lambda3", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+                          submitButton("Change"),
+                          br(),
+                          br(),
+                          p(strong("Strategies Compared"),
+                          div(textOutput("textCEAC2"),style = "color:black"),
+                          div(textOutput("textCEAC3"),style = "color:red"))),
+                        
+          
+              mainPanel(plotOutput("plots2", width="500px", height="500px")))
+        
                
       ),
       
       # Graphic
       # coming from the function output$boxplots in server.R
-      tabPanel("Plots",
+      tabPanel("EVPI",
                
-               h4("Figures"),
-               textInput("main",strong("Graphic title:"), "CE plane"),
-               textInput("xlab",strong("X axis label:"), "Effects"),
-               textInput("ylab",strong("Y axis label:"), "Costs"),
-               textInput("color","Color:","red"),
-               h4("Specify lambda"),
-               sliderInput('lambda2', label="", 500, 60000, 20000, 1000, width="600px"),
+               #h4("Figures"), ##HASHED OUT AS NOT SURE WHERE TO PUT IT
+               #textInput("main",strong("Graphic title:"), "CE plane"),
+               #textInput("xlab",strong("X axis label:"), "Effects"),
+               #textInput("ylab",strong("Y axis label:"), "Costs"),
+               #textInput("color","Color:","red"),
+               #h4("Specify lambda"),
+               #sliderInput('lambda2', label="", 500, 60000, 20000, 1000, width="600px"),
                #sliderInput('lambda2', label="", -6, 6, 4, 0.1),
-               plotOutput("plots4way", width="600px", height="600px"),    
-               
-               h3("CEAC"),
-               textInput("main2",strong("Graphic title:"), "CEAC"),
-               textInput("xlab2",strong("X axis label:"), "lambda"),
-               textInput("ylab2",strong("Y axis label:"), "P(cost effective)"),
-               textInput("color2","Color:","black"),
-               plotOutput("plots2"),
+               #plotOutput("plots4way", width="600px", height="600px"),    
                
                h3("Overall EVPI versus lambda"),
-               textInput("main3",strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),
-               textInput("xlab3",strong("X axis label:"), "lambda"),
-               textInput("ylab3",strong("Y axis label:"), "Overall EVPI (on costs scale)"),
-               textInput("color3","Color:","red"),
+               textInput("main3",strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
                plotOutput("plots3"),
                
                h3("Overall EVPI versus lambda"),
                textInput("main4",strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
-               textInput("xlab4",strong("X axis label:"), "lambda"),
-               textInput("ylab4",strong("Y axis label:"), "Overall EVPI (on effects scale)"),
-               textInput("color4","Color:","red"),
                plotOutput("plots4")
       ),
       

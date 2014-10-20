@@ -70,7 +70,7 @@ make.CEPlaneplot <- function(costs, effects, lambda, main, xlab, ylab, col) {
 
 make.CEACplot <<- function(ceac, lambda, main, xlab, ylab, col) {
   ## makes the CEAC plot
-  plot(ceac$l.seq, ceac$p[, 1], type="l", main="CEAC", xlab=xlab, ylab=ylab, col=col, ylim=c(0,1))
+  plot(ceac$l.seq, ceac$p[, 1], type="l", main=main, xlab=xlab, ylab=ylab, col=col, ylim=c(0,1))
   for (i in 2:ceac$d){
     lines(ceac$l.seq, ceac$p[, i], col = i)
   }

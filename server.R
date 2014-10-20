@@ -143,6 +143,21 @@ shinyServer(function(input, output, session) {
     of",input$t6,input$lambda2,"per",input$t7)
   })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
 
+  output$textCEAC1 <- renderText({
+    paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
+    value for cost-effectiveness of",input$t6,input$lambda2,"per",input$t7,"the strategy with the highest probability of being most cost-effective 
+    is X, with a probability of XX%. More details on how to interpret CEACs are available from the literature")
+  })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+
+  output$textCEAC2 <- renderText({
+    paste(input$t2)
+  })                       
+
+  output$textCEAC3 <- renderText({
+    paste(input$t3)
+  })                       
+
+
 
 # Functions that make tables  
   output$tableCEplane <- renderTable({
@@ -162,27 +177,27 @@ shinyServer(function(input, output, session) {
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
     make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, xlab=input$t4, 
                      ylab=input$t5, col="orangered")
-  })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
+  })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.DARK RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
   
   output$plots2 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
     ceac.obj <<- ceac()
-    make.CEACplot(ceac.obj, lambda=input$lambda2, main=input$main2, xlab=input$xlab2, ylab=input$ylab2,
-                  col=input$color2)
-  })
+    make.CEACplot(ceac.obj, lambda=input$lambda3, main="Cost-effectiveness Acceptability Curve", xlab="Threshold willingness to pay", 
+                  ylab="Probability strategy is cost-effective",col="red")
+  })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL AND COLOUR CODE LINES
   
   output$plots3 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
     dI2 <<- dInput2()
     dI3 <<- dInput3()
-    make.EVPIplot(dI2, dI3, main=input$main3, xlab=input$xlab3, ylab=input$ylab3,
-                  col=input$color3, input$incremental, costscale = TRUE)
+    make.EVPIplot(dI2, dI3, main=input$main3, xlab="Threshold willingness to pay", ylab="Overall EVPI per person affected (on costs scale)",
+                  col="red", input$incremental, costscale = TRUE)
   })
   
   output$plots4 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    make.EVPIplot(dInput2(), dInput3(), main=input$main4, xlab=input$xlab4, ylab=input$ylab4,
-                  col=input$color4, input$incremental, costscale = FALSE)
+    make.EVPIplot(dInput2(), dInput3(), main=input$main4, xlab="Threshold willingness to pay", ylab="Overall EVPI per person affected (on effects scale)",
+                  col="red", input$incremental, costscale = FALSE)
   })
   
   output$plots4way = renderPlot({

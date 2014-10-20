@@ -118,14 +118,14 @@ shinyServer(function(input, output, session) {
       parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
       The probability that",input$t3,"is cost saving (i.e. cheaper over the",input$n7,"year time horizon) compared 
       to",input$t2,"is XX%.")
-  })
+  })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
 
   output$textCEplane2 <- renderText({
     paste("The mean incremental benefit of",input$t3,"versus",input$t2,"is",input$t6,"X.  This suggests that",input$t3,"
       is more/or less beneficial over the",input$n7,"year time horizon.  Again, there is some uncertainty due to 
       model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
       The probability that",input$t3,"is more beneficial than",input$t2,"is XX%.")
-  })
+  })                        ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
 
   output$textCEplane3 <- renderText({
     paste("The incremental expected cost per unit of benefit is estimated at",input$t6,"XX per",input$t7,". This 
@@ -141,15 +141,28 @@ shinyServer(function(input, output, session) {
   output$textCEplane5 <- renderText({
     paste("$XX%$ probability that",input$t3,"is more cost-effective than",input$t2,"at a threshold 
     of",input$t6,input$lambda2,"per",input$t7)
-  })
+  })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
 
 
-  # Functions that make plots
+# Functions that make tables  
+  output$tableCEplane <- renderTable({
+    tableCEplane <- matrix(c(input$lambda2,input$t2,input$n3,NA,NA,NA,NA,NA,NA,NA,NA,NA),nrow=12,ncol=1)
+    colnames(tableCEplane) <- input$t3
+    rownames(tableCEplane) <- c("Threshold","Comparator","Number of PSA runs","Mean inc. Benefit per Person", "Mean inc. Cost per Person",
+                                   "ICER Estimate","PSA Results","95% CI for inc. Costs","95% CI for inc. Benefits","Probability
+                                   intervention is cost saving","Probability intervention provides more benefit","Probability that
+                                  intervention is cost-effective")
+    tableCEplane
+  })  
+
+
+
+# Functions that make plots
   output$plots1 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, main="Standardised Cost-effectiveness Plane per Person", xlab=input$t4, 
+    make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, xlab=input$t4, 
                      ylab=input$t5, col="orangered")
-  })
+  })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
   
   output$plots2 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)

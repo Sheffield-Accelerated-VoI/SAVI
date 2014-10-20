@@ -142,7 +142,10 @@ fluidPage(
             br(),
             textOutput("textCEplane5")),
           
-          mainPanel(plotOutput("plots1", width="500px", height="500px")))
+          mainPanel(plotOutput("plots1", width="500px", height="500px"))),
+        
+            h3("Table of Key Statistics"),
+            tableOutput("tableCEplane")
                
       ),
       

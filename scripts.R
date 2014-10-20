@@ -60,7 +60,7 @@ make.CEPlaneplot <- function(costs, effects, lambda, main, xlab, ylab, col) {
   m3.costs <<- max(m.costs, m2.costs)
   m3.effects <<- max(m.effects, m2.effects)
   
-  #main <- paste("CE plane\nlambda =", lambda)
+  main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
   plot(inc_effects, inc_costs, main=main, xlab=xlab, ylab=ylab, col=col, pty="s", cex=0.4,
        ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects))
   abline(1, lambda, lty=2)

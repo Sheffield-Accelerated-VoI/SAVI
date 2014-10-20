@@ -110,21 +110,45 @@ shinyServer(function(input, output, session) {
     })
   
   # Functions that make reactive text to accompany plots
-  output$textCEplane <- renderText({
+  output$textCEplane1 <- renderText({
     paste("This graph shows the standardised cost-effectiveness plane per person based on",input$n3,"model runs,
       in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-      The mean incremental cost of",input$t3,"versus",input$t2,"is X",input$t6,". This suggests that 
-      strategy 1 is more/less costly over the",input$n7,"year time horizon. There is some uncertainty due to model 
+      The mean incremental cost of",input$t3,"versus",input$t2,"is",input$t6,"X. This suggests that
+      ",input$t3,"is more/less costly over the",input$n7,"year time horizon. There is some uncertainty due to model 
       parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
       The probability that",input$t3,"is cost saving (i.e. cheaper over the",input$n7,"year time horizon) compared 
       to",input$t2,"is XX%.")
-    })                         ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+  })
+
+  output$textCEplane2 <- renderText({
+    paste("The mean incremental benefit of",input$t3,"versus",input$t2,"is",input$t6,"X.  This suggests that",input$t3,"
+      is more/or less beneficial over the",input$n7,"year time horizon.  Again, there is some uncertainty due to 
+      model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
+      The probability that",input$t3,"is more beneficial than",input$t2,"is XX%.")
+  })
+
+  output$textCEplane3 <- renderText({
+    paste("The incremental expected cost per unit of benefit is estimated at",input$t6,"XX per",input$t7,". This 
+      is above/below the threshold of",input$t6,input$lambda2,"per",input$t7,"indicating that",input$t3,"would (not) be considered cost-effective
+      at this threshold.  There is uncertainty with a XX% probability that",input$t3,"is more cost-effective (XX% of the 
+      probabilistic model run ‘dots’ are below and to the right of the diagonal threshold line).")
+  })                         ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
   
+  output$textCEplane4 <- renderText({
+    paste(input$t3,"vs.",input$t2)
+  })
+
+  output$textCEplane5 <- renderText({
+    paste("$XX%$ probability that",input$t3,"is more cost-effective than",input$t2,"at a threshold 
+    of",input$t6,input$lambda2,"per",input$t7)
+  })
+
+
   # Functions that make plots
   output$plots1 = renderPlot({
     if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, main=input$main, xlab=input$t4, 
-                     ylab=input$t5, col="red")
+    make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, main="Standardised Cost-effectiveness Plane per Person", xlab=input$t4, 
+                     ylab=input$t5, col="orangered")
   })
   
   output$plots2 = renderPlot({

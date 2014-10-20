@@ -28,20 +28,21 @@ fluidPage(
                       target='_blank'>here</a>")),br(),
                
                p(HTML("Please add some information about your model")),
-               textInput("t1",label = h5("Name of your model")),
+               textInput("t1",label = h5("Name of your model"),value ="My Model"),
                numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
-               textInput("t2",label = h5("Name of strategy considered to be current/standard care")),
-               textInput("t3",label = h5("Names of other strategies")),#Need some way of adding more than one name to box
+               textInput("t2",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
+               textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
                numericInput("n2",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
                numericInput("n3",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
                selectInput("s1",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
                numericInput("n4",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
-               textInput("t4",label = h5("Definition of effectiveness measure")),
-               textInput("t5",label = h5("Definition of cost measure")),
-               textInput("t6",label = h5("Units used for costs")),
+               textInput("t4",label = h5("Definition of effectiveness measure"),value ="Discounted Lifetime QALYs"),
+               textInput("t5",label = h5("Definition of cost measure"),value ="Discounted Lifetime Costs (£)"),
+               textInput("t6",label = h5("Units used for costs"),value ="£"),
+               textInput("t7",label = h5("Units used for benefits"),value ="QALY"),
                #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
-               #think might be more flexible to set lambda with slider than define it to begin with.
-               textInput("t7",label = h5("Name of jurisdiction (e.g. country, region, city)")),
+               #lambda set using sliders rather than here.
+               textInput("t8",label = h5("Name of jurisdiction (e.g. country, region, city)"),value ="England"),
                numericInput("n6",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 0, min = 0, step = 10),
                numericInput("n7",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 1, min = 1),
                br(),
@@ -122,14 +123,25 @@ fluidPage(
       
       
       tabPanel("PSA Results",
-               textOutput("textCEplane"),br(),
+               textOutput("textCEplane1"),
+               textOutput("textCEplane2"),
+               textOutput("textCEplane3"),
+               h6("Reference"),
+               p("Section 5.1 in Briggs, Claxton, Sculpher. Decision Modelling for Health Economic Evaluation 
+                (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (17 Aug 2006).  ISBN-13: 
+                978-0198526629"),
+               br(),
                
         sidebarLayout(
           sidebarPanel(
             h4("CE plane"),
-            textInput("main",strong("Graphic title:"), "CE plane"),
-            sliderInput('lambda2', label = h4("Specify lambda"), 0, 60000, 20000, 1000, width="500px")),
-            
+            sliderInput("lambda2", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+            submitButton("Change"),
+            br(),
+            p(strong("Strategies Compared"),textOutput("textCEplane4")),
+            br(),
+            textOutput("textCEplane5")),
+          
           mainPanel(plotOutput("plots1", width="500px", height="500px")))
                
       ),

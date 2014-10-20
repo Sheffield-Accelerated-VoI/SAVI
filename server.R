@@ -7,15 +7,19 @@ library(rmarkdown)
 
 shinyServer(function(input, output, session) {
   
-  dInput <- function() read.csv("parameters.csv")
-  dInput2 <- function() read.csv("costs.csv")
-  dInput3 <- function() read.csv("effects.csv")
   
+# these three rows autoload values for testing purposes - to avoid having to load them manually. MS
+###########
+  load.parameters <- function() read.csv("parameters.csv")
+  load.costs <- function() read.csv("costs.csv")
+  load.effects <- function() read.csv("effects.csv")
+########### 
   
+
   
-#  Function that imports the data file
-     dInput <<- reactive({
-       in.file = input$file1
+#  Function that imports parameters
+     load.parameters <<- reactive({
+       in.file = input$parameter.file
        
        if (is.null(in.file))
          return(NULL)
@@ -27,9 +31,9 @@ shinyServer(function(input, output, session) {
          read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
        }
      })
-     
-     dInput2 <<- reactive({
-       in.file = input$file2
+#  Function that imports costs    
+     load.costs <<- reactive({
+       in.file = input$costs.file
        
        if (is.null(in.file))
          return(NULL)
@@ -42,8 +46,9 @@ shinyServer(function(input, output, session) {
        }
      })
      
-     dInput3 <<- reactive({
-       in.file = input$file3
+# Function that imports effects
+     load.effects <<- reactive({
+       in.file = input$effects.file
        
        if (is.null(in.file))
          return(NULL)
@@ -56,49 +61,55 @@ shinyServer(function(input, output, session) {
        }
      })
    
+
+values.imported <- function(){
+  if (!is.null(load.parameters()) & !is.null(load.effects())  & !is.null(load.costs())) return(TRUE)
+}
   
-  # Function that render the data file and passes it to ui.R
-  output$view <- renderTable({
-    d.input = dInput()
-    if (is.null(d.input)) return(NULL)
-    if (ncol(d.input) > 10) d.input = d.input[, 1:10]
-    head(d.input, n=5)  
+# Functions that render the data files and pass them to ui.R
+
+  output$checktable1 <- renderTable({
+    table.values <- load.parameters()
+    if (is.null(table.values)) return(NULL)
+    if (ncol(table.values) > 10) table.values = table.values[, 1:10]
+    head(table.values, n=5)  
   })
   
-  output$view2 = renderTable({
-    d.input = dInput2()
-    if (is.null(d.input)) return(NULL)
-    if (ncol(d.input) > 10) d.input = d.input[, 1:10]
-    head(d.input, n=5)  
+  output$checktable2 <- renderTable({
+    table.values <- load.costs()
+    if (is.null(table.values)) return(NULL)
+    if (ncol(table.values) > 10) table.values = table.values[, 1:10]
+    head(table.values, n=5)   
   })
   
-  output$view3 = renderTable({
-    d.input = dInput3()
-    if (is.null(d.input)) return(NULL)
-    if (ncol(d.input) > 10) d.input = d.input[, 1:10]
-    head(d.input, n=5)  
+  output$checktable3 <- renderTable({
+    table.values <- load.effects()
+    if (is.null(table.values)) return(NULL)
+    if (ncol(table.values) > 10) table.values = table.values[, 1:10]
+    head(table.values, n=5)  
   })
   
   
 # Function that calculates the single partial EVPI outputs to be sent to the main panel in ui.R
   
   partialEVPI <- reactive({
-    if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    dI2 <<- dInput2()
-    dI3 <<- dInput3()
-    inb <- createINB(dInput2(), dInput3(), input$lambda, input$incremental)
-    d.input <- dInput()
-    pEVPI <<- apply.singleParamGam(d.input, inb)
+    if (!values.imported()) return(NULL)
+    parameters <<- load.parameters()
+    costs <<- load.costs()
+    effects <<- load.effects()
+    inb <<- createINB(costs, effects, input$lambda, input$incremental)
+    pEVPI <<- apply.singleParamGam(parameters, inb)
     cbind(pEVPI)
-    
   })
   
   output$summary <- renderTable(partialEVPI())
   
   # function that calculates ceac
   ceac <- reactive({
-    if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    make.CEAC(dInput2(), dInput3(), input$incremental)
+    if (!values.imported()) return(NULL)
+    #costs <<- load.costs()
+    #effects <<- load.effects()
+    make.CEAC(load.costs(), load.effects(), input$incremental)
   })
   
   
@@ -174,35 +185,36 @@ shinyServer(function(input, output, session) {
 
 # Functions that make plots
   output$plots1 = renderPlot({
-    if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    make.CEPlaneplot(dInput2(), dInput3(), lambda=input$lambda2, xlab=input$t4, 
+    if (!values.imported()) return(NULL)
+    make.CEPlaneplot(load.costs(), load.effects(), lambda=input$lambda2, xlab=input$t4, 
                      ylab=input$t5, col="orangered")
   })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.DARK RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
   
   output$plots2 = renderPlot({
-    if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
+    if (!values.imported()) return(NULL)
     ceac.obj <<- ceac()
-    make.CEACplot(ceac.obj, lambda=input$lambda3, main="Cost-effectiveness Acceptability Curve", xlab="Threshold willingness to pay", 
+    make.CEACplot(ceac.obj, lambda=input$lambda3, main="Cost-effectiveness Acceptability Curve", 
+                  xlab="Threshold willingness to pay", 
                   ylab="Probability strategy is cost-effective",col="red")
   })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL AND COLOUR CODE LINES
   
   output$plots3 = renderPlot({
-    if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    dI2 <<- dInput2()
-    dI3 <<- dInput3()
-    make.EVPIplot(dI2, dI3, main=input$main3, xlab="Threshold willingness to pay", ylab="Overall EVPI per person affected (on costs scale)",
+    if (!values.imported()) return(NULL)
+    make.EVPIplot(load.costs(), load.effects(), main=input$main3, 
+                  xlab="Threshold willingness to pay", ylab="Overall EVPI per person affected (on costs scale)",
                   col="red", input$incremental, costscale = TRUE)
   })
   
   output$plots4 = renderPlot({
-    if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    make.EVPIplot(dInput2(), dInput3(), main=input$main4, xlab="Threshold willingness to pay", ylab="Overall EVPI per person affected (on effects scale)",
+    if (!values.imported()) return(NULL)
+    make.EVPIplot(load.costs(), load.effects(), main=input$main4, 
+                  xlab="Threshold willingness to pay", ylab="Overall EVPI per person affected (on effects scale)",
                   col="red", input$incremental, costscale = FALSE)
   })
   
   output$plots4way = renderPlot({
-    if (is.null(dInput()) | is.null(dInput2())  | is.null(dInput3())) return(NULL)
-    make.4way.plot(dInput2(), dInput3(), ceac.obj, lambda=input$lambda2, main=input$main1, 
+    if (!values.imported()) return(NULL)
+    make.4way.plot(load.costs(), load.effects(), ceac.obj, lambda=input$lambda2, main=input$main1, 
                    xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
                    main2=input$main4, xlab2=input$xlab4, 
                    ylab2=input$ylab4,

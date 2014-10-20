@@ -27,8 +27,8 @@ singleParamGAM <- function(inputParam, inb) {
     g.hat[[d]] <- model$fitted
   }
   
-  perfect.info <- mean(do.call(pmax,g.hat)) 
-  baseline <- max(unlist(lapply(g.hat,mean)))
+  perfect.info <- mean(do.call(pmax, g.hat)) 
+  baseline <- max(unlist(lapply(g.hat, mean)))
   
   partial.evpi <- perfect.info - baseline
   partial.evpi

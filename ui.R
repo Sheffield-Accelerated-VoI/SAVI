@@ -56,7 +56,7 @@ fluidPage(
                       import buttons below. You data must
                       be supplied on the form of a csv file. If the importation is
                       done properly, the data are displayed in the next tab")),
-               fileInput('file1', 'Choose CSV File',
+               fileInput('parameter.file', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header', 'Is there a header row?', TRUE),
@@ -72,7 +72,7 @@ fluidPage(
                
                # Button to import costs  data    
                h3("Costs importation"),
-               fileInput('file2', 'Choose CSV File',
+               fileInput('costs.file', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header2', 'Is there a header row?', TRUE),
@@ -87,7 +87,7 @@ fluidPage(
                
                # Button to import effects data
                h3("Effects importation"),
-               fileInput('file3', 'Choose CSV File',
+               fileInput('effects.file', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header3', 'Is there a header row?', TRUE),
@@ -112,11 +112,11 @@ fluidPage(
                  more than 10 columns)"),br(),
                
                h4("Parameters"),
-               tableOutput("view"),
+               tableOutput("checktable1"),
                h4("Costs"),
-               tableOutput("view2"),
+               tableOutput("checktable2"),
                h4("Effects"),
-               tableOutput("view3")
+               tableOutput("checktable3")
       ),
       
       

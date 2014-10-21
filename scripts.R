@@ -27,8 +27,8 @@ singleParamGAM <- function(inputParam, inb) {
     g.hat[[d]] <- model$fitted
   }
   
-  perfect.info <- mean(do.call(pmax,g.hat)) 
-  baseline <- max(unlist(lapply(g.hat,mean)))
+  perfect.info <- mean(do.call(pmax, g.hat)) 
+  baseline <- max(unlist(lapply(g.hat, mean)))
   
   partial.evpi <- perfect.info - baseline
   partial.evpi
@@ -60,8 +60,8 @@ make.CEPlaneplot <- function(costs, effects, lambda, main, xlab, ylab, col) {
   m3.costs <<- max(m.costs, m2.costs)
   m3.effects <<- max(m.effects, m2.effects)
   
-  main <- paste("CE plane\nlambda =", lambda)
-  plot(inc_effects, inc_costs, main=main, xlab=xlab, ylab=ylab, col=col, pty="s",
+  main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
+  plot(inc_effects, inc_costs, main=main, xlab=xlab, ylab=ylab, col=col, pty="s", cex=0.4,
        ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects))
   abline(1, lambda, lty=2)
   abline(h=0)
@@ -70,7 +70,7 @@ make.CEPlaneplot <- function(costs, effects, lambda, main, xlab, ylab, col) {
 
 make.CEACplot <<- function(ceac, lambda, main, xlab, ylab, col) {
   ## makes the CEAC plot
-  plot(ceac$l.seq, ceac$p[, 1], type="l", main="CEAC", xlab=xlab, ylab=ylab, col=col, ylim=c(0,1))
+  plot(ceac$l.seq, ceac$p[, 1], type="l", main=main, xlab=xlab, ylab=ylab, col=col, ylim=c(0,1))
   for (i in 2:ceac$d){
     lines(ceac$l.seq, ceac$p[, i], col = i)
   }

@@ -26,22 +26,26 @@ fluidPage(
                       target='_blank'>here</a>")),br(),
                
                p(HTML("Please add some information about your model")),
-               textInput("t1",label = h5("Name of your model")),
+               textInput("t1",label = h5("Name of your model"),value ="My Model"),
                numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
-               textInput("t2",label = h5("Name of strategy considered to be current/standard care")),
-               textInput("t3",label = h5("Names of other strategies")),
+               textInput("t2",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
+               textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
                numericInput("n2",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
                numericInput("n3",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
                selectInput("s1",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
-               numericInput("n4",label = h5("If yes, how many individuals were run per PSA sample?"),value = 1000, min = 0, step = 100),
-               textInput("t4",label = h5("Definition of effectiveness measure")),
-               textInput("t5",label = h5("Definition of cost measure")),
-               textInput("t6",label = h5("Units used for costs")),
-               numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
-               textInput("t7",label = h5("Name of jurisdiction (e.g. country, region, city)")),
-               numericInput("n6",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 100, min = 0, step = 10),
-               numericInput("n7",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 5, min = 1)
-      ),
+               numericInput("n4",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
+               textInput("t4",label = h5("Definition of effectiveness measure"),value ="Discounted Lifetime QALYs"),
+               textInput("t5",label = h5("Definition of cost measure"),value ="Discounted Lifetime Costs (£)"),
+               textInput("t6",label = h5("Units used for costs"),value ="£"),
+               textInput("t7",label = h5("Units used for benefits"),value ="QALY"),
+               #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
+               #lambda set using sliders rather than here.
+               textInput("t8",label = h5("Name of jurisdiction (e.g. country, region, city)"),value ="England"),
+               numericInput("n6",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 0, min = 0, step = 10),
+               numericInput("n7",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 1, min = 1),
+               br(),
+               submitButton("Submit")
+               ),
 
       
       
@@ -52,7 +56,7 @@ fluidPage(
                       import buttons below. You data must
                       be supplied on the form of a csv file. If the importation is
                       done properly, the data are displayed in the next tab")),
-               fileInput('file1', 'Choose CSV File',
+               fileInput('parameter.file', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header', 'Is there a header row?', TRUE),
@@ -68,7 +72,7 @@ fluidPage(
                
                # Button to import costs  data    
                h3("Costs importation"),
-               fileInput('file2', 'Choose CSV File',
+               fileInput('costs.file', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header2', 'Is there a header row?', TRUE),
@@ -83,7 +87,7 @@ fluidPage(
                
                # Button to import effects data
                h3("Effects importation"),
-               fileInput('file3', 'Choose CSV File',
+               fileInput('effects.file', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header3', 'Is there a header row?', TRUE),
@@ -108,69 +112,95 @@ fluidPage(
                  more than 10 columns)"),br(),
                
                h4("Parameters"),
-               tableOutput("view"),
+               tableOutput("checktable1"),
                h4("Costs"),
-               tableOutput("view2"),
+               tableOutput("checktable2"),
                h4("Effects"),
-               tableOutput("view3")
+               tableOutput("checktable3")
       ),
       
       
-      tabPanel("Results", 
-               h3("Specify lambda"),
-               sliderInput('lambda', label="", 0, 60000, 10000, 1000),
-               h3("Partial EVPI for single parameters"),
-               tableOutput("summary")
+      tabPanel("PSA Results",
+               h1("Cost-Effectiveness Plane"),
+               textOutput("textCEplane1"),
+               textOutput("textCEplane2"),
+               textOutput("textCEplane3"),
+               h6("Reference"),
+               p("Section 5.1 in Briggs, Claxton & Sculpher. Decision Modelling for Health Economic Evaluation 
+                (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (2006).  ISBN-13: 
+                978-0198526629"),
+               br(),
+               
+        sidebarLayout(
+              sidebarPanel(
+                          sliderInput("lambda2", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+                          submitButton("Change"),
+                          br(),
+                          br(),
+                          p(strong("Strategies Compared"),textOutput("textCEplane4")),
+                          br(),
+                          p(strong("Summary")),
+                          textOutput("textCEplane5")),
+          
+              mainPanel(
+                          plotOutput("plots1", width="500px", height="500px"))),
+        
+            h3("Table of Key Statistics"),
+            tableOutput("tableCEplane"),
+            br(),
+            br(),
+            h1("Cost-Effectiveness Acceptability Curve (CEAC)"),
+            textOutput("textCEAC1"),
+            h6("Reference"),
+            p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
+            Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),
+            br(),
+        
+        sidebarLayout(
+              sidebarPanel(
+                          sliderInput("lambda3", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+                          submitButton("Change"),
+                          br(),
+                          br(),
+                          p(strong("Strategies Compared"),
+                          div(textOutput("textCEAC2"),style = "color:black"),
+                          div(textOutput("textCEAC3"),style = "color:red"))),
+                        
+          
+              mainPanel(plotOutput("plots2", width="500px", height="500px")))
+        
+               
       ),
       
       # Graphic
       # coming from the function output$boxplots in server.R
-      tabPanel("Plots",
+      tabPanel("EVPI",
                
-               h4("Figures"),
-               textInput("main",strong("Graphic title:"), "CE plane"),
-               textInput("xlab",strong("X axis label:"), "Effects"),
-               textInput("ylab",strong("Y axis label:"), "Costs"),
-               textInput("color","Color:","red"),
-               h4("Specify lambda"),
-               sliderInput('lambda2', label="", 500, 60000, 10000, 500, width="600px"),
+               #h4("Figures"), ##HASHED OUT AS NOT SURE WHERE TO PUT IT
+               #textInput("main",strong("Graphic title:"), "CE plane"),
+               #textInput("xlab",strong("X axis label:"), "Effects"),
+               #textInput("ylab",strong("Y axis label:"), "Costs"),
+               #textInput("color","Color:","red"),
+               #h4("Specify lambda"),
+               #sliderInput('lambda2', label="", 500, 60000, 20000, 1000, width="600px"),
                #sliderInput('lambda2', label="", -6, 6, 4, 0.1),
-               plotOutput("plots4way", width="600px", height="600px"),
-               
-               
-               h4("CE plane"),
-               textInput("main",strong("Graphic title:"), "CE plane"),
-               textInput("xlab",strong("X axis label:"), "Effects"),
-               textInput("ylab",strong("Y axis label:"), "Costs"),
-               textInput("color","Color:","red"),
-               h4("Specify lambda"),
-               sliderInput('lambda2', label="", 500, 60000, 10000, 500, width="600px"),
-               #sliderInput('lambda2', label="", -6, 6, 4, 0.1),
-               plotOutput("plots1", width="600px", height="600px"),
-               
-               h3("CEAC"),
-               textInput("main2",strong("Graphic title:"), "CEAC"),
-               textInput("xlab2",strong("X axis label:"), "lambda"),
-               textInput("ylab2",strong("Y axis label:"), "P(cost effective)"),
-               textInput("color2","Color:","black"),
-               plotOutput("plots2"),
+               #plotOutput("plots4way", width="600px", height="600px"),    
                
                h3("Overall EVPI versus lambda"),
-               textInput("main3",strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),
-               textInput("xlab3",strong("X axis label:"), "lambda"),
-               textInput("ylab3",strong("Y axis label:"), "Overall EVPI (on costs scale)"),
-               textInput("color3","Color:","red"),
+               textInput("main3",strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
                plotOutput("plots3"),
                
                h3("Overall EVPI versus lambda"),
                textInput("main4",strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
-               textInput("xlab4",strong("X axis label:"), "lambda"),
-               textInput("ylab4",strong("Y axis label:"), "Overall EVPI (on effects scale)"),
-               textInput("color4","Color:","red"),
                plotOutput("plots4")
       ),
       
-      tabPanel("EVPPI", 
+      tabPanel("EVPPI",
+               h3("Specify lambda"),
+               sliderInput('lambda', label="", 0, 60000, 20000, 1000),
+               h3("Partial EVPI for single parameters"),
+               tableOutput("summary"),
+               br(),
                p(HTML("Here you can define subsets of parameters to add to your EVPPI. Choose a subset of parameters
                       using the tick boxes and press the Add button to add the combination to the analysis.
                       You can add as many combinations as you wish. Press the Calculate EVPPI button
@@ -180,7 +210,7 @@ fluidPage(
                  sidebarPanel(
                    h3("Select Parameters for EVPPI"),
                    textOutput("selection"),
-                   checkboxGroupInput("parameters", NULL, 
+                   checkboxGroupInput("parameters", NULL, #Might be worth trying renderUI function
                                       c("a","b","c"), 
                                       selected = NULL),
                    br(),

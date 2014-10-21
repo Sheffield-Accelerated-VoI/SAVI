@@ -8,7 +8,9 @@ tables: true
 ---
 # Introduction
 
-Some text here.
+This is a mess. Needs lots of work.
+
+To do - make it work as docx and html!
 
 # Tables
 \begin{footnotesize}

@@ -2,11 +2,14 @@ source("scripts.R")
 library(mgcv)
 library(knitr)
 library(rmarkdown)
+cacheEnv <<- new.env() # define an environment in which to cache values of costs, etc
 
+print("server.R called")
 
 
 shinyServer(function(input, output, session) {
   
+  print("shinyServer called")
   
 # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
 ###########
@@ -15,56 +18,61 @@ shinyServer(function(input, output, session) {
   load.effects <- function() read.csv("effects.csv")
 ########### 
   
-
-  
-#  Function that imports parameters
-     load.parameters <<- reactive({
-       in.file = input$parameter.file
-       
-       if (is.null(in.file))
-         return(NULL)
-       
-       if (input$rownames) {
-         read.csv(in.file$datapath, header=input$header, #sep=input$sep,
-                  row.names=1)#, dec=input$dec)
-       } else {
-         read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
-       }
-     })
-#  Function that imports costs    
-     load.costs <<- reactive({
-       in.file = input$costs.file
-       
-       if (is.null(in.file))
-         return(NULL)
-       
-       if (input$rownames) {
-         read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
-                  row.names=1)#, dec=input$dec2)
-       } else {
-         read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
-       }
-     })
-     
-# Function that imports effects
-     load.effects <<- reactive({
-       in.file = input$effects.file
-       
-       if (is.null(in.file))
-         return(NULL)
-       
-       if (input$rownames) {
-         read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
-                  row.names=1)#, dec=input$dec3)
-       } else {
-         read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
-       }
-     })
+# 
+#   
+# #  Function that imports parameters
+#      load.parameters <- reactive({
+#        in.file = input$parameter.file
+#        
+#        if (is.null(in.file))
+#          return(NULL)
+#        
+#        if (input$rownames) {
+#          read.csv(in.file$datapath, header=input$header, #sep=input$sep,
+#                   row.names=1)#, dec=input$dec)
+#        } else {
+#          read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
+#        }
+#      })
+# #  Function that imports costs    
+#      load.costs <- reactive({
+#        in.file = input$costs.file
+#        
+#        if (is.null(in.file))
+#          return(NULL)
+#        
+#        if (input$rownames) {
+#          read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
+#                   row.names=1)#, dec=input$dec2)
+#        } else {
+#          read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
+#        }
+#      })
+#      
+# # Function that imports effects
+#      load.effects <- reactive({
+#        in.file = input$effects.file
+#        
+#        if (is.null(in.file))
+#          return(NULL)
+#        
+#        if (input$rownames) {
+#          read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
+#                   row.names=1)#, dec=input$dec3)
+#        } else {
+#          read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
+#        }
+#      })
    
 
-values.imported <- function(){
-  if (!is.null(load.parameters()) & !is.null(load.effects())  & !is.null(load.costs())) return(TRUE)
-}
+values.imported <<- function(){
+  if (!is.null(load.parameters()) & !is.null(load.effects())  & !is.null(load.costs())) {
+    #print("values.imported called - returning TRUE")
+    return(TRUE) } else 
+    {
+     #print("values.imported called - returning FALSE")
+      return (FALSE)}
+  }
   
 # Functions that render the data files and pass them to ui.R
 
@@ -92,23 +100,21 @@ values.imported <- function(){
   
 # Function that calculates the single partial EVPI outputs to be sent to the main panel in ui.R
   
-  partialEVPI <- reactive({
+  partialEVPI <<- reactive({
     if (!values.imported()) return(NULL)
-    parameters <<- load.parameters()
-    costs <<- load.costs()
-    effects <<- load.effects()
-    inb <<- createINB(costs, effects, input$lambda, input$incremental)
-    pEVPI <<- apply.singleParamGam(parameters, inb)
+    #parameters <- load.parameters()
+    assign("costs", load.costs(), envir = cacheEnv) # put costs in cache
+    assign("effects", load.effects(), envir = cacheEnv) # put effects in cache
+    inb <- createINB(load.costs(), load.effects(), input$lambda, input$incremental)
+    pEVPI <<- apply.singleParamGam(load.parameters(), inb)
     cbind(pEVPI)
   })
   
   output$summary <- renderTable(partialEVPI())
   
   # function that calculates ceac
-  ceac <- reactive({
+  ceac <<- reactive({ # store ceac function in global environment
     if (!values.imported()) return(NULL)
-    #costs <<- load.costs()
-    #effects <<- load.effects()
     make.CEAC(load.costs(), load.effects(), input$incremental)
   })
   

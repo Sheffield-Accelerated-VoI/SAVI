@@ -1,10 +1,10 @@
 ## calculator functions
 ## more comments https://github.com/Sheffield-Accelerated-VoI/SAVI.git
 
-createINB <- function(costs, effects, lambda = 20000, incremental = FALSE) {
+createINB <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
   ## this function creates the INB matrix
-  repository <<- "CRAN"
-  inb <- as.matrix(effects) * lambda - as.matrix(costs)
+#  repository <<- "CRAN"
+  inb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
   if(incremental) {
     inb <- cbind(0, inb)
   } else {
@@ -47,11 +47,44 @@ apply.singleParamGam <- function(df, inb) {
 
 # plot generator functions
 
-make.CEPlaneplot <- function(costs, effects, lambda, main, xlab, ylab, col) {
+
+make.CEAC <- function(costs.int, effects.int, incremental.int) {
+  ## generates the CEAC values
+  l.seq <- seq(0, 60000, 1000)
+  d <- ncol(costs.int) + ifelse(incremental.int, 1, 0)
+  p <- c()
+  p.ce <- matrix(ncol = d, nrow = length(l.seq))
+  for (i in 1:length(l.seq)) {
+    lambda.int <- l.seq[i]
+    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
+    if(incremental.int) {
+      inb.int <- cbind(0, inb.int)
+    } else {
+      inb.int <- inb.int - inb.int[, 1]
+    }
+    inb.int
+    for(j in 1:d) {
+      p.ce[i, j] <- sum(apply(inb.int, 1, which.max) == j) / nrow(inb.int)
+    }
+  }	
+  list(p=p.ce, l.seq=l.seq, d=d)
+}
+
+
+make.CEACplot <- function(ceac.int, lambda.int, ...) {
+  ## makes the CEAC plot
+  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1), ...)
+  for (i in 2:ceac.int$d){
+    lines(ceac.int$l.seq, ceac.int$p[, i], col = i)
+  }
+  abline(v=lambda.int, lty=2)
+}
+
+make.CEPlaneplot <- function(costs.int, effects.int, lambda, ...) {
   ## makes the CE plane
   
-  inc_costs <<- costs[, 2] - costs[, 1]
-  inc_effects <<- effects[, 2] - effects[, 1]
+  inc_costs <<- costs.int[, 2] - costs.int[, 1]
+  inc_effects <<- effects.int[, 2] - effects.int[, 1]
   
   m.costs <<- max(abs(inc_costs))
   m.effects <<- max(abs(inc_effects))
@@ -61,74 +94,44 @@ make.CEPlaneplot <- function(costs, effects, lambda, main, xlab, ylab, col) {
   m3.effects <<- max(m.effects, m2.effects)
   
   main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
-  plot(inc_effects, inc_costs, main=main, xlab=xlab, ylab=ylab, col=col, pty="s", cex=0.4,
-       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects))
+  plot(inc_effects, inc_costs, pty="s", cex=0.4,
+       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), ...)
   abline(1, lambda, lty=2)
   abline(h=0)
   abline(v=0)
 }
 
-make.CEACplot <<- function(ceac, lambda, main, xlab, ylab, col) {
-  ## makes the CEAC plot
-  plot(ceac$l.seq, ceac$p[, 1], type="l", main=main, xlab=xlab, ylab=ylab, col=col, ylim=c(0,1))
-  for (i in 2:ceac$d){
-    lines(ceac$l.seq, ceac$p[, i], col = i)
-  }
-  abline(v=lambda, lty=2)
-}
-
-
-make.CEAC <- function(costs, effects, incremental) {
-  ## generates the CEAC values
-  l.seq <- seq(0, 60000, 1000)
-  d <- ncol(costs) + ifelse(incremental, 1, 0)
-  p <- c()
-  p.ce <- matrix(ncol = d, nrow = length(l.seq))
-  for (i in 1:length(l.seq)) {
-    lambda <- l.seq[i]
-    inb <- as.matrix(effects) * lambda - as.matrix(costs)
-    if(incremental) {
-      inb <- cbind(0, inb)
-    } else {
-      inb <- inb - inb[, 1]
-    }
-    inb
-    for(j in 1:d) {
-      p.ce[i, j] <- sum(apply(inb, 1, which.max) == j) / nrow(inb)
-    }
-  }	
-  list(p=p.ce, l.seq=l.seq, d=d)
-}
-
-make.EVPIplot <- function(costs, effects, main2, xlab2, ylab2, col2, incremental = FALSE, costscale = TRUE) {
+make.EVPIplot <- function(costs.int, effects.int, 
+                          incremental.int = FALSE, costscale = TRUE, ...) {
   ## makes the overall EVPI plot
   l.seq <- seq(0, 60000, 1000)
   p <- c()
-  for (lambda in l.seq) {
-    inb <- as.matrix(effects) * lambda - as.matrix(costs)
-    if(incremental) {
-      inb <- cbind(0, inb)
+  for (lambda.int in l.seq) {
+    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
+    if(incremental.int) {
+      inb.int <- cbind(0, inb.int)
     } else {
-      inb <- inb - inb[, 1]
+      inb.int <- inb.int - inb.int[, 1]
     }
-    inb
-    evpi <- mean(pmax(inb[, 2], inb[, 1])) - max(colMeans(inb))
-    if(!costscale) evpi <- evpi / lambda
+    #inb.int
+    evpi <- mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))
+    if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }	
-  plot(l.seq, p, type="l", main=main2, xlab=xlab2, ylab=ylab2, col=col2)
+  plot(l.seq, p, type="l", ...)
 }
 
-make.4way.plot <<- function(costs, effects, ceac, lambda, main, xlab, ylab, col, 
-                              main2, xlab2, ylab2, col2) {
+make.4way.plot <- function(costs.int, effects.int, incremental.int, ceac.int, lambda.int, 
+                          main1, xlab1, ylab1, col1, 
+                          main2, xlab2, ylab2, col2) {
   ## makes a four way plot of CE plane, CEAC and EVPI
   opar <- par(mfrow = c(2,2))
-  make.CEPlaneplot(costs, effects, lambda, main, xlab, ylab, col)
-  make.CEACplot(ceac, lambda, main, xlab, ylab, col)
-  make.EVPIplot(costs, effects, main2, xlab2, ylab2, col2, 
-                incremental = FALSE, costscale = TRUE)
-  make.EVPIplot(costs, effects, main2, xlab2, ylab2, col2, 
-                incremental = FALSE, costscale = FALSE)  
+  make.CEPlaneplot(costs.int, effects.int, lambda.int, main = main1, xlab = xlab1, ylab = ylab1, col = col1)
+  make.CEACplot(ceac.int, lambda.int, main = main1, xlab = xlab1, ylab = ylab1, col = col1)
+  make.EVPIplot(costs.int, effects.int, incremental.int, costscale = TRUE,
+                main = main2,  xlab = xlab2, ylab = ylab2, col = col2)
+  make.EVPIplot(costs.int, effects.int, incremental.int, costscale = FALSE,
+                main = main2,  xlab = xlab2, ylab = ylab2, col = col2)
   on.exit(par(opar))
 }
 

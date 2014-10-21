@@ -1,15 +1,8 @@
-# dInput <<- function() {
-# a <- cbind(1)
-# colnames(a) <- "No inputs selected"
-# a
-# }
-
-
 
 fluidPage(
   # Application title
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
-  
+
   
   # Main panel (on the right hand side)
   mainPanel(

@@ -2,67 +2,82 @@ source("scripts.R")
 library(mgcv)
 library(knitr)
 library(rmarkdown)
-cacheEnv <<- new.env() # define an environment in which to cache values of costs, etc
+print(cacheEnv <<- new.env()) # define an environment in which to cache values of costs, etc
 
 print("server.R called")
 
 
 shinyServer(function(input, output, session) {
   
+  # Session is the environment unique to each user visit
+  # This is where we will save values that need to persist, 
+  # and that can be picked up and incldued in the report
+  
   print("shinyServer called")
+  print(session)
+  print(class(session))
+  print(ls(envir=session))
   
 # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
-###########
-  load.parameters <- function() read.csv("parameters.csv")
-  load.costs <- function() read.csv("costs.csv")
-  load.effects <- function() read.csv("effects.csv")
-########### 
+# ###########
+#   load.parameters <- function() read.csv("parameters.csv")                                   
+#   load.costs <- function() read.csv("costs.csv")
+#   load.effects <- function() read.csv("effects.csv")
+# ########### 
   
-# 
-#   
-# #  Function that imports parameters
-#      load.parameters <- reactive({
-#        in.file = input$parameter.file
-#        
-#        if (is.null(in.file))
-#          return(NULL)
-#        
-#        if (input$rownames) {
-#          read.csv(in.file$datapath, header=input$header, #sep=input$sep,
-#                   row.names=1)#, dec=input$dec)
-#        } else {
-#          read.csv(in.file$datapath, header=input$header)#, sep=input$sep, dec=input$dec)
-#        }
-#      })
-# #  Function that imports costs    
-#      load.costs <- reactive({
-#        in.file = input$costs.file
-#        
-#        if (is.null(in.file))
-#          return(NULL)
-#        
-#        if (input$rownames) {
-#          read.csv(in.file$datapath, header=input$header2, #sep=input$sep2,
-#                   row.names=1)#, dec=input$dec2)
-#        } else {
-#          read.csv(in.file$datapath, header=input$header2)#, sep=input$sep2, dec=input$dec2)
-#        }
-#      })
-#      
-# # Function that imports effects
-#      load.effects <- reactive({
-#        in.file = input$effects.file
-#        
-#        if (is.null(in.file))
-#          return(NULL)
-#        
-#        if (input$rownames) {
-#          read.csv(in.file$datapath, header=input$header3, #sep=input$sep3,
-#                   row.names=1)#, dec=input$dec3)
-#        } else {
-#          read.csv(in.file$datapath, header=input$header3)#, sep=input$sep3, dec=input$dec3)
-#        }
-#      })
+
+  
+#  Function that imports parameters
+     load.parameters <- reactive({
+       in.file = input$parameter.file
+       
+       if (is.null(in.file))
+         return(NULL)
+       
+       if (input$rownames) {
+         dat <- read.csv(in.file$datapath, header=input$header1, #sep=input$sep,
+                   row.names=1)#, dec=input$dec)
+         assign("params", dat, envir = session)
+       } else {
+         dat <- read.csv(in.file$datapath, header=input$header1)#, sep=input$sep, dec=input$dec)
+         assign("params", dat, envir = session)
+       }
+       return(TRUE)
+     })
+#  Function that imports costs    
+     load.costs <- reactive({
+       in.file = input$costs.file
+       
+       if (is.null(in.file))
+         return(NULL)
+       
+       if (input$rownames) {
+         dat <- read.csv(in.file$datapath, header=input$header2, #sep=input$sep,
+                         row.names=1)#, dec=input$dec)
+         assign("costs", dat, envir = session)
+       } else {
+         dat <- read.csv(in.file$datapath, header=input$header2)#, sep=input$sep, dec=input$dec)
+         assign("costs", dat, envir = session)
+       }
+         return(TRUE)
+     })
+     
+# Function that imports effects
+     load.effects <- reactive({
+       in.file = input$effects.file
+   
+       if (is.null(in.file))
+         return(NULL)
+       
+       if (input$rownames) {
+         dat <- read.csv(in.file$datapath, header=input$header3, #sep=input$sep,
+                         row.names=1)#, dec=input$dec)
+         assign("effects", dat, envir = session)
+       } else {
+         dat <- read.csv(in.file$datapath, header=input$header3)#, sep=input$sep, dec=input$dec)
+         assign("effects", dat, envir = session)
+       }
+     })
    
 
 values.imported <<- function(){

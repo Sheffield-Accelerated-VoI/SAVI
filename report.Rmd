@@ -17,6 +17,7 @@ To do - make it work as docx and html!
 
 ```{r, echo=TRUE}
 print(cacheEnv)
+print(environment())
 #library(xtable)
 #options(xtable.comment = FALSE)
 #options(xtable.booktabs = TRUE)
@@ -27,6 +28,7 @@ EVPI
 #xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
 #} else {print(EVPI)}
 print(EVPI)
+print(get("params", envir=session))
 ```
 
 \end{footnotesize}

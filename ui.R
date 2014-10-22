@@ -52,7 +52,7 @@ fluidPage(
                fileInput('parameter.file', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
-               checkboxInput('header', 'Is there a header row?', TRUE),
+               checkboxInput('header1', 'Is there a header row?', TRUE),
                checkboxInput('rownames', 'Does the first column contain row names?', FALSE),
                #selectInput('sep', 'Separator:',
                #	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ','),

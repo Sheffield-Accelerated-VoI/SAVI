@@ -253,11 +253,12 @@ shinyServer(
       make4wayPlot(get("costs", envir=cache), get("effects", envir=cache), 
                    get("ceac.obj", envir=cache), lambda=input$lambda2, main=input$main1, 
                    xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
-                   main2=input$main4, xlab2=input$xlab4, 
-                   ylab2=input$ylab4,
-                   col2=input$color4)
+                                       main2=input$main4, xlab2=input$xlab4, 
+                                       ylab2=input$ylab4,
+                                       col2=input$color4)
     })
     
+  
     
     observe({
       x <- input$parameter.file

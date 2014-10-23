@@ -2,7 +2,7 @@
 fluidPage(
   # Application title
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
-
+  
   
   # Main panel (on the right hand side)
   mainPanel(
@@ -39,11 +39,11 @@ fluidPage(
                br(),
                submitButton("Submit")
                ),
-
       
       
       
-      tabPanel("Import files",   	# Button to import parameter data
+      
+      tabPanel("Import files",     # Button to import parameter data
                h3("Parameter importation"),
                p(HTML("To run the application, import your data set using the 
                       import buttons below. You data must
@@ -122,50 +122,50 @@ fluidPage(
                textOutput("textCEplane3"),
                h6("Reference"),
                p("Section 5.1 in Briggs, Claxton & Sculpher. Decision Modelling for Health Economic Evaluation 
-                (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (2006).  ISBN-13: 
-                978-0198526629"),
+                 (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (2006).  ISBN-13: 
+                 978-0198526629"),
                br(),
                
-        sidebarLayout(
-              sidebarPanel(
-                          sliderInput("lambda2", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
-                          submitButton("Change"),
-                          br(),
-                          br(),
-                          p(strong("Strategies Compared"),textOutput("textCEplane4")),
-                          br(),
-                          p(strong("Summary")),
-                          textOutput("textCEplane5")),
-          
-              mainPanel(
-                          plotOutput("plots1", width="500px", height="500px"))),
-        
-            h3("Table of Key Statistics"),
-            tableOutput("tableCEplane"),
-            br(),
-            br(),
-            h1("Cost-Effectiveness Acceptability Curve (CEAC)"),
-            textOutput("textCEAC1"),
-            h6("Reference"),
-            p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
-            Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),
-            br(),
-        
-        sidebarLayout(
-              sidebarPanel(
-                          sliderInput("lambda3", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
-                          submitButton("Change"),
-                          br(),
-                          br(),
-                          p(strong("Strategies Compared"),
-                          div(textOutput("textCEAC2"), style = "color:black"),
-                          div(textOutput("textCEAC3"), style = "color:green"))),
-                        
-          
-              mainPanel(plotOutput("plots2", width="500px", height="500px")))
-        
+               sidebarLayout(
+                 sidebarPanel(
+                   sliderInput("lambda2", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+                   submitButton("Change"),
+                   br(),
+                   br(),
+                   p(strong("Strategies Compared"),textOutput("textCEplane4")),
+                   br(),
+                   p(strong("Summary")),
+                   textOutput("textCEplane5")),
+                 
+                 mainPanel(
+                   plotOutput("plots1", width="500px", height="500px"))),
                
-      ),
+               h3("Table of Key Statistics"),
+               tableOutput("tableCEplane"),
+               br(),
+               br(),
+               h1("Cost-Effectiveness Acceptability Curve (CEAC)"),
+               textOutput("textCEAC1"),
+               h6("Reference"),
+               p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
+                 Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),
+               br(),
+               
+               sidebarLayout(
+                 sidebarPanel(
+                   sliderInput("lambda3", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+                   submitButton("Change"),
+                   br(),
+                   br(),
+                   p(strong("Strategies Compared"),
+                     div(textOutput("textCEAC2"), style = "color:black"),
+                     div(textOutput("textCEAC3"), style = "color:green"))),
+                 
+                 
+                 mainPanel(plotOutput("plots2", width="500px", height="500px")))
+               
+               
+               ),
       
       # Graphic
       # coming from the function output$boxplots in server.R
@@ -204,21 +204,20 @@ fluidPage(
                sidebarLayout(
                  sidebarPanel(
                    h3("Select Parameters for EVPPI"),
-                   textOutput("selection"),
-                   checkboxGroupInput("pevpi.parameters", NULL, #Might be worth trying renderUI function
-                                      c("a","b","c"), 
+                   checkboxGroupInput("pevpiParameters", NULL, #Might be worth trying renderUI function
+                                      c("null"), 
                                       selected = NULL),
                    br(),
                    submitButton("Add")),
-                
+                 
                  mainPanel(
                    h3("selected parameter combinations"),
-                   fluidRow(verbatimTextOutput("selection1")),
+                   fluidRow(verbatimTextOutput("selection")),
                    br(),
                    actionButton("calculate1", "Calculate EVPPI"),
                    br(),
                    actionButton("clear1",label="Clear Selection")))       
-               ),
+      ),
       
       
       
@@ -227,7 +226,7 @@ fluidPage(
       tabPanel("Downloads",downloadButton('downloadSummary', 'Download EVPI values'),
                br(),br(),#,tableOutput("summary")
                radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
-                             inline = TRUE),
+                            inline = TRUE),
                downloadButton('downloadReport', 'Download report')
       )
       ))

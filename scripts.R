@@ -1,7 +1,17 @@
 ## calculator functions
 ## more comments https://github.com/Sheffield-Accelerated-VoI/SAVI.git
 
-createINB <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
+
+valuesImportedFLAG <- function(input){
+  if (
+      is.null(input$parameter.file) | 
+      is.null(input$costs.file) | 
+      is.null(input$effects.file)
+      )   
+  {return(FALSE)} else {return (TRUE)}
+}
+
+createInb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
   ## this function creates the INB matrix
 #  repository <<- "CRAN"
   inb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
@@ -10,10 +20,11 @@ createINB <- function(costs.int, effects.int, lambda = 20000, incremental = FALS
   } else {
     inb <- inb - inb[, 1]
   }
-  inb
+  # assign("inb", inb, envir=cache)
+  return(inb)
 }
 
-singleParamGAM <- function(inputParam, inb) {
+calcSingleParamGAM <- function(inputParam, inb) {
   ## this function calculates EVPI for a single parameter using GAM
   D <- ncol(inb)
   N <- nrow(inb)
@@ -34,21 +45,21 @@ singleParamGAM <- function(inputParam, inb) {
   partial.evpi
 }
 
-apply.singleParamGam <- function(df, inb) {
+applyCalcSingleParamGam <- function(df, inb) {
   ## this function applies singleParamGAM over the parameters
   df <- as.matrix(df)
   numVar <- sapply(1:ncol(df),function(x){is.numeric(df[, x])})
   if (sum(numVar)==0) {
     return(NULL)
     stop("PSA parameters are non-numeric!")
-  } else res <- apply(df[, numVar], 2, singleParamGAM, inb)
+  } else res <- apply(df[, numVar], 2, calcSingleParamGAM, inb)
   res
 }
 
 # plot generator functions
 
 
-make.CEAC <- function(costs.int, effects.int, incremental.int) {
+makeCeac <- function(costs.int, effects.int, incremental.int) {
   ## generates the CEAC values
   l.seq <- seq(0, 60000, 1000)
   d <- ncol(costs.int) + ifelse(incremental.int, 1, 0)
@@ -71,7 +82,7 @@ make.CEAC <- function(costs.int, effects.int, incremental.int) {
 }
 
 
-make.CEACplot <- function(ceac.int, lambda.int, ...) {
+makeCeacPlot <- function(ceac.int, lambda.int, ...) {
   ## makes the CEAC plot
   plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1), ...)
   for (i in 2:ceac.int$d){
@@ -80,18 +91,18 @@ make.CEACplot <- function(ceac.int, lambda.int, ...) {
   abline(v=lambda.int, lty=2)
 }
 
-make.CEPlaneplot <- function(costs.int, effects.int, lambda, ...) {
+makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
   ## makes the CE plane
   
-  inc_costs <<- costs.int[, 2] - costs.int[, 1]
-  inc_effects <<- effects.int[, 2] - effects.int[, 1]
+  inc_costs <- costs.int[, 2] - costs.int[, 1]
+  inc_effects <- effects.int[, 2] - effects.int[, 1]
   
-  m.costs <<- max(abs(inc_costs))
-  m.effects <<- max(abs(inc_effects))
-  m2.effects <<- m.costs / lambda
-  m2.costs <<- m.effects * lambda
-  m3.costs <<- max(m.costs, m2.costs)
-  m3.effects <<- max(m.effects, m2.effects)
+  m.costs <- max(abs(inc_costs))
+  m.effects <- max(abs(inc_effects))
+  m2.effects <- m.costs / lambda
+  m2.costs <- m.effects * lambda
+  m3.costs <- max(m.costs, m2.costs)
+  m3.effects <- max(m.effects, m2.effects)
   
   main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
   plot(inc_effects, inc_costs, pty="s", cex=0.4,
@@ -101,7 +112,7 @@ make.CEPlaneplot <- function(costs.int, effects.int, lambda, ...) {
   abline(v=0)
 }
 
-make.EVPIplot <- function(costs.int, effects.int, 
+makeEvpiPlot <- function(costs.int, effects.int, 
                           incremental.int = FALSE, costscale = TRUE, ...) {
   ## makes the overall EVPI plot
   l.seq <- seq(0, 60000, 1000)
@@ -121,16 +132,16 @@ make.EVPIplot <- function(costs.int, effects.int,
   plot(l.seq, p, type="l", ...)
 }
 
-make.4way.plot <- function(costs.int, effects.int, incremental.int, ceac.int, lambda.int, 
+make4wayPlot <- function(costs.int, effects.int, incremental.int, ceac.int, lambda.int, 
                           main1, xlab1, ylab1, col1, 
                           main2, xlab2, ylab2, col2) {
   ## makes a four way plot of CE plane, CEAC and EVPI
   opar <- par(mfrow = c(2,2))
-  make.CEPlaneplot(costs.int, effects.int, lambda.int, main = main1, xlab = xlab1, ylab = ylab1, col = col1)
-  make.CEACplot(ceac.int, lambda.int, main = main1, xlab = xlab1, ylab = ylab1, col = col1)
-  make.EVPIplot(costs.int, effects.int, incremental.int, costscale = TRUE,
+  makeCEPlanePlot(costs.int, effects.int, lambda.int, main = main1, xlab = xlab1, ylab = ylab1, col = col1)
+  makeCeacPlot(ceac.int, lambda.int, main = main1, xlab = xlab1, ylab = ylab1, col = col1)
+  makeEvpiPlot(costs.int, effects.int, incremental.int, costscale = TRUE,
                 main = main2,  xlab = xlab2, ylab = ylab2, col = col2)
-  make.EVPIplot(costs.int, effects.int, incremental.int, costscale = FALSE,
+  makeEvpiPlot(costs.int, effects.int, incremental.int, costscale = FALSE,
                 main = main2,  xlab = xlab2, ylab = ylab2, col = col2)
   on.exit(par(opar))
 }

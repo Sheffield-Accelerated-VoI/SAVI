@@ -1,8 +1,8 @@
 ---
 title: "Value of Information Report"
-author: "Author"
-date: "today"
-output: pdf
+author: "`r input$t1`"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
 tables: true
 
 ---
@@ -13,63 +13,40 @@ This is a mess. Needs lots of work.
 To do - make it work as docx and html!
 
 # Tables
+
+## more tables
+
+### small text
+```{r, echo=TRUE, results='asis' }
+colnamesParams <- colnames(params)
+print(colnamesParams)
+```
+
+
+The parameter names are `r colnamesParams`
+The parameter names are `r NULL`
+
 \begin{footnotesize}
 
 ```{r, echo=TRUE}
-print(cacheEnv)
-print(environment())
+#print(environment())
+#print(values.imported(environment()))
+#print(params)
+# print(inb)
+#if(values.imported(environment())){
+#print(environment())
 #library(xtable)
 #options(xtable.comment = FALSE)
 #options(xtable.booktabs = TRUE)
-EVPI <- cbind(pEVPI)
-colnames(EVPI) <- "Partial\ EVPI"
-EVPI
+#EVPI <- cbind(pEVPI)
+#colnames(EVPI) <- "Partial\ EVPI"
+#EVPI
 #if(input$format == "PDF") {
 #xtable(EVPI, caption = paste("Partial EVPI values at lambda =", input$lambda))
 #} else {print(EVPI)}
-print(EVPI)
-print(get("params", envir=session))
+#print(EVPI)
+#}
+  
 ```
 
 \end{footnotesize}
-
-
-# Figures
-
-
-```{r, fig.cap = 'Results', echo=FALSE, fig.width=8, fig.height=8}
-
-cos <- get("costs", envir=cacheEnv)
-eff <- get("effects", envir=cacheEnv)
-
- make.4way.plot(costs.int = cos, effects.int = eff, incremental.int = input$incremental,
-                 ceac.int = ceac.obj, lambda.int=input$lambda2, main1=input$main, xlab1=input$xlab, 
-                 ylab1=input$ylab, col1=2, main2=input$main, xlab2=input$xlab, 
-                 ylab2=input$ylab, col2=3)
-```
-
-
-
-```{r, fig.cap = 'Cost-effectiveness plane', echo=FALSE, fig.width=4, fig.height=4}
-plot(inc_effects, inc_costs,  main=paste("lambda =", input$lambda), cex.main=0.8, xlab=input$xlab, 
-  ylab=input$ylab, col=1, pty="s",
-	ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects))
-abline(1, input$lambda2, lty=2, col=3)
-abline(h=0)
-abline(v=0)
-```
-
-
-```{r, fig.cap = 'CEAC', echo=FALSE, fig.width=4, fig.height=4}
-make.CEACplot(ceac.obj, lambda=input$lambda2, main=input$main2, xlab=input$xlab2, ylab=input$ylab2,
-                  col=3)
-abline(v=0)
-```
-
-```{r, fig.cap = 'EVPI (on health scale) with respect to lambda', echo=FALSE, fig.width=4, fig.height=4}
-cos <- get("costs", envir=cacheEnv)
-eff <- get("effects", envir=cacheEnv)
-     make.EVPIplot(costs.int = cos, effects.int = eff, incremental.int = input$incremental, 
-                   costscale = FALSE, main="test.main", xlab="testx", ylab="testy",
-                   col=2)
-```

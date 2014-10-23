@@ -19,9 +19,9 @@ fluidPage(
                       target='_blank'>here</a>")),br(),
                
                p(HTML("Please add some information about your model")),
-               textInput("t1",label = h5("Name of your model"),value ="My Model"),
+               textInput("model.name",label = h5("Name of your model"),value ="My Model"),
                numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
-               textInput("t2",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
+               textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
                textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
                numericInput("n2",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
                numericInput("n3",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
@@ -53,7 +53,7 @@ fluidPage(
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header1', 'Is there a header row?', TRUE),
-               checkboxInput('rownames', 'Does the first column contain row names?', FALSE),
+               checkboxInput('rownames1', 'Does the first column contain row names?', FALSE),
                #selectInput('sep', 'Separator:',
                #	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ','),
                #selectInput('quote', 'Quote:',
@@ -116,7 +116,9 @@ fluidPage(
       tabPanel("PSA Results",
                h1("Cost-Effectiveness Plane"),
                textOutput("textCEplane1"),
+               br(),
                textOutput("textCEplane2"),
+               br(),
                textOutput("textCEplane3"),
                h6("Reference"),
                p("Section 5.1 in Briggs, Claxton & Sculpher. Decision Modelling for Health Economic Evaluation 
@@ -156,8 +158,8 @@ fluidPage(
                           br(),
                           br(),
                           p(strong("Strategies Compared"),
-                          div(textOutput("textCEAC2"),style = "color:black"),
-                          div(textOutput("textCEAC3"),style = "color:red"))),
+                          div(textOutput("textCEAC2"), style = "color:black"),
+                          div(textOutput("textCEAC3"), style = "color:green"))),
                         
           
               mainPanel(plotOutput("plots2", width="500px", height="500px")))
@@ -203,7 +205,7 @@ fluidPage(
                  sidebarPanel(
                    h3("Select Parameters for EVPPI"),
                    textOutput("selection"),
-                   checkboxGroupInput("parameters", NULL, #Might be worth trying renderUI function
+                   checkboxGroupInput("pevpi.parameters", NULL, #Might be worth trying renderUI function
                                       c("a","b","c"), 
                                       selected = NULL),
                    br(),

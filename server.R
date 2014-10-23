@@ -2,21 +2,39 @@ source("scripts.R")
 library(mgcv)
 library(knitr)
 library(rmarkdown)
-print(cacheEnv <<- new.env()) # define an environment in which to cache values of costs, etc
+ #print(cacheEnv <- new.env()) # define an environment in which to cache values of costs, etc
 
 print("server.R called")
 
 
-shinyServer(function(input, output, session) {
+shinyServer(
   
-  # Session is the environment unique to each user visit
-  # This is where we will save values that need to persist, 
-  # and that can be picked up and incldued in the report
+  function(input, output, session) {
+    # `cache' is the environment unique to each user visit
+    # This is where we will save values that need to persist, 
+    # and that can be picked up and incldued in the report
+    
+  print("cache is")
+  print(cache <- new.env())
+
   
   print("shinyServer called")
+  print("session is")
   print(session)
-  print(class(session))
+
+  print("objects in the session environment")
   print(ls(envir=session))
+  
+  print("current environment")
+  print(environment())
+  
+  # initialise cached variable values
+  
+  assign("pEVPI", NULL, envir = cache)
+  assign("params", NULL, envir = cache)
+  assign("costs", NULL, envir = cache)  
+  assign("effects", NULL, envir = cache) 
+  
   
 # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
 # ###########
@@ -28,109 +46,99 @@ shinyServer(function(input, output, session) {
 
   
 #  Function that imports parameters
-     load.parameters <- reactive({
+     load.parameters <- observe({
        in.file = input$parameter.file
-       
+       print("reactive called")
        if (is.null(in.file))
          return(NULL)
        
-       if (input$rownames) {
+       if (input$rownames1) {
          dat <- read.csv(in.file$datapath, header=input$header1, #sep=input$sep,
                    row.names=1)#, dec=input$dec)
-         assign("params", dat, envir = session)
+         assign("params", dat, envir = cache)
        } else {
          dat <- read.csv(in.file$datapath, header=input$header1)#, sep=input$sep, dec=input$dec)
-         assign("params", dat, envir = session)
+         print(assign("params", dat, envir = cache))
        }
-       return(TRUE)
      })
+
 #  Function that imports costs    
-     load.costs <- reactive({
+     load.costs <- observe({
        in.file = input$costs.file
        
        if (is.null(in.file))
          return(NULL)
        
-       if (input$rownames) {
+       if (input$rownames2) {
          dat <- read.csv(in.file$datapath, header=input$header2, #sep=input$sep,
                          row.names=1)#, dec=input$dec)
-         assign("costs", dat, envir = session)
+         assign("costs", dat, envir = cache)
        } else {
          dat <- read.csv(in.file$datapath, header=input$header2)#, sep=input$sep, dec=input$dec)
-         assign("costs", dat, envir = session)
+         assign("costs", dat, envir = cache)
        }
-         return(TRUE)
      })
      
 # Function that imports effects
-     load.effects <- reactive({
+     load.effects <- observe({
        in.file = input$effects.file
    
        if (is.null(in.file))
          return(NULL)
        
-       if (input$rownames) {
+       if (input$rownames3) {
          dat <- read.csv(in.file$datapath, header=input$header3, #sep=input$sep,
                          row.names=1)#, dec=input$dec)
-         assign("effects", dat, envir = session)
+         assign("effects", dat, envir = cache)
        } else {
          dat <- read.csv(in.file$datapath, header=input$header3)#, sep=input$sep, dec=input$dec)
-         assign("effects", dat, envir = session)
+         assign("effects", dat, envir = cache)
        }
      })
    
-
-values.imported <<- function(){
-  if (!is.null(load.parameters()) & !is.null(load.effects())  & !is.null(load.costs())) {
-    #print("values.imported called - returning TRUE")
-    return(TRUE) } else 
-    {
-     #print("values.imported called - returning FALSE")
-      return (FALSE)}
-  }
-  
 # Functions that render the data files and pass them to ui.R
 
   output$checktable1 <- renderTable({
-    table.values <- load.parameters()
-    if (is.null(table.values)) return(NULL)
-    if (ncol(table.values) > 10) table.values = table.values[, 1:10]
-    head(table.values, n=5)  
+      x <- input$parameter.file
+      if (is.null(x)) return(NULL)
+      table.values <- get("params", envir=cache)
+      if (ncol(table.values) > 10) table.values = table.values[, 1:10]
+      head(table.values, n=5)
   })
   
   output$checktable2 <- renderTable({
-    table.values <- load.costs()
-    if (is.null(table.values)) return(NULL)
-    if (ncol(table.values) > 10) table.values = table.values[, 1:10]
-    head(table.values, n=5)   
+      x <- input$costs.file
+      if (is.null(x)) return(NULL)
+      table.values <- get("costs", envir=cache)
+      if (ncol(table.values) > 10) table.values = table.values[, 1:10]
+      head(table.values, n=5)   
   })
   
   output$checktable3 <- renderTable({
-    table.values <- load.effects()
-    if (is.null(table.values)) return(NULL)
-    if (ncol(table.values) > 10) table.values = table.values[, 1:10]
-    head(table.values, n=5)  
+    x <- input$effects.file
+    if (is.null(x)) return(NULL)
+      table.values <- get("effects", envir=cache)
+      if (ncol(table.values) > 10) table.values = table.values[, 1:10]
+      head(table.values, n=5)   
   })
   
   
 # Function that calculates the single partial EVPI outputs to be sent to the main panel in ui.R
   
-  partialEVPI <<- reactive({
-    if (!values.imported()) return(NULL)
-    #parameters <- load.parameters()
-    assign("costs", load.costs(), envir = cacheEnv) # put costs in cache
-    assign("effects", load.effects(), envir = cacheEnv) # put effects in cache
-    inb <- createINB(load.costs(), load.effects(), input$lambda, input$incremental)
-    pEVPI <<- apply.singleParamGam(load.parameters(), inb)
+  calcPartialEvpi <- reactive({
+    if (!valuesImportedFLAG(input)) return(NULL)
+    inb <- createInb(get("costs", envir=cache), get("effects", envir=cache), 
+                    input$lambda, input$incremental)
+    pEVPI <- applyCalcSingleParamGam(get("params", envir=cache), inb)
     cbind(pEVPI)
   })
   
-  output$summary <- renderTable(partialEVPI())
+  output$summary <- renderTable(calcPartialEvpi())
   
   # function that calculates ceac
-  ceac <<- reactive({ # store ceac function in global environment
-    if (!values.imported()) return(NULL)
-    make.CEAC(load.costs(), load.effects(), input$incremental)
+  ceac <- reactive({ 
+    if (!valuesImportedFLAG(input)) return(NULL)
+    makeCeac(get("costs", envir=cache), get("effects", envir=cache), input$incremental)
   })
   
   
@@ -138,25 +146,25 @@ values.imported <<- function(){
   output$downloadSummary = downloadHandler(
     filename = "evpi\ values.csv",
     content = function(file) {
-      write.csv(partialEVPI(), file)
+      write.csv(calcPartialEvpi(), file)
     })
   
   # Functions that make reactive text to accompany plots
   output$textCEplane1 <- renderText({
     paste("This graph shows the standardised cost-effectiveness plane per person based on",input$n3,"model runs,
       in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-      The mean incremental cost of",input$t3,"versus",input$t2,"is",input$t6,"X. This suggests that
+      The mean incremental cost of",input$t3,"versus",input$current,"is",input$t6,"X. This suggests that
       ",input$t3,"is more/less costly over the",input$n7,"year time horizon. There is some uncertainty due to model 
       parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
       The probability that",input$t3,"is cost saving (i.e. cheaper over the",input$n7,"year time horizon) compared 
-      to",input$t2,"is XX%.")
+      to",input$current,"is XX%.")
   })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
 
   output$textCEplane2 <- renderText({
-    paste("The mean incremental benefit of",input$t3,"versus",input$t2,"is",input$t6,"X.  This suggests that",input$t3,"
+    paste("The mean incremental benefit of",input$t3,"versus",input$current,"is",input$t6,"X.  This suggests that",input$t3,"
       is more/or less beneficial over the",input$n7,"year time horizon.  Again, there is some uncertainty due to 
       model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
-      The probability that",input$t3,"is more beneficial than",input$t2,"is XX%.")
+      The probability that",input$t3,"is more beneficial than",input$current,"is XX%.")
   })                        ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
 
   output$textCEplane3 <- renderText({
@@ -167,11 +175,11 @@ values.imported <<- function(){
   })                         ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
   
   output$textCEplane4 <- renderText({
-    paste(input$t3,"vs.",input$t2)
+    paste(input$t3,"vs.",input$current)
   })
 
   output$textCEplane5 <- renderText({
-    paste("$XX%$ probability that",input$t3,"is more cost-effective than",input$t2,"at a threshold 
+    paste("$XX%$ probability that",input$t3,"is more cost-effective than",input$current,"at a threshold 
     of",input$t6,input$lambda2,"per",input$t7)
   })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
 
@@ -182,7 +190,7 @@ values.imported <<- function(){
   })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
 
   output$textCEAC2 <- renderText({
-    paste(input$t2)
+    paste(input$current)
   })                       
 
   output$textCEAC3 <- renderText({
@@ -193,11 +201,12 @@ values.imported <<- function(){
 
 # Functions that make tables  
   output$tableCEplane <- renderTable({
-    tableCEplane <- matrix(c(input$lambda2,input$t2,input$n3,NA,NA,NA,NA,NA,NA,NA,NA,NA),nrow=12,ncol=1)
+    if (!valuesImportedFLAG(input)) return(NULL)
+    tableCEplane <- matrix(c(input$lambda2, input$current, input$n3, rep(NA, 9)), nrow=12, ncol=1)
     colnames(tableCEplane) <- input$t3
     rownames(tableCEplane) <- c("Threshold","Comparator","Number of PSA runs","Mean inc. Benefit per Person", "Mean inc. Cost per Person",
-                                   "ICER Estimate","PSA Results","95% CI for inc. Costs","95% CI for inc. Benefits","Probability
-                                   intervention is cost saving","Probability intervention provides more benefit","Probability that
+                                  "ICER Estimate","PSA Results","95% CI for inc. Costs","95% CI for inc. Benefits","Probability
+                                  intervention is cost saving","Probability intervention provides more benefit","Probability that
                                   intervention is cost-effective")
     tableCEplane
   })  
@@ -206,36 +215,43 @@ values.imported <<- function(){
 
 # Functions that make plots
   output$plots1 = renderPlot({
-    if (!values.imported()) return(NULL)
-    make.CEPlaneplot(load.costs(), load.effects(), lambda=input$lambda2, xlab=input$t4, 
+    if (!valuesImportedFLAG(input)) return(NULL)
+    makeCEPlanePlot(get("costs", envir=cache), get("effects", envir=cache), 
+                     lambda=input$lambda2, xlab=input$t4, 
                      ylab=input$t5, col="orangered")
   })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.DARK RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
   
   output$plots2 = renderPlot({
-    if (!values.imported()) return(NULL)
-    ceac.obj <<- ceac()
-    make.CEACplot(ceac.obj, lambda=input$lambda3, main="Cost-effectiveness Acceptability Curve", 
+    if (!valuesImportedFLAG(input)) return(NULL)
+    ceac.obj <- assign("ceac.obj", ceac(), envir=cache)
+    makeCeacPlot(ceac.obj, lambda=input$lambda3, 
+                  main="Cost-effectiveness Acceptability Curve", 
                   xlab="Threshold willingness to pay", 
                   ylab="Probability strategy is cost-effective",col="red")
   })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL AND COLOUR CODE LINES
   
   output$plots3 = renderPlot({
-    if (!values.imported()) return(NULL)
-    make.EVPIplot(load.costs(), load.effects(), main=input$main3, 
-                  xlab="Threshold willingness to pay", ylab="Overall EVPI per person affected (on costs scale)",
+    if (!valuesImportedFLAG(input)) return(NULL)
+    makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), 
+                  main=input$main3, 
+                  xlab="Threshold willingness to pay", 
+                  ylab="Overall EVPI per person affected (on costs scale)",
                   col="red", input$incremental, costscale = TRUE)
   })
   
   output$plots4 = renderPlot({
-    if (!values.imported()) return(NULL)
-    make.EVPIplot(load.costs(), load.effects(), main=input$main4, 
-                  xlab="Threshold willingness to pay", ylab="Overall EVPI per person affected (on effects scale)",
+    if (!valuesImportedFLAG(input)) return(NULL)
+    makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), 
+                  main=input$main4, 
+                  xlab="Threshold willingness to pay", 
+                  ylab="Overall EVPI per person affected (on effects scale)",
                   col="red", input$incremental, costscale = FALSE)
   })
   
   output$plots4way = renderPlot({
-    if (!values.imported()) return(NULL)
-    make.4way.plot(load.costs(), load.effects(), ceac.obj, lambda=input$lambda2, main=input$main1, 
+    if (!valuesImportedFLAG(input)) return(NULL)
+    make4wayPlot(get("costs", envir=cache), get("effects", envir=cache), 
+                   get("ceac.obj", envir=cache), lambda=input$lambda2, main=input$main1, 
                    xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
                    main2=input$main4, xlab2=input$xlab4, 
                    ylab2=input$ylab4,
@@ -264,7 +280,8 @@ values.imported <<- function(){
       out <- render('report.Rmd', #pdf_document()
                     switch(
                     input$format,
-                    PDF = pdf_document(), HTML = html_document(), Word = word_document_local())
+                    PDF = pdf_document(), HTML = html_document(), Word = word_document_local()),
+                    envir = cache
       )
       file.copy(out, file)
     }
@@ -298,8 +315,8 @@ output$selection1 <- renderPrint({input$parameters})
 # output$cnames <- reactive(if (exists(dInput())) {colnames(dInput())} else {print("HELP!")}) 
 
 observe({
-
-  updateCheckboxGroupInput(session, "parameters", label = input$Add)
+  x <- input$parameter.file
+  updateCheckboxGroupInput(session, "pevpi.parameters", label = colnames(get("params", envir=cache)))
 })
   
 })

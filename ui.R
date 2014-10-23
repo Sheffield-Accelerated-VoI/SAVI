@@ -12,11 +12,11 @@ fluidPage(
                p(HTML("Welcome to this early draft version!")),
                p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
                       black;'>WARNING: THIS IS AN EARLY DRAFT WEB-BASED IMPLIMENTATION. USE AT YOUR OWN RISK.</div>
-                      </b>")),br(),
+                      </b>")), br(),
                
                p(HTML("For more information see Mark Strong's website  
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
-                      target='_blank'>here</a>")),br(),
+                      target='_blank'>here</a>")), br(),
                
                p(HTML("Please add some information about your model")),
                textInput("t1",label = h5("Name of your model"),value ="My Model"),
@@ -33,7 +33,7 @@ fluidPage(
                textInput("t7",label = h5("Units used for benefits"),value ="QALY"),
                #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
                #lambda set using sliders rather than here.
-               textInput("t8",label = h5("Name of jurisdiction (e.g. country, region, city)"),value ="England"),
+               textInput("t8",label = h5("Name of jurisdiction (e.g. country, region, city)"),value = "England"),
                numericInput("n6",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 0, min = 0, step = 10),
                numericInput("n7",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 1, min = 1),
                br(),
@@ -133,10 +133,12 @@ fluidPage(
                           p(strong("Strategies Compared"),textOutput("textCEplane4")),
                           br(),
                           p(strong("Summary")),
-                          textOutput("textCEplane5")),
+                          textOutput("textCEplane5")
+                          ),
           
-              mainPanel(
-                          plotOutput("plots1", width="500px", height="500px"))),
+                mainPanel(plotOutput("plots1", width="500px", height="500px")
+                          )
+                    ),
         
             h3("Table of Key Statistics"),
             tableOutput("tableCEplane"),
@@ -151,7 +153,7 @@ fluidPage(
         
         sidebarLayout(
               sidebarPanel(
-                          sliderInput("lambda3", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+                          sliderInput("lambda3", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width = "500px"),
                           submitButton("Change"),
                           br(),
                           br(),
@@ -180,11 +182,11 @@ fluidPage(
                #plotOutput("plots4way", width="600px", height="600px"),    
                
                h3("Overall EVPI versus lambda"),
-               textInput("main3",strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
+               textInput("main3", strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
                plotOutput("plots3"),
                
                h3("Overall EVPI versus lambda"),
-               textInput("main4",strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
+               textInput("main4", strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
                plotOutput("plots4")
       ),
       

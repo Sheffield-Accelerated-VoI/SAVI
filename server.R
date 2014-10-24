@@ -129,6 +129,7 @@ shinyServer(
       if (!valuesImportedFLAG(input)) return(NULL)
       inb <- createInb(get("costs", envir=cache), get("effects", envir=cache), 
                        input$lambda, input$incremental)
+      assign("inb", inb, envir=cache)
       pEVPI <- applyCalcSingleParamGam(get("params", envir=cache), inb)
       cbind(pEVPI)
     })

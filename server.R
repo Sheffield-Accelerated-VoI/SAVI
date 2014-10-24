@@ -259,7 +259,12 @@ shinyServer(
                                        col2=input$color4)
     })
     
-  
+    output$plots5 <- renderPlot({
+      if (!valuesImportedFLAG(input)) return(NULL)
+      makeNbDensity(get("costs", envir=cache), get("effects", envir=cache), 
+                    main = "Net Benefit Densities",
+                    xlab = "Net Benefit", ylab = "Density")
+    })
     
     observe({
       x <- input$parameter.file

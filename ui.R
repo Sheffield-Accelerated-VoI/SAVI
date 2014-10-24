@@ -165,9 +165,11 @@ fluidPage(
                      div(textOutput("textCEAC3"), style = "color:green"))),
                  
                  
-                 mainPanel(plotOutput("plots2", width="500px", height="500px")))
-               
-               
+                 mainPanel(plotOutput("plots2", width="500px", height="500px"))),
+        
+                 
+               h1("Net Benefit Densities"),
+                 mainPanel(plotOutput("plots5", width="500px", height="500px")) 
                ),
       
       # Graphic

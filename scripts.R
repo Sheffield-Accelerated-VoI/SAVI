@@ -24,6 +24,13 @@ createInb <- function(costs.int, effects.int, lambda = 20000, incremental = FALS
   return(inb)
 }
 
+createNb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
+   ## this function creates the NB matrix
+     nb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
+     return(nb)
+}
+
+
 calcSingleParamGAM <- function(inputParam, inb) {
   ## this function calculates EVPI for a single parameter using GAM
   D <- ncol(inb)

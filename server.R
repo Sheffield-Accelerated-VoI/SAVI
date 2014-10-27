@@ -138,6 +138,8 @@ shinyServer(
     
     
     # Function that calculates the single partial EVPI outputs to be sent to the main panel in ui.R
+    # Stores pEVPI object in cache
+    # also stores the inb object
     
     calcPartialEvpi <- reactive({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -159,8 +161,7 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeCeac(get("costs", envir=cache), get("effects", envir=cache), input$incremental)
     })
-    
-    
+        
   
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
@@ -341,22 +342,32 @@ shinyServer(
 #       setStore[1:counterAdd]
 #       })
  
+    # get the selection and assign it to cache
     observe({
-      setStore <- get("setStore", envir=cache)
-      counterAdd <- get("counterAdd", envir = cache)
-      setStore[[counterAdd]] <- input$pevpiParameters
-      assign("setStore", setStore, envir = cache)
+      currentSelection <- input$pevpiParameters
+      assign("currentSelection", currentSelection, envir = cache)
     })
     
-    #fix the selection
-    output$selection <- reactive({
-      # if(input$addSelection==0) return(NULL)
+    # save the current selection and then increase counter
+    observe({
+      # counterAdd <- get("counterAdd", envir=cache)
       x <- input$addSelection
-      get("counterAdd", envir=cache)
-      print(counterAdd <- counterAdd + 1)
-      assign("counterAdd", counterAdd, envir=cache)
+      if(x==0) return(NULL)
+      counterAdd <- x
       setStore <- get("setStore", envir=cache)
-      setStore[1:counterAdd]
+      currentSelection <- get("currentSelection", envir=cache)
+      setStore[[counterAdd]] <- currentSelection
+      assign("setStore", setStore, envir = cache)
+      # print(counterAdd <- counterAdd + 1)
+      assign("counterAdd", counterAdd, envir=cache)   
+    })
+
+    # output the selection table when add button pressed
+    output$selection <- reactive({
+      x <- input$addSelection
+      if(x==0) return(NULL)
+      setStore <- get("setStore", envir=cache)
+      print(setStore[[x]])
     })
     
     

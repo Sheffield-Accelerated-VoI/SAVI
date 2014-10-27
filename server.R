@@ -350,8 +350,10 @@ shinyServer(
     
     #fix the selection
     output$selection <- reactive({
-      if(input$addSelection==0) return(NULL)
-      print(counterAdd <- input$addSelection)
+      # if(input$addSelection==0) return(NULL)
+      x <- input$addSelection
+      get("counterAdd", envir=cache)
+      print(counterAdd <- counterAdd + 1)
       assign("counterAdd", counterAdd, envir=cache)
       setStore <- get("setStore", envir=cache)
       setStore[1:counterAdd]

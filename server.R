@@ -34,7 +34,8 @@ shinyServer(
     assign("params", NULL, envir = cache)
     assign("costs", NULL, envir = cache)  
     assign("effects", NULL, envir = cache) 
-    assign("counterAdd", 0, envir = cache)     
+    assign("counterAdd", 1, envir = cache)     
+    assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
     
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
@@ -43,102 +44,119 @@ shinyServer(
     #   load.effects <- function() read.csv("effects.csv")
     # ########### 
     
-    
+  
+    #  Function that loads saved session
+    observe({
+      inFile = input$loadSession
+      if (is.null(inFile))
+        return(NULL)
+      
+      load(inFile$datapath, envir=cache)
+      #print(lapply(ls(envir=cache), function(x) object.size(get(x, envir=cache))))
+      #print(ls(envir=cache))
+    })   
     
     #  Function that imports parameters
-    load.parameters <- observe({
-      in.file = input$parameter.file
-      print("reactive called")
-      if (is.null(in.file))
+    #loadParameters <- 
+      observe({
+      inFile = input$parameterFile
+      if (is.null(inFile))
         return(NULL)
       
       if (input$rownames1) {
-        dat <- read.csv(in.file$datapath, header=input$header1, #sep=input$sep,
+        dat <- read.csv(inFile$datapath, header=input$header1, #sep=input$sep,
                         row.names=1)#, dec=input$dec)
         assign("params", dat, envir = cache)
       } else {
-        dat <- read.csv(in.file$datapath, header=input$header1)#, sep=input$sep, dec=input$dec)
+        dat <- read.csv(inFile$datapath, header=input$header1)#, sep=input$sep, dec=input$dec)
         assign("params", dat, envir = cache)
       }
     })
     
     #  Function that imports costs    
-    load.costs <- observe({
-      in.file = input$costs.file
-      
-      if (is.null(in.file))
+    #loadCosts <- 
+      observe({
+      inFile = input$costsFile
+      if (is.null(inFile))
         return(NULL)
       
       if (input$rownames2) {
-        dat <- read.csv(in.file$datapath, header=input$header2, #sep=input$sep,
+        dat <- read.csv(inFile$datapath, header=input$header2, #sep=input$sep,
                         row.names=1)#, dec=input$dec)
         assign("costs", dat, envir = cache)
       } else {
-        dat <- read.csv(in.file$datapath, header=input$header2)#, sep=input$sep, dec=input$dec)
+        dat <- read.csv(inFile$datapath, header=input$header2)#, sep=input$sep, dec=input$dec)
         assign("costs", dat, envir = cache)
       }
     })
     
     # Function that imports effects
-    load.effects <- observe({
-      in.file = input$effects.file
-      
-      if (is.null(in.file))
+    #loadEffects <- 
+      observe({
+      inFile = input$effectsFile      
+      if (is.null(inFile))
         return(NULL)
       
       if (input$rownames3) {
-        dat <- read.csv(in.file$datapath, header=input$header3, #sep=input$sep,
+        dat <- read.csv(inFile$datapath, header=input$header3, #sep=input$sep,
                         row.names=1)#, dec=input$dec)
         assign("effects", dat, envir = cache)
       } else {
-        dat <- read.csv(in.file$datapath, header=input$header3)#, sep=input$sep, dec=input$dec)
-        assign("effects", dat, envir = cache)
+        dat <- read.csv(inFile$datapath, header=input$header3)#, sep=input$sep, dec=input$dec)
+        print(assign("effects", dat, envir = cache))
       }
     })
     
     # Functions that render the data files and pass them to ui.R
     
     output$checktable1 <- renderTable({
-      x <- input$parameter.file
-      if (is.null(x)) return(NULL)
-      table.values <- get("params", envir=cache)
-      if (ncol(table.values) > 10) table.values = table.values[, 1:10]
-      head(table.values, n=5)
+      x <- input$parameterFile 
+      y <- input$loadSession
+      tableValues <- get("params", envir=cache)
+      if (is.null(tableValues)) return(NULL)
+      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
+      head(tableValues, n=5)
     })
     
     output$checktable2 <- renderTable({
-      x <- input$costs.file
-      if (is.null(x)) return(NULL)
-      table.values <- get("costs", envir=cache)
-      if (ncol(table.values) > 10) table.values = table.values[, 1:10]
-      head(table.values, n=5)   
+      x <- input$costsFile 
+      y <- input$loadSession
+      tableValues <- get("costs", envir=cache)
+      if (is.null(tableValues)) return(NULL)
+      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
+      head(tableValues, n=5)  
     })
     
     output$checktable3 <- renderTable({
-      x <- input$effects.file
-      if (is.null(x)) return(NULL)
-      table.values <- get("effects", envir=cache)
-      if (ncol(table.values) > 10) table.values = table.values[, 1:10]
-      head(table.values, n=5)   
+      x <- input$effectsFile 
+      y <- input$loadSession
+      tableValues <- get("effects", envir=cache)
+      if (is.null(tableValues)) return(NULL)
+      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
+      head(tableValues, n=5)
     })
     
     
     # Function that calculates the single partial EVPI outputs to be sent to the main panel in ui.R
     
     calcPartialEvpi <- reactive({
-      if (!valuesImportedFLAG(input)) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       inb <- createInb(get("costs", envir=cache), get("effects", envir=cache), 
                        input$lambda, input$incremental)
       assign("inb", inb, envir=cache)
-      pEVPI <- applyCalcSingleParamGam(get("params", envir=cache), inb)
-      cbind(pEVPI)
+      pEVPI <- cbind(applyCalcSingleParamGam(get("params", envir=cache), inb))
+      assign("pEVPI", pEVPI, envir = cache)
+      pEVPI
     })
     
-    output$summary <- renderTable(calcPartialEvpi())
-    
+    output$summary <- renderTable({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      calcPartialEvpi()
+    })
+      
     # function that calculates ceac
     ceac <- reactive({ 
-      if (!valuesImportedFLAG(input)) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeCeac(get("costs", envir=cache), get("effects", envir=cache), input$incremental)
     })
     
@@ -156,7 +174,7 @@ shinyServer(
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
     output$textCEplane2 <- renderText({
-      paste("The mean incremental benefit of",input$t3,"versus",input$current,"is",input$t6,"X.  This suggests that",input$t3,"
+      paste("The mean incremental benefit of", input$t3, "versus", input$current, "is", input$t6, "X.  This suggests that",input$t3,"
             is more/or less beneficial over the",input$n7,"year time horizon.  Again, there is some uncertainty due to 
             model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
             The probability that",input$t3,"is more beneficial than",input$current,"is XX%.")
@@ -196,7 +214,8 @@ shinyServer(
     
     # Functions that make tables  
     output$tableCEplane <- renderTable({
-      if (!valuesImportedFLAG(input)) return(NULL)
+      
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       tableCEplane <- matrix(c(input$lambda2, input$current, input$n3, rep(NA, 9)), nrow=12, ncol=1)
       colnames(tableCEplane) <- input$t3
       rownames(tableCEplane) <- c("Threshold","Comparator","Number of PSA runs","Mean inc. Benefit per Person", "Mean inc. Cost per Person",
@@ -210,14 +229,16 @@ shinyServer(
     
     # Functions that make plots
     output$plots1 <- renderPlot({
-      if (!valuesImportedFLAG(input)) return(NULL)
+    
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeCEPlanePlot(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambda2, xlab=input$t4, 
                       ylab=input$t5, col="orangered")
     })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.DARK RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
     
     output$plots2 <- renderPlot({
-      if (!valuesImportedFLAG(input)) return(NULL)
+    
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       ceac.obj <- assign("ceac.obj", ceac(), envir=cache)
       makeCeacPlot(ceac.obj, lambda=input$lambda2, 
                    main="Cost-effectiveness Acceptability Curve", 
@@ -226,7 +247,7 @@ shinyServer(
     })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
     
     output$plots3 <- renderPlot({
-      if (!valuesImportedFLAG(input)) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), 
                    main=input$main3, 
                    xlab="Threshold willingness to pay", 
@@ -235,7 +256,7 @@ shinyServer(
     })
     
     output$plots4 <- renderPlot({
-      if (!valuesImportedFLAG(input)) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), 
                    main=input$main4, 
                    xlab="Threshold willingness to pay", 
@@ -244,7 +265,7 @@ shinyServer(
     })
     
     output$plots4way <- renderPlot({
-      if (!valuesImportedFLAG(input)) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       make4wayPlot(get("costs", envir=cache), get("effects", envir=cache), 
                    get("ceac.obj", envir=cache), lambda=input$lambda2, main=input$main1, 
                    xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
@@ -254,30 +275,49 @@ shinyServer(
     })
     
     output$plots5 <- renderPlot({
-      if (!valuesImportedFLAG(input)) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeNbDensity(get("costs", envir=cache), get("effects", envir=cache), 
                     main = "Net Benefit Densities",
                     xlab = "Net Benefit", ylab = "Density")
     })
     
     observe({
-      x <- input$parameter.file
+      x <- input$parameterFile
+      y <- input$loadSession
+      if (is.null(get("params", envir=cache))) return(NULL)
       updateCheckboxGroupInput(session, "pevpiParameters", 
                                choices = colnames(get("params", envir=cache)))
     })
       
+#     output$selection <- reactive({
+#       if(input$addSelection==0) return(NULL)
+#       print(counterAdd <- input$addSelection)
+#       assign("counterAdd", counterAdd, envir=cache)
+# 
+#       setStore <- get("setStore", envir=cache)
+#       setStore[[counterAdd]] <- input$pevpiParameters
+#       assign("setStore", setStore, envir = cache)
+#       
+#       setStore[1:counterAdd]
+#       })
+ 
+    observe({
+      setStore <- get("setStore", envir=cache)
+      counterAdd <- get("counterAdd", envir = cache)
+      setStore[[counterAdd]] <- input$pevpiParameters
+      assign("setStore", setStore, envir = cache)
+    })
+    
+    #fix the selection
     output$selection <- reactive({
-      x <- input$Add
-      
-      # update counter
-      counterAdd <- get("counterAdd", envir=cache)
-      counterAdd <- counterAdd + 1
+      if(input$addSelection==0) return(NULL)
+      print(counterAdd <- input$addSelection)
       assign("counterAdd", counterAdd, envir=cache)
-      assign(paste("setStore", counterAdd), input$pevpiParameters)
+      setStore <- get("setStore", envir=cache)
       
-      input$pevpiParameters
-      })
-      
+    })
+    
+    
     # output$selectionParameters <-observe({
     #   params <- input$parameter.file
     #   colnames(params)
@@ -292,7 +332,7 @@ shinyServer(
     # Functions that make the reports
     
     # Download csv file
-    output$downloadSummary = downloadHandler(
+    output$downloadSummary <- downloadHandler(
       filename = "evpi\ values.csv",
       content = function(file) {
         write.csv(calcPartialEvpi(), file)
@@ -351,11 +391,10 @@ shinyServer(
     # output$text1 <- checkboxGroupInput("parameter", "Parameters", c("a", "b", "c"), selected = NULL)
     
     # Download .Rdata file
-    output$saveSession = downloadHandler(
-      filename = input$RdataFileName,
+    output$saveSession <- downloadHandler(
+      filename =  function() paste(input$RdataFileName),
       content = function(file) {
-        #parameters <- get("params")
-        save(list = ls(all=TRUE), file=file, envir=cache)
+        save(list = ls(envir=cache), file = file, envir=cache)
       },
       contentType = "text/plain")
     

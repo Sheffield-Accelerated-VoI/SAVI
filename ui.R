@@ -18,8 +18,11 @@ fluidPage(
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
                       target='_blank'>here</a>")), br(),
                
+               fileInput('loadSession', label = h4('Load previously saved session')),
+                            
+               
                p(HTML("Please add some information about your model")),
-               textInput("model.name",label = h5("Name of your model"),value ="My Model"),
+               textInput("modelName",label = h5("Name of your model"),value ="My Model"),
                numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
                textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
                textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
@@ -36,11 +39,10 @@ fluidPage(
                textInput("t8",label = h5("Name of jurisdiction (e.g. country, region, city)"),value = "England"),
                numericInput("n6",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 0, min = 0, step = 10),
                numericInput("n7",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 1, min = 1),
-               br(),
-               submitButton("Submit")
+               br()
+               #submitButton("Submit")
                ),
-      
-      
+    
       
       
       tabPanel("Import files",     # Button to import parameter data
@@ -49,7 +51,7 @@ fluidPage(
                       import buttons below. You data must
                       be supplied on the form of a csv file. If the importation is
                       done properly, the data are displayed in the next tab")),
-               fileInput('parameter.file', 'Choose CSV File',
+               fileInput('parameterFile', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header1', 'Is there a header row?', TRUE),
@@ -65,7 +67,7 @@ fluidPage(
                
                # Button to import costs  data    
                h3("Costs importation"),
-               fileInput('costs.file', 'Choose CSV File',
+               fileInput('costsFile', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header2', 'Is there a header row?', TRUE),
@@ -80,7 +82,7 @@ fluidPage(
                
                # Button to import effects data
                h3("Effects importation"),
-               fileInput('effects.file', 'Choose CSV File',
+               fileInput('effectsFile', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                checkboxInput('header3', 'Is there a header row?', TRUE),
@@ -129,7 +131,7 @@ fluidPage(
         sidebarLayout(
               sidebarPanel(
                           sliderInput("lambda2", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
-                          submitButton("Change"),
+                          #submitButton("Change"), # this button stops everything else auto-updating!
                           br(),
                           br(),
                           p(strong("Strategies Compared"),textOutput("textCEplane4")),
@@ -211,11 +213,12 @@ fluidPage(
                                       c("null"), 
                                       selected = NULL),
                    br(),
-                   submitButton("Add")),
+                   actionButton("addSelection", "Add selection")),
                  
                  mainPanel(
                    h3("selected parameter combinations"),
-                   fluidRow(verbatimTextOutput("selection")),
+                   #fluidRow(textOutput("selection")),
+                   textOutput("selection"),
                    br(),
                    actionButton("calculate1", "Calculate EVPPI"),
                    br(),
@@ -235,11 +238,11 @@ fluidPage(
       ),
       
       tabPanel("Save session", 
-               textInput("RdataFileName", strong("Filename:"), "SaviSession.Rdata"),
+               textInput("RdataFileName", strong("Filename"), value="SAVISession.Rdata"),
                br(), br(),
                downloadButton('saveSession', 'Save SAVI session')
       )
-      
-      
-      ))
+    )
+  )
 )
+ 

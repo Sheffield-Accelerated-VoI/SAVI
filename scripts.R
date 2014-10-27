@@ -2,12 +2,27 @@
 ## more comments https://github.com/Sheffield-Accelerated-VoI/SAVI.git
 
 
-valuesImportedFLAG <- function(input){
+# valuesImportedFLAG <- function(input){
+#  # if (!is.null(input$loadSession)) return(TRUE) else {
+#       is.null(input$parameterFile) | 
+#       is.null(input$costsFile) | 
+#       is.null(input$effectsFile)
+#       )   
+#   {return(FALSE)} else {return (TRUE)}#}
+# }
+
+valuesImportedFLAG <- function(cache, input){  
+  
+  dummy1 <- input$parameterFile 
+  dummy2 <- input$costsFile 
+  dummy3 <- input$effectsFile 
+  dummy4 <- input$loadSession
+  
   if (
-      is.null(input$parameter.file) | 
-      is.null(input$costs.file) | 
-      is.null(input$effects.file)
-      )   
+      is.null(get("params", envir=cache)) | 
+      is.null(get("costs", envir=cache)) | 
+      is.null(get("effects", envir=cache))
+  )   
   {return(FALSE)} else {return (TRUE)}
 }
 

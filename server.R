@@ -354,8 +354,8 @@ shinyServer(
     output$saveSession = downloadHandler(
       filename = input$RdataFileName,
       content = function(file) {
-        #parameters <- get("parameters", envir=cache)
-        save.image(file=file)
+        #parameters <- get("params")
+        save(list = ls(all=TRUE), file=file, envir=cache)
       },
       contentType = "text/plain")
     

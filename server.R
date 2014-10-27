@@ -262,8 +262,20 @@ shinyServer(
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(input)) return(NULL)
       makeNbDensity(get("costs", envir=cache), get("effects", envir=cache), 
-                    main = "Net Benefit Densities",
-                    xlab = "Net Benefit", ylab = "Density")
+                      lambda=input$lambda2)
+    })
+    
+    output$plots6 <- renderPlot({
+      if (!valuesImportedFLAG(input)) return(NULL)
+      ### Need to replace 1 with usual care/base column number
+      makeInbBaseDens(get("costs", envir=cache), get("effects", envir=cache), 1,
+                      lambda=input$lambda2)
+    })
+
+    output$plots7 <- renderPlot({
+      if (!valuesImportedFLAG(input)) return(NULL)
+      makeInbOptDens(get("costs", envir=cache), get("effects", envir=cache), 
+                      lambda=input$lambda2)
     })
     
     observe({

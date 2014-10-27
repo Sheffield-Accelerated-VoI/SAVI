@@ -169,7 +169,13 @@ fluidPage(
         
                  
                h1("Net Benefit Densities"),
-                 mainPanel(plotOutput("plots5", width="500px", height="500px")) 
+                 mainPanel(plotOutput("plots5", width="500px", height="500px")),
+
+               h1("Incremental Net Benefit Densities compared with Base Strategy"),
+                 mainPanel(plotOutput("plots6", width="500px", height="500px")), 
+        
+               h1("Incremental Net Benefit Densities compared with Optimal Strategy"),
+                 mainPanel(plotOutput("plots7", width="500px", height="500px")) 
                ),
       
       # Graphic

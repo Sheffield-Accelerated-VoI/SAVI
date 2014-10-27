@@ -167,20 +167,17 @@ fluidPage(
                br(),
                br(),
                h1("Net Benefit Densities"),
-<<<<<<< HEAD
                  mainPanel(plotOutput("plots5", width="500px", height="500px")),
+               br(),
+               h3("Expected Incremental Net Benefit versus Current Care"),
+               tableOutput("tableNetBenefit")
 
                h1("Incremental Net Benefit Densities compared with Base Strategy"),
                  mainPanel(plotOutput("plots6", width="500px", height="500px")), 
         
                h1("Incremental Net Benefit Densities compared with Optimal Strategy"),
                  mainPanel(plotOutput("plots7", width="500px", height="500px")) 
-=======
-               plotOutput("plots5", width="500px", height="500px"),
-               br(),
-               h3("Expected Incremental Net Benefit versus Current Care"),
-               tableOutput("tableNetBenefit")
->>>>>>> 92bd773bc09aded133e1762aa47094422eb0305b
+               
                ),
       
       # Graphic

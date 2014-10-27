@@ -143,13 +143,7 @@ shinyServer(
     })
     
     
-    # Function that creates a download button
-    output$downloadSummary = downloadHandler(
-      filename = "evpi\ values.csv",
-      content = function(file) {
-        write.csv(calcPartialEvpi(), file)
-      })
-    
+  
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
       paste("This graph shows the standardised cost-effectiveness plane per person based on",input$n3,"model runs,
@@ -322,6 +316,14 @@ shinyServer(
     
     # Functions that make the reports
     
+    # Download csv file
+    output$downloadSummary = downloadHandler(
+      filename = "evpi\ values.csv",
+      content = function(file) {
+        write.csv(calcPartialEvpi(), file)
+      })
+    
+    # Download pdf / html / docx report - NEED TO FIX THE HTML AND DOCX
     output$downloadReport <- downloadHandler(
       filename = function() {#"my-report.pdf"
         paste('my-report', sep = '.', switch(
@@ -373,6 +375,14 @@ shinyServer(
     
     # output$text1 <- checkboxGroupInput("parameter", "Parameters", c("a", "b", "c"), selected = NULL)
     
+    # Download .Rdata file
+    output$saveSession = downloadHandler(
+      filename = input$RdataFileName,
+      content = function(file) {
+        #parameters <- get("params")
+        save(list = ls(all=TRUE), file=file, envir=cache)
+      },
+      contentType = "text/plain")
     
     
     })

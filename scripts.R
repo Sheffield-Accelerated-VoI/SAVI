@@ -11,6 +11,7 @@ valuesImportedFLAG <- function(input){
   {return(FALSE)} else {return (TRUE)}
 }
 
+
 createInb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
   ## this function creates the INB matrix
 #  repository <<- "CRAN"

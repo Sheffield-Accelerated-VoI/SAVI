@@ -143,7 +143,7 @@ fluidPage(
                     ),
 
                
-               h3("Table of Key Statistics"),
+               h3("Table of Key Cost-Effectiveness Statistics"),
                tableOutput("tableCEplane"),
                br(),
                br(),
@@ -158,7 +158,7 @@ fluidPage(
                  sidebarPanel(
                     p(strong("Strategies Compared"),
                      div(textOutput("textCEAC2"), style = "color:black"),
-                     div(textOutput("textCEAC3"), style = "color:green"))),
+                     div(textOutput("textCEAC3"), style = "color:red"))),
                  
                  
                  mainPanel(plotOutput("plots2", width="500px", height="500px"))
@@ -167,7 +167,10 @@ fluidPage(
                br(),
                br(),
                h1("Net Benefit Densities"),
-               plotOutput("plots5", width="500px", height="500px")
+               plotOutput("plots5", width="500px", height="500px"),
+               br(),
+               h3("Expected Incremental Net Benefit versus Current Care"),
+               tableOutput("tableNetBenefit")
                ),
       
       # Graphic
@@ -190,7 +193,11 @@ fluidPage(
                
                h3("Overall EVPI versus lambda"),
                textInput("main4", strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
-               plotOutput("plots4")
+               plotOutput("plots4"),
+               br(),
+               h3("The Expected Value of Removing all Current Decision Uncertainty: Overall Expected Value of Information"),
+               tableOutput("tableEVPI")
+               
       ),
       
       tabPanel("EVPPI",
@@ -219,7 +226,12 @@ fluidPage(
                    br(),
                    actionButton("calculate1", "Calculate EVPPI"),
                    br(),
-                   actionButton("clear1",label="Clear Selection")))       
+                   actionButton("clear1",label="Clear Selection"))),
+               
+               br(),
+               h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
+               tableOutput("tableEVPPI")
+               
       ),
       
       

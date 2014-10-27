@@ -79,7 +79,7 @@ shinyServer(
       }
     })
     
-    # Function that imports effects
+   #  Function that imports effects
     load.effects <- observe({
       in.file = input$effects.file
       
@@ -203,16 +203,41 @@ shinyServer(
     # Functions that make tables  
     output$tableCEplane <- renderTable({
       if (!valuesImportedFLAG(input)) return(NULL)
-      tableCEplane <- matrix(c(input$lambda2, input$current, input$n3, rep(NA, 9)), nrow=12, ncol=1)
-      colnames(tableCEplane) <- input$t3
-      rownames(tableCEplane) <- c("Threshold","Comparator","Number of PSA runs","Mean inc. Benefit per Person", "Mean inc. Cost per Person",
-                                  "ICER Estimate","PSA Results","95% CI for inc. Costs","95% CI for inc. Benefits","Probability
-                                  intervention is cost saving","Probability intervention provides more benefit","Probability that
+      tableCEplane <- matrix(c(input$lambda2, input$current, input$n3, NA, NA, NA, NA, NA, NA, NA, NA, NA), nrow = 12, ncol = ncol(get("costs", envir=cache))-1)
+      colnames(tableCEplane) <- colnames(get("costs", envir=cache)[,-1])
+      rownames(tableCEplane) <- c("Threshold", "Comparator", "Number of PSA runs", "Mean inc. Effect per Person", "Mean inc. Cost per Person",
+                                  "ICER Estimate", "PSA Results", "95% CI for inc. Costs", "95% CI for inc. Benefits", "Probability
+                                  intervention is cost saving", "Probability intervention provides more benefit", "Probability that
                                   intervention is cost-effective")
       tableCEplane
     })  
-    
-    
+
+   output$tableNetBenefit <- renderTable({
+     if (!valuesImportedFLAG(input)) return(NULL)
+     tableNetBenefit <- matrix(NA, nrow = 8, ncol = ncol(get("costs", envir=cache)))
+     colnames(tableNetBenefit) <- colnames(get("costs", envir=cache))
+     rownames(tableNetBenefit) <- c("Mean Effects", "Mean Cost Measures", "Expected Net Benefit at Chosen Threshold", "95% Lower CI (on Costs Scale)", 
+                                 "95% Upper CI (on Costs Scale)", "Expected Net Benefit on Effects Scale", "95% Lower CI (on Effects Scale)", "95% Upper CI (on Effects Scale)")
+     tableNetBenefit
+   })  
+   
+   output$tableEVPI <- renderTable({
+     if (!valuesImportedFLAG(input)) return(NULL)
+     tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
+     colnames(tableEVPI) <- c("Overall EVPI Financial Valuation (Currency)", "Overall EVPI (Effect Measure) Valuation")
+     rownames(tableEVPI) <- c("Per Person Affected by the Decision", "Per Year in (Jurisdiction) Assuming (Number) Persons Affected per Year", 
+                              "Over 5 Years", "Over 10 Years", "Over 15 Years", "Over 20 years", "Over Specified Decision Relevance Horizon (X years)")
+     tableEVPI
+   }) 
+   
+   output$tableEVPPI <- renderTable({
+     if (!valuesImportedFLAG(input)) return(NULL)
+     tableEVPPI <- matrix(NA, nrow = ncol(get("params", envir=cache)), ncol = 4)
+     colnames(tableEVPPI) <- c("Per Person EVPPI (Currency)", "Indexed Overall EVPI = 1.00", "EVPPI Per (Jurisdiction) Per Year", "EVPPI Per (Jurisdiction) over (X) years")
+     rownames(tableEVPPI) <- colnames(get("params", envir=cache))
+     tableEVPPI
+   }) 
+   
     
     # Functions that make plots
     output$plots1 <- renderPlot({

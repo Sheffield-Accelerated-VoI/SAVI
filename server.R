@@ -146,18 +146,18 @@ shinyServer(
   
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
-      paste("This graph shows the standardised cost-effectiveness plane per person based on",input$n3,"model runs,
+      paste("This graph shows the standardised cost-effectiveness plane per person based on",input$nIterate,"model runs,
             in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
             The mean incremental cost of", input$t3, "versus", input$current,"is",input$currency,"X. This suggests that
-            ",input$t3,"is more/less costly over the",input$n7,"year time horizon. There is some uncertainty due to model 
+            ",input$t3,"is more/less costly over the",input$horizon,"year time horizon. There is some uncertainty due to model 
             parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
-            The probability that",input$t3,"is cost saving (i.e. cheaper over the",input$n7,"year time horizon) compared 
+            The probability that",input$t3,"is cost saving (i.e. cheaper over the",input$horizon,"year time horizon) compared 
             to",input$current,"is XX%.")
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
     output$textCEplane2 <- renderText({
       paste("The mean incremental benefit of",input$t3,"versus",input$current,"is",input$currency,"X.  This suggests that",input$t3,"
-            is more/or less beneficial over the",input$n7,"year time horizon.  Again, there is some uncertainty due to 
+            is more/or less beneficial over the",input$horizon,"year time horizon.  Again, there is some uncertainty due to 
             model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
             The probability that",input$t3,"is more beneficial than",input$current,"is XX%.")
     })                        ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
@@ -175,7 +175,7 @@ shinyServer(
     
     output$textCEplane5 <- renderText({
       paste("$XX%$ probability that",input$t3,"is more cost-effective than",input$current,"at a threshold 
-            of",input$t6,input$lambda2,"per",input$unitBens)
+            of",input$currency,input$lambda2,"per",input$unitBens)
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
     output$textCEAC1 <- renderText({
@@ -197,7 +197,7 @@ shinyServer(
     # Functions that make tables  
     output$tableCEplane <- renderTable({
       if (!valuesImportedFLAG(input)) return(NULL)
-      tableCEplane <- matrix(c(input$lambda2, input$current, input$n3, NA, NA, NA, NA, NA, NA, NA, NA, NA), nrow = 12, ncol = ncol(get("costs", envir=cache))-1)
+      tableCEplane <- matrix(c(input$lambda2, input$current, input$nIterate, NA, NA, NA, NA, NA, NA, NA, NA, NA), nrow = 12, ncol = ncol(get("costs", envir=cache))-1)
       colnames(tableCEplane) <- colnames(get("costs", envir=cache)[,-1])
       rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), "Comparator", "Number of PSA runs", paste("Mean inc. Effect per Person (", input$unitBens, ")"), paste("Mean inc. Cost per Person (", input$currency, ")"),
                                   paste("ICER Estimate (", input$currency, "per", input$unitBens, ")"), "PSA RESULTS", paste("95% CI for inc. Costs (", input$currency, ")"), 
@@ -248,7 +248,8 @@ shinyServer(
       makeCeacPlot(ceac.obj, lambda=input$lambda2, 
                    main="Cost-effectiveness Acceptability Curve", 
                    xlab="Threshold willingness to pay", 
-                   ylab="Probability strategy is cost-effective")
+                   ylab="Probability strategy is cost-effective",
+                   names=colnames(get("costs", envir=cache)))
     })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
     
     output$plots3 <- renderPlot({

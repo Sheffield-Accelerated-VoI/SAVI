@@ -23,10 +23,10 @@ fluidPage(
                numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
                textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
                textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
-               numericInput("n2",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
-               numericInput("n3",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
-               selectInput("s1",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
-               numericInput("n4",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
+               numericInput("nParam",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
+               numericInput("nIterate",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
+               selectInput("indSim",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
+               numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
                textInput("effectDef",label = h5("Definition of effectiveness measure"),value ="Discounted Lifetime QALYs"),
                textInput("costDef",label = h5("Definition of cost measure"),value ="Discounted Lifetime Costs (£)"),
                textInput("currency",label = h5("Units used for costs"),value ="£"),
@@ -153,9 +153,7 @@ fluidPage(
                p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
                  Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),
                br(),
-             
-                 
-                 mainPanel(plotOutput("plots2", width="500px", height="500px")),
+               plotOutput("plots2", width="500px", height="500px"),
 
         
                br(),

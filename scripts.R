@@ -90,13 +90,14 @@ makeCeac <- function(costs.int, effects.int, incremental.int) {
 }
 
 
-makeCeacPlot <- function(ceac.int, lambda.int, ...) {
+makeCeacPlot <- function(ceac.int, lambda.int, names, ...) {
   ## makes the CEAC plot
   plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1), ...)
   for (i in 2:ceac.int$d){
     lines(ceac.int$l.seq, ceac.int$p[, i], col = i)
   }
   abline(v=lambda.int, lty=2)
+  legend("topright", names, col = c(1:i), lty = 1)
 }
 
 makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {

@@ -143,7 +143,7 @@ fluidPage(
                     ),
 
                
-               h3("Table of Key Statistics"),
+               h3("Table of Key Cost-Effectiveness Statistics"),
                tableOutput("tableCEplane"),
                br(),
                br(),
@@ -156,19 +156,18 @@ fluidPage(
                
                sidebarLayout(
                  sidebarPanel(
-                   sliderInput("lambda3", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
-                   submitButton("Change"),
-                   br(),
-                   br(),
-                   p(strong("Strategies Compared"),
+                    p(strong("Strategies Compared"),
                      div(textOutput("textCEAC2"), style = "color:black"),
-                     div(textOutput("textCEAC3"), style = "color:green"))),
+                     div(textOutput("textCEAC3"), style = "color:red"))),
                  
                  
-                 mainPanel(plotOutput("plots2", width="500px", height="500px"))),
+                 mainPanel(plotOutput("plots2", width="500px", height="500px"))
+                    ),
         
-                 
+               br(),
+               br(),
                h1("Net Benefit Densities"),
+<<<<<<< HEAD
                  mainPanel(plotOutput("plots5", width="500px", height="500px")),
 
                h1("Incremental Net Benefit Densities compared with Base Strategy"),
@@ -176,6 +175,12 @@ fluidPage(
         
                h1("Incremental Net Benefit Densities compared with Optimal Strategy"),
                  mainPanel(plotOutput("plots7", width="500px", height="500px")) 
+=======
+               plotOutput("plots5", width="500px", height="500px"),
+               br(),
+               h3("Expected Incremental Net Benefit versus Current Care"),
+               tableOutput("tableNetBenefit")
+>>>>>>> 92bd773bc09aded133e1762aa47094422eb0305b
                ),
       
       # Graphic
@@ -198,7 +203,11 @@ fluidPage(
                
                h3("Overall EVPI versus lambda"),
                textInput("main4", strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
-               plotOutput("plots4")
+               plotOutput("plots4"),
+               br(),
+               h3("The Expected Value of Removing all Current Decision Uncertainty: Overall Expected Value of Information"),
+               tableOutput("tableEVPI")
+               
       ),
       
       tabPanel("EVPPI",
@@ -215,7 +224,7 @@ fluidPage(
                sidebarLayout(
                  sidebarPanel(
                    h3("Select Parameters for EVPPI"),
-                   checkboxGroupInput("pevpiParameters", NULL, #Might be worth trying renderUI function
+                   checkboxGroupInput("pevpiParameters", NULL, 
                                       c("null"), 
                                       selected = NULL),
                    br(),
@@ -227,18 +236,32 @@ fluidPage(
                    br(),
                    actionButton("calculate1", "Calculate EVPPI"),
                    br(),
-                   actionButton("clear1",label="Clear Selection")))       
+                   actionButton("clear1",label="Clear Selection"))),
+               
+               br(),
+               h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
+               tableOutput("tableEVPPI")
+               
       ),
       
       
       
       # Numerical summary of the dataset,
       # coming from the function output$summary in server.R
-      tabPanel("Downloads",downloadButton('downloadSummary', 'Download EVPI values'),
-               br(),br(),#,tableOutput("summary")
+      tabPanel("Downloads", 
+               downloadButton('downloadSummary', 'Download EVPI values'),
+               br(), br(),#,tableOutput("summary")
                radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
                             inline = TRUE),
                downloadButton('downloadReport', 'Download report')
+      ),
+      
+      tabPanel("Save session", 
+               textInput("RdataFileName", strong("Filename:"), "SaviSession.Rdata"),
+               br(), br(),
+               downloadButton('saveSession', 'Save SAVI session')
       )
+      
+      
       ))
 )

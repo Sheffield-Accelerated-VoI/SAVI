@@ -11,6 +11,7 @@ valuesImportedFLAG <- function(input){
   {return(FALSE)} else {return (TRUE)}
 }
 
+
 createInb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
   ## this function creates the INB matrix
 #  repository <<- "CRAN"
@@ -25,12 +26,11 @@ createInb <- function(costs.int, effects.int, lambda = 20000, incremental = FALS
 }
 
 createNb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
-  ## this function creates the NB matrix
-#  repository <<- "CRAN"
-  nb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
-  # assign("inb", inb, envir=cache)
-  return(nb)
+   ## this function creates the NB matrix
+     nb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
+     return(nb)
 }
+
 
 calcSingleParamGAM <- function(inputParam, inb) {
   ## this function calculates EVPI for a single parameter using GAM
@@ -154,6 +154,7 @@ make4wayPlot <- function(costs.int, effects.int, incremental.int, ceac.int, lamb
   on.exit(par(opar))
 }
 
+<<<<<<< HEAD
 makeNbDensity <- function (costs.int, effects.int, lambda, ...) {
   nb <- createNb(costs.int, effects.int, lambda, FALSE)
   d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
@@ -226,6 +227,26 @@ makeInbOptDens <- function (costs.int, effects.int, lambda) {
   # Need strategy names adding
   legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)  
 }
+=======
+makeNbDensity <- function (costs.int, effects.int, ...) {
+   nb <- createNb(costs.int, effects.int, 20000, FALSE)
+   d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
+   xmax<-max(nb)
+   xmin<-min(nb)
+   ymax<-c(1:d)
+   for (i in 1:d){
+     den<-density(nb[, i])
+     ymax[i]<-max(den$y)
+     }
+   ymax<-max(ymax)
+   plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax))
+   for (i in 2:d){
+     lines(density(nb[, 2]), col = i)
+     }
+   # Need strategy names adding
+     legend("topright",c("Strat0","Strat1"),col=c(1:d), lty = 1)
+  }
+>>>>>>> 92bd773bc09aded133e1762aa47094422eb0305b
 
 ## Partial EVPI functions
 ## Author: Mark Strong

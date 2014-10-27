@@ -79,7 +79,7 @@ shinyServer(
       }
     })
     
-    # Function that imports effects
+   #  Function that imports effects
     load.effects <- observe({
       in.file = input$effects.file
       
@@ -143,13 +143,7 @@ shinyServer(
     })
     
     
-    # Function that creates a download button
-    output$downloadSummary = downloadHandler(
-      filename = "evpi\ values.csv",
-      content = function(file) {
-        write.csv(calcPartialEvpi(), file)
-      })
-    
+  
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
       paste("This graph shows the standardised cost-effectiveness plane per person based on",input$n3,"model runs,
@@ -203,16 +197,41 @@ shinyServer(
     # Functions that make tables  
     output$tableCEplane <- renderTable({
       if (!valuesImportedFLAG(input)) return(NULL)
-      tableCEplane <- matrix(c(input$lambda2, input$current, input$n3, rep(NA, 9)), nrow=12, ncol=1)
-      colnames(tableCEplane) <- input$t3
-      rownames(tableCEplane) <- c("Threshold","Comparator","Number of PSA runs","Mean inc. Benefit per Person", "Mean inc. Cost per Person",
-                                  "ICER Estimate","PSA Results","95% CI for inc. Costs","95% CI for inc. Benefits","Probability
-                                  intervention is cost saving","Probability intervention provides more benefit","Probability that
+      tableCEplane <- matrix(c(input$lambda2, input$current, input$n3, NA, NA, NA, NA, NA, NA, NA, NA, NA), nrow = 12, ncol = ncol(get("costs", envir=cache))-1)
+      colnames(tableCEplane) <- colnames(get("costs", envir=cache)[,-1])
+      rownames(tableCEplane) <- c("Threshold", "Comparator", "Number of PSA runs", "Mean inc. Effect per Person", "Mean inc. Cost per Person",
+                                  "ICER Estimate", "PSA Results", "95% CI for inc. Costs", "95% CI for inc. Benefits", "Probability
+                                  intervention is cost saving", "Probability intervention provides more benefit", "Probability that
                                   intervention is cost-effective")
       tableCEplane
     })  
-    
-    
+
+   output$tableNetBenefit <- renderTable({
+     if (!valuesImportedFLAG(input)) return(NULL)
+     tableNetBenefit <- matrix(NA, nrow = 8, ncol = ncol(get("costs", envir=cache)))
+     colnames(tableNetBenefit) <- colnames(get("costs", envir=cache))
+     rownames(tableNetBenefit) <- c("Mean Effects", "Mean Cost Measures", "Expected Net Benefit at Chosen Threshold", "95% Lower CI (on Costs Scale)", 
+                                 "95% Upper CI (on Costs Scale)", "Expected Net Benefit on Effects Scale", "95% Lower CI (on Effects Scale)", "95% Upper CI (on Effects Scale)")
+     tableNetBenefit
+   })  
+   
+   output$tableEVPI <- renderTable({
+     if (!valuesImportedFLAG(input)) return(NULL)
+     tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
+     colnames(tableEVPI) <- c("Overall EVPI Financial Valuation (Currency)", "Overall EVPI (Effect Measure) Valuation")
+     rownames(tableEVPI) <- c("Per Person Affected by the Decision", "Per Year in (Jurisdiction) Assuming (Number) Persons Affected per Year", 
+                              "Over 5 Years", "Over 10 Years", "Over 15 Years", "Over 20 years", "Over Specified Decision Relevance Horizon (X years)")
+     tableEVPI
+   }) 
+   
+   output$tableEVPPI <- renderTable({
+     if (!valuesImportedFLAG(input)) return(NULL)
+     tableEVPPI <- matrix(NA, nrow = ncol(get("params", envir=cache)), ncol = 4)
+     colnames(tableEVPPI) <- c("Per Person EVPPI (Currency)", "Indexed Overall EVPI = 1.00", "EVPPI Per (Jurisdiction) Per Year", "EVPPI Per (Jurisdiction) over (X) years")
+     rownames(tableEVPPI) <- colnames(get("params", envir=cache))
+     tableEVPPI
+   }) 
+   
     
     # Functions that make plots
     output$plots1 <- renderPlot({
@@ -225,11 +244,11 @@ shinyServer(
     output$plots2 <- renderPlot({
       if (!valuesImportedFLAG(input)) return(NULL)
       ceac.obj <- assign("ceac.obj", ceac(), envir=cache)
-      makeCeacPlot(ceac.obj, lambda=input$lambda3, 
+      makeCeacPlot(ceac.obj, lambda=input$lambda2, 
                    main="Cost-effectiveness Acceptability Curve", 
                    xlab="Threshold willingness to pay", 
-                   ylab="Probability strategy is cost-effective",col="red")
-    })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL AND COLOUR CODE LINES
+                   ylab="Probability strategy is cost-effective")
+    })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
     
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(input)) return(NULL)
@@ -309,6 +328,14 @@ shinyServer(
     
     # Functions that make the reports
     
+    # Download csv file
+    output$downloadSummary = downloadHandler(
+      filename = "evpi\ values.csv",
+      content = function(file) {
+        write.csv(calcPartialEvpi(), file)
+      })
+    
+    # Download pdf / html / docx report - NEED TO FIX THE HTML AND DOCX
     output$downloadReport <- downloadHandler(
       filename = function() {#"my-report.pdf"
         paste('my-report', sep = '.', switch(
@@ -360,6 +387,14 @@ shinyServer(
     
     # output$text1 <- checkboxGroupInput("parameter", "Parameters", c("a", "b", "c"), selected = NULL)
     
+    # Download .Rdata file
+    output$saveSession = downloadHandler(
+      filename = input$RdataFileName,
+      content = function(file) {
+        #parameters <- get("params")
+        save(list = ls(all=TRUE), file=file, envir=cache)
+      },
+      contentType = "text/plain")
     
     
     })

@@ -26,6 +26,7 @@ valuesImportedFLAG <- function(cache, input){
   {return(FALSE)} else {return (TRUE)}
 }
 
+
 createInb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
   ## this function creates the INB matrix
 #  repository <<- "CRAN"
@@ -104,13 +105,14 @@ makeCeac <- function(costs.int, effects.int, incremental.int) {
 }
 
 
-makeCeacPlot <- function(ceac.int, lambda.int, ...) {
+makeCeacPlot <- function(ceac.int, lambda.int, names, ...) {
   ## makes the CEAC plot
   plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1), ...)
   for (i in 2:ceac.int$d){
     lines(ceac.int$l.seq, ceac.int$p[, i], col = i)
   }
   abline(v=lambda.int, lty=2)
+  legend("topright", names, col = c(1:i), lty = 1)
 }
 
 makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
@@ -166,6 +168,80 @@ make4wayPlot <- function(costs.int, effects.int, incremental.int, ceac.int, lamb
   makeEvpiPlot(costs.int, effects.int, incremental.int, costscale = FALSE,
                 main = main2,  xlab = xlab2, ylab = ylab2, col = col2)
   on.exit(par(opar))
+}
+
+
+makeNbDensity <- function (costs.int, effects.int, lambda, ...) {
+  nb <- createNb(costs.int, effects.int, lambda, FALSE)
+  d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
+  xmax<-max(nb)
+  xmin<-min(nb)
+  ymax<-c(1:d)
+  for (i in 1:d){
+    den<-density(nb[, i])
+    ymax[i]<-max(den$y)
+  }
+  ymax<-max(ymax)
+  plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax),xlab="Net Benefit",main="Net Benefit Densities")
+  for (i in 2:d){
+    lines(density(nb[, 2]), col = i)
+  }
+  # Need strategy names adding
+  legend("topright",colnames(nb),col=c(1:d), lty = 1)
+}
+
+makeInbBaseDens <- function (costs.int, effects.int, baseNum, lambda) {
+  nb <- createNb(costs.int, effects.int, lambda, FALSE)
+  c <- baseNum
+  inbOpt <- nb-nb[,c]
+  inbOpt <- as.matrix(inbOpt[,-c])
+  colnames(inbOpt) <- colnames(nb)[-c]
+  d <- ncol(inbOpt) + ifelse(FALSE, 1, 0)
+  xmax<-max(inbOpt)
+  xmin<-min(inbOpt)
+  ymax<-c(1:d)
+  for (i in 1:d){
+    den<-density(nb[, i])
+    ymax[i]<-max(den$y)
+  }
+  ymax<-max(ymax)
+  plot(density(inbOpt[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), 
+       ylim = c(0, ymax),xlab="Incremental Net Benefit",
+       main="Inc. Net Benefit Density vs. Base Strategy")
+  if (d>1) {
+  for (i in 2:d){
+    lines(density(inbOpt[, i]), col = i)
+  }    
+  }
+  # Need strategy names adding
+  legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)  
+}
+
+makeInbOptDens <- function (costs.int, effects.int, lambda) {
+  nb <- createNb(costs.int, effects.int, lambda, FALSE)
+  c <- which.max(as.matrix(colMeans(nb)))
+  inbOpt <- nb-nb[,c]
+  inbOpt <- as.matrix(inbOpt[,-c])
+  colnames(inbOpt) <- colnames(nb)[-c]
+  d <- ncol(inbOpt) + ifelse(FALSE, 1, 0)
+  xmax<-max(inbOpt)
+  xmin<-min(inbOpt)
+  ymax<-c(1:d)
+  for (i in 1:d){
+    den<-density(nb[, i])
+    ymax[i]<-max(den$y)
+  }
+  ymax<-max(ymax)
+  plot(density(inbOpt[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), 
+       ylim = c(0, ymax),xlab="Incremental Net Benefit",
+       main="Inc. Net Benefit Density vs. Optimal Strategy")
+  if (d>1) {
+  for (i in 2:d){
+    lines(density(inbOpt[, i]), col = i)
+  }    
+  }
+  # Need strategy names adding
+  legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)  
 }
 
 makeNbDensity <- function (costs.int, effects.int, ...) {

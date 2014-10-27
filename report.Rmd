@@ -17,7 +17,7 @@ In section 4 the results of single parameter Partial Expected Value of Perfect I
 # 2. Exploring Current Uncertainty: Probabilistic Sensitivity Analysis Results
 ## 2.1 Probabilistic Sensitivity Analysis Summary
 ```{r, echo=FALSE}
-print(pEVPI)
+# print(pEVPI)
 numberRuns <- 1
 chosenInt2 <- chosenInt1 <- currency <- meanIncCost <- modelYears <- lowerIncCost <-probCostSaving<-meanIncBenefit<-benefitUnit<-probBenefit<-threshold<-meanICER<-probCEInt2<-probCEInt1<-probMaxInt<-maxInt<-lowerNbcMaxInt<-upperNbcMaxInt<-meanNbcMaxInt<-percentCEInt2<-percentCEInt1<-nInt<-baseInt<-nPsa<-decisionYears<-99
 ```
@@ -160,6 +160,7 @@ The EVPI estimates in the table below quantifies the expected value to decision 
 ## 4.1 Single parameter EVPPI
 
 ```{r, echo=FALSE}
+print(pEVPI)
 #print(tableEvppi)
 ```
 

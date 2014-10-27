@@ -246,6 +246,7 @@ shinyServer(
    output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      tableEVPPI <- matrix(NA, nrow = ncol(get("params", envir=cache)), ncol = 4)
+     tableEVPPI[, 1] <- get("pEVPI", envir=cache)
      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", paste("EVPPI for", input$jurisdiction, "Per Year"), paste("EVPPI for", 
                                input$jurisdiction, "over", input$horizon, "years"))
      rownames(tableEVPPI) <- colnames(get("params", envir=cache))
@@ -353,7 +354,7 @@ shinyServer(
       print(counterAdd <- input$addSelection)
       assign("counterAdd", counterAdd, envir=cache)
       setStore <- get("setStore", envir=cache)
-      
+      setStore[1:counterAdd]
     })
     
     

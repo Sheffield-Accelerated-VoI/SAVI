@@ -225,11 +225,11 @@ shinyServer(
     output$plots2 <- renderPlot({
       if (!valuesImportedFLAG(input)) return(NULL)
       ceac.obj <- assign("ceac.obj", ceac(), envir=cache)
-      makeCeacPlot(ceac.obj, lambda=input$lambda3, 
+      makeCeacPlot(ceac.obj, lambda=input$lambda2, 
                    main="Cost-effectiveness Acceptability Curve", 
                    xlab="Threshold willingness to pay", 
-                   ylab="Probability strategy is cost-effective",col="red")
-    })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL AND COLOUR CODE LINES
+                   ylab="Probability strategy is cost-effective")
+    })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
     
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(input)) return(NULL)

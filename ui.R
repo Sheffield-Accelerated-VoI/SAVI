@@ -156,20 +156,18 @@ fluidPage(
                
                sidebarLayout(
                  sidebarPanel(
-                   sliderInput("lambda3", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
-                   submitButton("Change"),
-                   br(),
-                   br(),
-                   p(strong("Strategies Compared"),
+                    p(strong("Strategies Compared"),
                      div(textOutput("textCEAC2"), style = "color:black"),
                      div(textOutput("textCEAC3"), style = "color:green"))),
                  
                  
-                 mainPanel(plotOutput("plots2", width="500px", height="500px"))),
+                 mainPanel(plotOutput("plots2", width="500px", height="500px"))
+                    ),
         
-                 
+               br(),
+               br(),
                h1("Net Benefit Densities"),
-                 mainPanel(plotOutput("plots5", width="500px", height="500px")) 
+               plotOutput("plots5", width="500px", height="500px")
                ),
       
       # Graphic
@@ -209,7 +207,7 @@ fluidPage(
                sidebarLayout(
                  sidebarPanel(
                    h3("Select Parameters for EVPPI"),
-                   checkboxGroupInput("pevpiParameters", NULL, #Might be worth trying renderUI function
+                   checkboxGroupInput("pevpiParameters", NULL, 
                                       c("null"), 
                                       selected = NULL),
                    br(),

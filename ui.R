@@ -153,24 +153,25 @@ fluidPage(
                p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
                  Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),
                br(),
-               
-               sidebarLayout(
-                 sidebarPanel(
-                    p(strong("Strategies Compared"),
-                     div(textOutput("textCEAC2"), style = "color:black"),
-                     div(textOutput("textCEAC3"), style = "color:red"))),
+             
                  
-                 
-                 mainPanel(plotOutput("plots2", width="500px", height="500px"))
-                    ),
+                 mainPanel(plotOutput("plots2", width="500px", height="500px")),
+
         
                br(),
                br(),
                h1("Net Benefit Densities"),
-               plotOutput("plots5", width="500px", height="500px"),
+                 mainPanel(plotOutput("plots5", width="500px", height="500px")),
                br(),
                h3("Expected Incremental Net Benefit versus Current Care"),
-               tableOutput("tableNetBenefit")
+               tableOutput("tableNetBenefit"),
+
+               h1("Incremental Net Benefit Densities compared with Base Strategy"),
+                 mainPanel(plotOutput("plots6", width="500px", height="500px")), 
+        
+               h1("Incremental Net Benefit Densities compared with Optimal Strategy"),
+                 mainPanel(plotOutput("plots7", width="500px", height="500px")) 
+               
                ),
       
       # Graphic

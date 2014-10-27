@@ -154,7 +154,7 @@ make4wayPlot <- function(costs.int, effects.int, incremental.int, ceac.int, lamb
   on.exit(par(opar))
 }
 
-<<<<<<< HEAD
+
 makeNbDensity <- function (costs.int, effects.int, lambda, ...) {
   nb <- createNb(costs.int, effects.int, lambda, FALSE)
   d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
@@ -227,7 +227,7 @@ makeInbOptDens <- function (costs.int, effects.int, lambda) {
   # Need strategy names adding
   legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)  
 }
-=======
+
 makeNbDensity <- function (costs.int, effects.int, ...) {
    nb <- createNb(costs.int, effects.int, 20000, FALSE)
    d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
@@ -246,7 +246,6 @@ makeNbDensity <- function (costs.int, effects.int, ...) {
    # Need strategy names adding
      legend("topright",c("Strat0","Strat1"),col=c(1:d), lty = 1)
   }
->>>>>>> 92bd773bc09aded133e1762aa47094422eb0305b
 
 ## Partial EVPI functions
 ## Author: Mark Strong

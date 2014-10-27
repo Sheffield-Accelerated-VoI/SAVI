@@ -226,11 +226,20 @@ fluidPage(
       
       # Numerical summary of the dataset,
       # coming from the function output$summary in server.R
-      tabPanel("Downloads",downloadButton('downloadSummary', 'Download EVPI values'),
-               br(),br(),#,tableOutput("summary")
+      tabPanel("Downloads", 
+               downloadButton('downloadSummary', 'Download EVPI values'),
+               br(), br(),#,tableOutput("summary")
                radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
                             inline = TRUE),
                downloadButton('downloadReport', 'Download report')
+      ),
+      
+      tabPanel("Save session", 
+               textInput("RdataFileName", strong("Filename:"), "SaviSession.Rdata"),
+               br(), br(),
+               downloadButton('saveSession', 'Save SAVI session')
       )
+      
+      
       ))
 )

@@ -148,7 +148,7 @@ shinyServer(
     output$textCEplane1 <- renderText({
       paste("This graph shows the standardised cost-effectiveness plane per person based on",input$n3,"model runs,
             in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-            The mean incremental cost of", input$t3, "versus", input$current,"is",input$t6,"X. This suggests that
+            The mean incremental cost of", input$t3, "versus", input$current,"is",input$currency,"X. This suggests that
             ",input$t3,"is more/less costly over the",input$n7,"year time horizon. There is some uncertainty due to model 
             parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
             The probability that",input$t3,"is cost saving (i.e. cheaper over the",input$n7,"year time horizon) compared 
@@ -156,15 +156,15 @@ shinyServer(
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
     output$textCEplane2 <- renderText({
-      paste("The mean incremental benefit of",input$t3,"versus",input$current,"is",input$t6,"X.  This suggests that",input$t3,"
+      paste("The mean incremental benefit of",input$t3,"versus",input$current,"is",input$currency,"X.  This suggests that",input$t3,"
             is more/or less beneficial over the",input$n7,"year time horizon.  Again, there is some uncertainty due to 
             model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
             The probability that",input$t3,"is more beneficial than",input$current,"is XX%.")
     })                        ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
     output$textCEplane3 <- renderText({
-      paste("The incremental expected cost per unit of benefit is estimated at",input$t6,"XX per",input$t7,". This 
-            is above/below the threshold of",input$t6,input$lambda2,"per",input$t7,"indicating that",input$t3,"would (not) be considered cost-effective
+      paste("The incremental expected cost per unit of benefit is estimated at",input$currency,"XX per",input$unitBens,". This 
+            is above/below the threshold of",input$currency,input$lambda2,"per",input$unitBens,"indicating that",input$t3,"would (not) be considered cost-effective
             at this threshold.  There is uncertainty with a XX% probability that",input$t3,"is more cost-effective (XX% of the 
             probabilistic model run ‘dots’ are below and to the right of the diagonal threshold line).")
     })                         ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
@@ -175,12 +175,12 @@ shinyServer(
     
     output$textCEplane5 <- renderText({
       paste("$XX%$ probability that",input$t3,"is more cost-effective than",input$current,"at a threshold 
-            of",input$t6,input$lambda2,"per",input$t7)
+            of",input$t6,input$lambda2,"per",input$unitBens)
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
     output$textCEAC1 <- renderText({
       paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
-            value for cost-effectiveness of",input$t6,input$lambda2,"per",input$t7,"the strategy with the highest probability of being most cost-effective 
+            value for cost-effectiveness of",input$currency,input$lambda2,"per",input$unitBens,"the strategy with the highest probability of being most cost-effective 
             is X, with a probability of XX%. More details on how to interpret CEACs are available from the literature")
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
@@ -199,10 +199,10 @@ shinyServer(
       if (!valuesImportedFLAG(input)) return(NULL)
       tableCEplane <- matrix(c(input$lambda2, input$current, input$n3, NA, NA, NA, NA, NA, NA, NA, NA, NA), nrow = 12, ncol = ncol(get("costs", envir=cache))-1)
       colnames(tableCEplane) <- colnames(get("costs", envir=cache)[,-1])
-      rownames(tableCEplane) <- c("Threshold", "Comparator", "Number of PSA runs", "Mean inc. Effect per Person", "Mean inc. Cost per Person",
-                                  "ICER Estimate", "PSA Results", "95% CI for inc. Costs", "95% CI for inc. Benefits", "Probability
-                                  intervention is cost saving", "Probability intervention provides more benefit", "Probability that
-                                  intervention is cost-effective")
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), "Comparator", "Number of PSA runs", paste("Mean inc. Effect per Person (", input$unitBens, ")"), paste("Mean inc. Cost per Person (", input$currency, ")"),
+                                  paste("ICER Estimate (", input$currency, "per", input$unitBens, ")"), "PSA RESULTS", paste("95% CI for inc. Costs (", input$currency, ")"), 
+                                  paste("95% CI for inc. Effects (", input$unitBens, ")"), "Probability intervention is cost saving", "Probability intervention provides more benefit", 
+                                  "Probability that intervention is cost-effective")
       tableCEplane
     })  
 
@@ -210,24 +210,25 @@ shinyServer(
      if (!valuesImportedFLAG(input)) return(NULL)
      tableNetBenefit <- matrix(NA, nrow = 8, ncol = ncol(get("costs", envir=cache)))
      colnames(tableNetBenefit) <- colnames(get("costs", envir=cache))
-     rownames(tableNetBenefit) <- c("Mean Effects", "Mean Cost Measures", "Expected Net Benefit at Chosen Threshold", "95% Lower CI (on Costs Scale)", 
-                                 "95% Upper CI (on Costs Scale)", "Expected Net Benefit on Effects Scale", "95% Lower CI (on Effects Scale)", "95% Upper CI (on Effects Scale)")
+     rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), paste("Mean", input$costDef), paste("Expected Net Benefit at",input$currency,input$lambda2,"per",input$unitBens), 
+                                  "95% Lower CI (on Costs Scale)", "95% Upper CI (on Costs Scale)", "Expected Net Benefit on Effects Scale", "95% Lower CI (on Effects Scale)", "95% Upper CI (on Effects Scale)")
      tableNetBenefit
    })  
    
    output$tableEVPI <- renderTable({
      if (!valuesImportedFLAG(input)) return(NULL)
      tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
-     colnames(tableEVPI) <- c("Overall EVPI Financial Valuation (Currency)", "Overall EVPI (Effect Measure) Valuation")
-     rownames(tableEVPI) <- c("Per Person Affected by the Decision", "Per Year in (Jurisdiction) Assuming (Number) Persons Affected per Year", 
-                              "Over 5 Years", "Over 10 Years", "Over 15 Years", "Over 20 years", "Over Specified Decision Relevance Horizon (X years)")
+     colnames(tableEVPI) <- c(paste("Overall EVPI Financial Valuation (", input$currency, ")"), paste("Overall EVPI", input$unitBens, "Valuation"))
+     rownames(tableEVPI) <- c("Per Person Affected by the Decision", paste("Per Year in", input$jurisdiction, "Assuming", input$annualPrev, "Persons Affected per Year"), 
+                              "Over 5 Years", "Over 10 Years", "Over 15 Years", "Over 20 years", paste("Over Specified Decision Relevance Horizon (", input$horizon, "years)"))
      tableEVPI
    }) 
    
    output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(input)) return(NULL)
      tableEVPPI <- matrix(NA, nrow = ncol(get("params", envir=cache)), ncol = 4)
-     colnames(tableEVPPI) <- c("Per Person EVPPI (Currency)", "Indexed Overall EVPI = 1.00", "EVPPI Per (Jurisdiction) Per Year", "EVPPI Per (Jurisdiction) over (X) years")
+     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", paste("EVPPI for", input$jurisdiction, "Per Year"), paste("EVPPI for", 
+                               input$jurisdiction, "over", input$horizon, "years"))
      rownames(tableEVPPI) <- colnames(get("params", envir=cache))
      tableEVPPI
    }) 
@@ -237,8 +238,8 @@ shinyServer(
     output$plots1 <- renderPlot({
       if (!valuesImportedFLAG(input)) return(NULL)
       makeCEPlanePlot(get("costs", envir=cache), get("effects", envir=cache), 
-                      lambda=input$lambda2, xlab=input$t4, 
-                      ylab=input$t5, col="orangered")
+                      lambda=input$lambda2, xlab=input$effectDef, 
+                      ylab=input$costDef, col="orangered")
     })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.DARK RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
     
     output$plots2 <- renderPlot({

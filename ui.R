@@ -11,8 +11,8 @@ fluidPage(
       tabPanel("Getting started", 
                #div(class="outer", tags$head(
                  # Include our custom CSS
-              #   includeCSS("styles.css")
-              # ),
+               #   includeCSS("styles.css")
+               # ),
                h3("Basic user guide"),
                p(HTML("Welcome to this early draft version!")),
                p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
@@ -28,8 +28,11 @@ fluidPage(
                
                p(HTML("Please add some information about your model")),
                textInput("modelName",label = h5("Name of your model"),value ="My Model"),
+               numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 1000, min = 0, step = 10),
+               numericInput("horizon", label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 10, min = 1),
+               numericInput("lambdaOverall", label = h5("Value of one unit of health effect (lambda)"),  value = 20000, min = 10, step = 100),
                #numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
-               #textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
+               textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
                #textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
                #numericInput("nParam",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
                #numericInput("nIterate",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
@@ -42,9 +45,7 @@ fluidPage(
                #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
                #lambda set using sliders rather than here.
                textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"),value = "England"),
-               numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 1000, min = 0, step = 10),
-               numericInput("horizon", label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 10, min = 1),
-               numericInput("lambdaOverall", label = h5("Value of one unit of health effect (lambda)"),  value = 20000, min = 10, step = 100),
+
                br()
               # submitButton("Submit")
                ),
@@ -138,7 +139,7 @@ fluidPage(
                
         sidebarLayout(
               sidebarPanel(
-                          sliderInput("lambda2", label = h5("Specify lambda"), 1, 100000, 20000, 1000, width="500px"),
+                          sliderInput("lambda2", label = h5("Specify lambda"), 1000, 100000, 20000, 1000, width="500px"),
                           #submitButton("Change"), # this button stops everything else auto-updating!
                           br(),
                           br(),
@@ -204,13 +205,15 @@ fluidPage(
 
                
       ),
-      
-      tabPanel("EVPPI",
+
+      tabPanel("EVPPI single parameters",
                h3("Specify lambda"),
                sliderInput('lambda', label="", 0, 60000, 20000, 1000),
                h3("Partial EVPI for single parameters"),
-               tableOutput("summary"),
-               br(),
+               tableOutput("summary")
+      ),
+      
+      tabPanel("EVPPI groups",
                p(HTML("Here you can define subsets of parameters to add to your EVPPI. Choose a subset of parameters
                       using the tick boxes and press the Add button to add the combination to the analysis.
                       You can add as many combinations as you wish. Press the Calculate EVPPI button

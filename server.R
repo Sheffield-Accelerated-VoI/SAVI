@@ -30,6 +30,8 @@ shinyServer(
     
     # initialise cached variable values
     
+    assign("savedSession", 0, envir=cache)
+    assign("nIterate", 0, envir = cache)
     assign("pEVPI", NULL, envir = cache)
     assign("params", NULL, envir = cache)
     assign("costs", NULL, envir = cache)  
@@ -50,7 +52,7 @@ shinyServer(
       inFile = input$loadSession
       if (is.null(inFile))
         return(NULL)
-      
+      assign("savedSession", 1, envir=TRUE)
       load(inFile$datapath, envir=cache)
       #print(lapply(ls(envir=cache), function(x) object.size(get(x, envir=cache))))
       #print(ls(envir=cache))
@@ -68,13 +70,13 @@ shinyServer(
                         row.names=1)#, dec=input$dec)
         assign("params", dat, envir = cache)
         assign("nParams", ncol(dat), envir=cache)
-        assign("nParamSamples", nrow(dat), envir=cache)
+        assign("nIterate", nrow(dat), envir=cache)
         
       } else {
         dat <- read.csv(inFile$datapath, header=input$header1)#, sep=input$sep, dec=input$dec)
         assign("params", dat, envir = cache)
         assign("nParams", ncol(dat), envir=cache)
-        assign("nParamSamples", nrow(dat), envir=cache)
+        assign("nIterate", nrow(dat), envir=cache)
         
       }
     })
@@ -227,7 +229,7 @@ shinyServer(
     # Functions that make tables  
     output$tableCEplane <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      tableCEplane <- matrix(c(input$lambda2, input$current, input$nIterate, NA, NA, NA, NA, NA, NA, NA, NA, NA), nrow = 12, ncol = ncol(get("costs", envir=cache))-1)
+      tableCEplane <- matrix(c(input$lambda2, input$current, get("nIterate", envir=cache), rep(NA, 9)), nrow = 12, ncol = ncol(get("costs", envir=cache))-1)
       colnames(tableCEplane) <- colnames(get("costs", envir=cache)[,-1])
       rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), "Comparator", "Number of PSA runs", paste("Mean inc. Effect per Person (", input$unitBens, ")"), paste("Mean inc. Cost per Person (", input$currency, ")"),
                                   paste("ICER Estimate (", input$currency, "per", input$unitBens, ")"), "PSA RESULTS", paste("95% CI for inc. Costs (", input$currency, ")"), 
@@ -263,9 +265,10 @@ shinyServer(
                      overallEvpi * input$annualPrev * 10, overallEvpi * input$annualPrev * 15,
                      overallEvpi * input$annualPrev * 20,
                      overallEvpi * input$annualPrev * input$horizon)     
-     tableEVPI[, 2] <- signif(evpiVector, 4)          
+     tableEVPI[, 1] <- signif(evpiVector, 4)          
+     tableEVPI[, 2] <- signif(evpiVector / input$lambdaOverall, 4)   
      tableEVPI
-   }, digits=0) 
+   }, digits=cbind(rep(0, 7), rep(0, 7), rep(2, 7))) 
    
    output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -341,18 +344,7 @@ shinyServer(
                                choices = colnames(get("params", envir=cache)))
     })
       
-#     output$selection <- reactive({
-#       if(input$addSelection==0) return(NULL)
-#       print(counterAdd <- input$addSelection)
-#       assign("counterAdd", counterAdd, envir=cache)
-# 
-#       setStore <- get("setStore", envir=cache)
-#       setStore[[counterAdd]] <- input$pevpiParameters
-#       assign("setStore", setStore, envir = cache)
-#       
-#       setStore[1:counterAdd]
-#       })
- 
+
     # get the selection and assign it to cache
     observe({
       currentSelection <- input$pevpiParameters
@@ -386,7 +378,7 @@ shinyServer(
     # Output the subset EVPI table
     output$selectedEvpiTable <- renderTable({
       x <- input$calculateSubsetsEvpi
-      if(x==0) return(NULL)
+      if(x==0 & get("savedSession", envir=cache)==0) return(NULL)
       counterAdd <- get("counterAdd", envir = cache)
       setStore <- get("setStore", envir=cache)
 
@@ -400,7 +392,7 @@ shinyServer(
       #names(df) <- c("EVPI", rep("", ncol(sets)))
       
       df <- data.frame(EVPI = subsetEvpiValues)      
-      rownames(df) <- paste("Selection", 1:counterAdd)
+      rownames(df) <- paste("Set", 1:counterAdd)
       df
     }, sanitize.rownames.function =  bold.allrows)  
     
@@ -408,7 +400,7 @@ shinyServer(
 #       x <- input$clearSubsetsEvpi
 #       if(x==0) return(NULL)
 #       counterAdd <- 0
-#       setStore <- rep("vector", 100)
+#       setStore <- vector("list", 100)
 #       assign("setStore", setStore, envir = cache)
 #       assign("counterAdd", counterAdd, envir = cache)
 #     })

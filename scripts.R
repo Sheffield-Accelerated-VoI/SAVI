@@ -391,7 +391,7 @@ buildSetStoreTable <- function(store) {
   maxRows <- max(unlist(lapply(store, length)))
   tableRows <- lapply(store, function(x) c(x, rep("", maxRows - length(x))))
   df <- t(data.frame(tableRows))
-  rownames(df) <- paste("Selection", 1:length(store))
+  rownames(df) <- paste("Set", 1:length(store))
   colnames(df) <- NULL
   names(df) <- NULL
   df

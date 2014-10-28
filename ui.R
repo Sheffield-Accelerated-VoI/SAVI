@@ -1,16 +1,18 @@
 
-navbarPage("SAVI",
-  # Application title
- # headerPanel("SAVI - Sheffield Accelerated Value of Information"),
+fluidPage(
+  headerPanel("SAVI - Sheffield Accelerated Value of Information"),
+  mainPanel(
+  tabsetPanel(  # Application title
+ #
   
   # Main panel (on the right hand side)
  # mainPanel(
    # tabsetPanel(
       tabPanel("Getting started", 
-               div(class="outer", tags$head(
+               #div(class="outer", tags$head(
                  # Include our custom CSS
-                 includeCSS("styles.css")
-               ),
+              #   includeCSS("styles.css")
+              # ),
                h3("Basic user guide"),
                p(HTML("Welcome to this early draft version!")),
                p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
@@ -44,7 +46,7 @@ navbarPage("SAVI",
                numericInput("horizon",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 1, min = 1),
                br()
               # submitButton("Submit")
-               )),
+               ),
     
       
       
@@ -101,6 +103,8 @@ navbarPage("SAVI",
                radioButtons('incremental', label="", c("Incremental" = "TRUE", "Absolute" = "FALSE"), "FALSE")
                ),
       
+ 
+ 
       tabPanel("Check upload",
                
                h3("Check data import"),
@@ -222,18 +226,20 @@ navbarPage("SAVI",
                  
                  mainPanel(
                    h3("Selected parameter combinations"),
-                   tableOutput("test"),
                    br(),
                    actionButton("calculate1", "Calculate EVPPI"),
                    br(),
                    actionButton("clear1",label="Clear Selection"))),
                                  
-               
+               br(),
+               tableOutput("selectedTable"),
                br(),
                h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
                tableOutput("tableEVPPI")
                
-      ),
+      ),# style = 'width:100%;'), 
+      tags$style(type="text/css", ".tab-content { overflow: visible; }"),
+     # tags$head(tags$style(type="text/css", ".container-fluid {max-width: 4000px%;}")),
       
       
       
@@ -253,5 +259,6 @@ navbarPage("SAVI",
                downloadButton('saveSession', 'Save SAVI session')
      )
     #)#, width = 12)
+,type = "pills")
+,width = 12)
 )
- 

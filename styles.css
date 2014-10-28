@@ -2,12 +2,12 @@ input[type="number"] {
 max-width: 100%;
 }
 div.outer {
-position: fixed;
+/*position: fixed;*/
 top: 41px;
 left: 20px;
 right: 0;
 bottom: 0;
-/*overflow: hidden;*/
+overflow: hidden;
 padding: 0;
 }
 /* Customize fonts */

@@ -372,7 +372,7 @@ shinyServer(
     
     
 
-    output$test <- renderTable({
+    output$selectedTable <- renderTable({
       x <- input$addSelection
       if(x==0) return(NULL)
       setStore <- get("setStore", envir=cache)

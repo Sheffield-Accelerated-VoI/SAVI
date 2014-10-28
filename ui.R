@@ -2,7 +2,7 @@
 fluidPage(
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   mainPanel(
-  tabsetPanel(  # Application title
+    tabsetPanel(  # Application title
  #
   
   # Main panel (on the right hand side)
@@ -28,22 +28,23 @@ fluidPage(
                
                p(HTML("Please add some information about your model")),
                textInput("modelName",label = h5("Name of your model"),value ="My Model"),
-               numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
-               textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
-               textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
-               numericInput("nParam",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
-               numericInput("nIterate",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
-               selectInput("indSim",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
-               numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
+               #numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
+               #textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
+               #textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
+               #numericInput("nParam",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
+               #numericInput("nIterate",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
+               #selectInput("indSim",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
+               #numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
                textInput("effectDef",label = h5("Definition of effectiveness measure"),value ="Discounted Lifetime QALYs"),
                textInput("costDef",label = h5("Definition of cost measure"),value ="Discounted Lifetime Costs (£)"),
                textInput("currency",label = h5("Units used for costs"),value ="£"),
                textInput("unitBens",label = h5("Units used for benefits"),value ="QALY"),
                #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
                #lambda set using sliders rather than here.
-               textInput("jurisdiction",label = h5("Name of jurisdiction (e.g. country, region, city)"),value = "England"),
-               numericInput("annualPrev",label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 0, min = 0, step = 10),
-               numericInput("horizon",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 1, min = 1),
+               textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"),value = "England"),
+               numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 1000, min = 0, step = 10),
+               numericInput("horizon", label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 10, min = 1),
+               numericInput("lambdaOverall", label = h5("Value of one unit of health effect (lambda)"),  value = 20000, min = 10, step = 100),
                br()
               # submitButton("Submit")
                ),
@@ -137,7 +138,7 @@ fluidPage(
                
         sidebarLayout(
               sidebarPanel(
-                          sliderInput("lambda2", label = h5("Specify lambda"), 0, 100000, 20000, 1000, width="500px"),
+                          sliderInput("lambda2", label = h5("Specify lambda"), 1, 100000, 20000, 1000, width="500px"),
                           #submitButton("Change"), # this button stops everything else auto-updating!
                           br(),
                           br(),
@@ -222,27 +223,27 @@ fluidPage(
                                       c("null"), 
                                       selected = NULL),
                    br(),
-                   actionButton("addSelection", "Add selection")),
+                   actionButton("addSelection", "Add selection"),
+                   br(),
+                   br(),
+                   br(),
+                   actionButton("calculateSubsetsEvpi", "Calculate EVPPI values")),
                  
                  mainPanel(
                    h3("Selected parameter combinations"),
                    br(),
-                   actionButton("calculate1", "Calculate EVPPI"),
+                   tableOutput("selectedTable"),
                    br(),
-                   actionButton("clear1",label="Clear Selection"))),
+                   tableOutput("selectedEvpiTable"),
+                   br(),
+                   actionButton("clearSubsetsEvpi",label="Clear Selections"))),
                                  
-               br(),
-               tableOutput("selectedTable"),
-               br(),
+               br(),    
                h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
                tableOutput("tableEVPPI")
                
-      ),# style = 'width:100%;'), 
-      tags$style(type="text/css", ".tab-content { overflow: visible; }"),
-     # tags$head(tags$style(type="text/css", ".container-fluid {max-width: 4000px%;}")),
-      
-      
-      
+      ),
+    
       # Numerical summary of the dataset,
       # coming from the function output$summary in server.R
       tabPanel("Downloads", 
@@ -258,7 +259,10 @@ fluidPage(
                br(), br(),
                downloadButton('saveSession', 'Save SAVI session')
      )
-    #)#, width = 12)
-,type = "pills")
-,width = 12)
+     , type = "pills" # this controls the look of the tabs
+  ), 
+ tags$style(type="text/css", ".tab-content { overflow: visible; }")
+  ,width = 12 # 12 is the max width of the mainPanel page
+ )
+#,theme="bootstrapDefault.css"
 )

@@ -249,10 +249,23 @@ shinyServer(
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
      colnames(tableEVPI) <- c(paste("Overall EVPI Financial Valuation (", input$currency, ")"), paste("Overall EVPI", input$unitBens, "Valuation"))
-     rownames(tableEVPI) <- c("Per Person Affected by the Decision", paste("Per Year in", input$jurisdiction, "Assuming", input$annualPrev, "Persons Affected per Year"), 
-                              "Over 5 Years", "Over 10 Years", "Over 15 Years", "Over 20 years", paste("Over Specified Decision Relevance Horizon (", input$horizon, "years)"))
+     rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
+                              paste("Per Year in", input$jurisdiction, "Assuming", input$annualPrev, "Persons Affected per Year"), 
+                              "Over 5 Years", 
+                              "Over 10 Years", 
+                              "Over 15 Years", 
+                              "Over 20 years", 
+                              paste("Over Specified Decision Relevance Horizon (", input$horizon, "years)"))
+     
+     overallEvpi <- calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+              lambda=input$lambda2)
+     evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 
+                     overallEvpi * input$annualPrev * 10, overallEvpi * input$annualPrev * 15,
+                     overallEvpi * input$annualPrev * 20,
+                     overallEvpi * input$annualPrev * input$horizon)     
+     tableEVPI[, 2] <- signif(evpiVector, 4)          
      tableEVPI
-   }) 
+   }, digits=0) 
    
    output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -349,9 +362,8 @@ shinyServer(
     # save the current selection and then increase counter
     observe({
       # counterAdd <- get("counterAdd", envir=cache)
-      x <- input$addSelection
-      if(x==0) return(NULL)
-      counterAdd <- x
+      counterAdd <- input$addSelection
+      if(counterAdd==0) return(NULL)
       setStore <- get("setStore", envir=cache)
       currentSelection <- get("currentSelection", envir=cache)
       #nCurrentSelection <- length(currentSelection)
@@ -363,25 +375,44 @@ shinyServer(
     })
 
     # output the selection table when add button pressed
-#     output$selection <- reactive({
-#       x <- input$addSelection
-#       if(x==0) return(NULL)
-#       setStore <- get("setStore", envir=cache)
-#       print(setStore[[x]])
-#     })
-    
-    
 
     output$selectedTable <- renderTable({
       x <- input$addSelection
       if(x==0) return(NULL)
       setStore <- get("setStore", envir=cache)
-      #nParams <- get("nParams", envir=cache)
       buildSetStoreTable(setStore[1:x])
     }, include.colnames = FALSE, sanitize.rownames.function =  bold.allrows)
 
+    # Output the subset EVPI table
+    output$selectedEvpiTable <- renderTable({
+      x <- input$calculateSubsetsEvpi
+      if(x==0) return(NULL)
+      counterAdd <- get("counterAdd", envir = cache)
+      setStore <- get("setStore", envir=cache)
 
+      #subsetEvpiValues <- calSubsetEvpi(setStore[1:counterAdd])
+      subsetEvpiValues <- unlist(lapply(setStore[1:counterAdd], calSubsetEvpi, input$lambda, cache))
+      assign("subsetEvpiValues", subsetEvpiValues, envir = cache)
+      assign("setStoreMatchEvpiValues", setStore, envir = cache) # cache these for the report in case they change
+      
+      #sets <- buildSetStoreTable(setStore[1:counterAdd])
+      #df <- data.frame(EVPI = subsetEvpiValues, sets)
+      #names(df) <- c("EVPI", rep("", ncol(sets)))
+      
+      df <- data.frame(EVPI = subsetEvpiValues)      
+      rownames(df) <- paste("Selection", 1:counterAdd)
+      df
+    }, sanitize.rownames.function =  bold.allrows)  
     
+#     observe({ # clear the selections
+#       x <- input$clearSubsetsEvpi
+#       if(x==0) return(NULL)
+#       counterAdd <- 0
+#       setStore <- rep("vector", 100)
+#       assign("setStore", setStore, envir = cache)
+#       assign("counterAdd", counterAdd, envir = cache)
+#     })
+
     
     # Functions that make the reports
     

@@ -46,6 +46,12 @@ createNb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE
      return(nb)
 }
 
+calcEvpi <- function(costs.int, effects.int, lambda = 20000) {
+  ## this function creates the NB matrix
+  nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
+  evpi <- mean(do.call(pmax, nb)) - max(colMeans(nb))
+  return(evpi)
+}
 
 calcSingleParamGAM <- function(inputParam, inb) {
   ## this function calculates EVPI for a single parameter using GAM
@@ -395,3 +401,31 @@ bold.allrows <- function(x) {
   h <- paste('<strong>',x,'</strong>', sep ='')
   h
 }
+
+calSubsetEvpi <- function(sets, lambda, cache) {
+  f <- formulaGenerator(sets)
+  # lambda <- input$lambda
+  costs <- get("costs", envir = cache)
+  effects <- get("effects", envir = cache)
+  params <- get("params", envir = cache)
+  nb <- effects * lambda - costs
+  inb <- nb - nb[ ,1]
+  modelFitted <- c()
+  for (i in 2:ncol(inb)) {
+    y <- inb[, i]
+    modelFitted[[i]] <- fitted(gam(formula(f), data = params))
+  }
+  modelFitted[[1]] <- 0
+  dfModelFitted <- data.frame(modelFitted)
+  evpi <- mean(do.call(pmax, dfModelFitted)) - max(colMeans(dfModelFitted))
+  evpi
+ # 0
+}
+
+formulaGenerator <- function(namesList) {
+    form <- paste("te(", namesList, ")+", sep="", collapse="")
+    form <- substr(form, 1, nchar(form) - 1)
+    form <- paste("y~", form, sep="")
+    form
+}
+

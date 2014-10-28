@@ -227,21 +227,37 @@ shinyServer(
     # Functions that make tables  
     output$tableCEplane <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      tableCEplane <- matrix(c(input$lambda2, input$current, input$nIterate, NA, NA, NA, NA, NA, NA, NA, NA, NA), nrow = 12, ncol = ncol(get("costs", envir=cache))-1)
-      colnames(tableCEplane) <- colnames(get("costs", envir=cache)[,-1])
-      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), "Comparator", "Number of PSA runs", paste("Mean inc. Effect per Person (", input$unitBens, ")"), paste("Mean inc. Cost per Person (", input$currency, ")"),
-                                  paste("ICER Estimate (", input$currency, "per", input$unitBens, ")"), "PSA RESULTS", paste("95% CI for inc. Costs (", input$currency, ")"), 
-                                  paste("95% CI for inc. Effects (", input$unitBens, ")"), "Probability intervention is cost saving", "Probability intervention provides more benefit", 
-                                  "Probability that intervention is cost-effective")
+      tableCEplane <- makeTableCePlane(get("costs", envir=cache), get("effects", 
+                            envir=cache), lambda=input$lambda2)
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), "Comparator", 
+                            "Number of PSA runs", 
+                            paste("Mean inc. Effect per Person (", input$unitBens, ")"), 
+                            paste("Mean inc. Cost per Person (", input$currency, ")"),
+                            paste("ICER Estimate (", input$currency, "per", input$unitBens, ")"),
+                            paste("2.5th CI for inc. Effects (", input$unitBens, ")"), 
+                            paste("97.5th CI for inc. Effects (", input$unitBens, ")"),
+                            paste("2.5th CI for inc. Costs (", input$currency, ")"),
+                            paste("97.5th CI for inc. Costs (", input$currency, ")"),
+                            "Probability intervention is cost saving", 
+                            "Probability intervention provides more benefit", 
+                            "Probability that intervention is cost-effective")
+      
       tableCEplane
     })  
 
-   output$tableNetBenefit <- renderTable({
-     if (!valuesImportedFLAG(cache, input)) return(NULL)
-     tableNetBenefit <- matrix(NA, nrow = 8, ncol = ncol(get("costs", envir=cache)))
-     colnames(tableNetBenefit) <- colnames(get("costs", envir=cache))
-     rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), paste("Mean", input$costDef), paste("Expected Net Benefit at",input$currency,input$lambda2,"per",input$unitBens), 
-                                  "95% Lower CI (on Costs Scale)", "95% Upper CI (on Costs Scale)", "Expected Net Benefit on Effects Scale", "95% Lower CI (on Effects Scale)", "95% Upper CI (on Effects Scale)")
+    output$tableNetBenefit <- renderTable({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+     tableNetBenefit <- makeTableNetBenefit(get("costs", envir=cache), get("effects", 
+                            envir=cache), lambda=input$lambda2, get("nInt", envir=cache))
+     rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
+                                    paste("Mean", input$costDef), 
+                                    paste("Expected Net Benefit at", 
+                                          input$currency,input$lambda2, "per",input$unitBens), 
+                                    "95% Lower CI (on Costs Scale)", 
+                                    "95% Upper CI (on Costs Scale)", 
+                                    "Expected Net Benefit on Effects Scale", 
+                                    "95% Lower CI (on Effects Scale)", 
+                                    "95% Upper CI (on Effects Scale)")
      tableNetBenefit
    })  
    

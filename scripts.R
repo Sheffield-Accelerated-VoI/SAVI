@@ -81,7 +81,6 @@ applyCalcSingleParamGam <- function(df, inb) {
 
 # plot generator functions
 
-
 makeCeac <- function(costs.int, effects.int, incremental.int) {
   ## generates the CEAC values
   l.seq <- seq(0, 60000, 1000)
@@ -230,6 +229,53 @@ make2wayDensity <- function(costs.int, effects.int, lambda) {
   makeNbDensity(costs.int, effects.int, lambda)
   makeInbOptDens(costs.int, effects.int, lambda)
   on.exit(par(opar))
+}
+
+# table generator functions
+
+makeTableCePlane <- function(costs.int, effects.int, lambda) {
+  npsa<-length(costs.int[,1])
+  tableCePlane <- matrix(NA,ncol=ncol(costs.int)-1, nrow = 13)
+  tableCePlane[1] <- format(lambda, digits=4, nsmall = 0)
+  tableCePlane[2] <- colnames(costs.int)[1]
+  tableCePlane[3] <- format(npsa)
+  tableCePlane[4] <- format(mean(effects.int[,2] - effects.int[,1]), digits=2, nsmall=4)
+  tableCePlane[5] <- format(mean(costs.int[,2] - costs.int[,1]), digits=2, nsmall=2)
+  tableCePlane[6] <- format(mean(costs.int[,2] - costs.int[,1]) /
+                            mean(effects.int[,2] - effects.int[,1]), digits=2, nsmall=2)
+  tableCePlane[7] <- format(quantile((effects.int[,2] - effects.int[,1]),0.025), digits=4, 
+                            nsmall=4)
+  tableCePlane[8] <- format(quantile((effects.int[,2] - effects.int[,1]),0.975), digits=4, 
+                            nsmall=4)
+  tableCePlane[9] <- format(quantile((costs.int[,2] - costs.int[,1]),0.025), digits=4, 
+                            nsmall=2)
+  tableCePlane[10] <- format(quantile((costs.int[,2] - costs.int[,1]),0.975), digits=4, 
+                            nsmall=2)
+  tableCePlane[11] <- format(length(which((costs.int[,2]-costs.int[,1])<0)) / npsa, digits=2,
+                             nsmall=3)
+  tableCePlane[12] <- format(length(which((effects.int[,2]-effects.int[,1])>0)) / npsa, 
+                             digits=2, nsmall=3)
+  tableCePlane[13] <- format(length(which((effects.int[,2]-effects.int[,1]) * lambda-
+                            (costs.int[,2]-costs.int[,1])>0)) / npsa, digits=2,
+                             nsmall=3)
+  colnames(tableCePlane) <- colnames(costs.int)[2]
+  tableCePlane
+}
+
+makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
+  
+  tableNetBenefit <- matrix(NA, ncol= nInt, nrow = 8) 
+  for (i in 1:nInt) {
+    tableNetBenefit[1,i] <- format(mean(effects.int[,i]), digits=2, nsmall=4)
+    tableNetBenefit[2,i] <- format(mean(costs.int[,i]), digits=2, nsmall=2)
+    tableNetBenefit[3,i] <- format(mean(effects.int[,i] * lambda - costs.int[,i]), digits=2, nsmall=2)
+    tableNetBenefit[4,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.025), digits=2, nsmall=2)
+    tableNetBenefit[5,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.975), digits=2, nsmall=2) 
+    tableNetBenefit[6,i] <- format(mean(effects.int[,i] - (costs.int[,i] / lambda)), digits=2, nsmall=4)
+    tableNetBenefit[7,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.025), digits=2, nsmall=4)
+    tableNetBenefit[8,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.975), digits=2, nsmall=4)
+  }
+  colnames(tableNetBenefit)<-colnames(costs.int)
 }
 
 ## Partial EVPI functions

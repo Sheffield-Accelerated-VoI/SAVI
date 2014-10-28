@@ -158,15 +158,12 @@ navbarPage("SAVI",
                p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
                  Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),
                br(),
-               plotOutput("plots2", width="500px", height="500px"),
-
-        
-               br(),
+               plotOutput("plots2", width="500px", height="500px"),    
                br(),
                h1("Net Benefit Densities"),
-                 mainPanel(plotOutput("plots5", width="700px", height="400px")),
+               plotOutput("plots5", width="700px", height="400px"),
                br(),
-               h3("Expected Incremental Net Benefit versus Current Care"),
+               h1("Expected Incremental Net Benefit versus Current Care"),
                tableOutput("tableNetBenefit")
                
                ),

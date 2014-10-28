@@ -410,3 +410,19 @@ word_document_local <- function (fig_width = 5, fig_height = 4, fig_caption = FA
                                                        from = rmarkdown:::from_rmarkdown(fig_caption), 
                                                        args = args))
 }
+
+# function for building up table of parameter sets for partial EVPI
+buildSetStoreTable <- function(store) {
+  maxRows <- max(unlist(lapply(store, length)))
+  tableRows <- lapply(store, function(x) c(x, rep("", maxRows - length(x))))
+  df <- t(data.frame(tableRows))
+  rownames(df) <- paste("Selection", 1:length(store))
+  colnames(df) <- NULL
+  names(df) <- NULL
+  df
+}
+
+bold.allrows <- function(x) {
+  h <- paste('<strong>',x,'</strong>', sep ='')
+  h
+}

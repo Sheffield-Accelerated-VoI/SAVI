@@ -44,7 +44,7 @@ shinyServer(
     #   load.effects <- function() read.csv("effects.csv")
     # ########### 
     
-  
+  load("SAVISession.Rdata", envir=cache)
     #  Function that loads saved session
     observe({
       inFile = input$loadSession
@@ -56,7 +56,7 @@ shinyServer(
       #print(ls(envir=cache))
     })   
     
-    #  Function that imports parameters
+    #  Function that imports parameters - NEED TO DO _ SANITY CHECK
     #loadParameters <- 
       observe({
       inFile = input$parameterFile
@@ -67,9 +67,15 @@ shinyServer(
         dat <- read.csv(inFile$datapath, header=input$header1, #sep=input$sep,
                         row.names=1)#, dec=input$dec)
         assign("params", dat, envir = cache)
+        assign("nParams", ncol(dat), envir=cache)
+        assign("nParamSamples", nrow(dat), envir=cache)
+        
       } else {
         dat <- read.csv(inFile$datapath, header=input$header1)#, sep=input$sep, dec=input$dec)
         assign("params", dat, envir = cache)
+        assign("nParams", ncol(dat), envir=cache)
+        assign("nParamSamples", nrow(dat), envir=cache)
+        
       }
     })
     
@@ -84,9 +90,11 @@ shinyServer(
         dat <- read.csv(inFile$datapath, header=input$header2, #sep=input$sep,
                         row.names=1)#, dec=input$dec)
         assign("costs", dat, envir = cache)
+        assign("nInt", ncol(dat), envir=cache)
       } else {
         dat <- read.csv(inFile$datapath, header=input$header2)#, sep=input$sep, dec=input$dec)
         assign("costs", dat, envir = cache)
+        assign("nInt", ncol(dat), envir=cache)
       }
     })
     
@@ -103,7 +111,7 @@ shinyServer(
         assign("effects", dat, envir = cache)
       } else {
         dat <- read.csv(inFile$datapath, header=input$header3)#, sep=input$sep, dec=input$dec)
-        print(assign("effects", dat, envir = cache))
+        assign("effects", dat, envir = cache)
       }
     })
     
@@ -113,6 +121,7 @@ shinyServer(
       x <- input$parameterFile 
       y <- input$loadSession
       tableValues <- get("params", envir=cache)
+      assign("nParamSamples", nrow(tableValues), envir=cache)
       if (is.null(tableValues)) return(NULL)
       if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
       head(tableValues, n=5)
@@ -122,6 +131,7 @@ shinyServer(
       x <- input$costsFile 
       y <- input$loadSession
       tableValues <- get("costs", envir=cache)
+
       if (is.null(tableValues)) return(NULL)
       if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
       head(tableValues, n=5)  
@@ -356,30 +366,33 @@ shinyServer(
       counterAdd <- x
       setStore <- get("setStore", envir=cache)
       currentSelection <- get("currentSelection", envir=cache)
-      setStore[[counterAdd]] <- currentSelection
+      #nCurrentSelection <- length(currentSelection)
+      #nParams <- get("nParams", envir = cache)
+      #completedCurrentSelection <- c(currentSelection, rep("", nParams - nCurrentSelection))
+      setStore[[counterAdd]] <-currentSelection
       assign("setStore", setStore, envir = cache)
-      # print(counterAdd <- counterAdd + 1)
       assign("counterAdd", counterAdd, envir=cache)   
     })
 
     # output the selection table when add button pressed
-    output$selection <- reactive({
+#     output$selection <- reactive({
+#       x <- input$addSelection
+#       if(x==0) return(NULL)
+#       setStore <- get("setStore", envir=cache)
+#       print(setStore[[x]])
+#     })
+    
+    
+
+    output$test <- renderTable({
       x <- input$addSelection
       if(x==0) return(NULL)
       setStore <- get("setStore", envir=cache)
-      print(setStore[[x]])
-    })
-    
-    
-    # output$selectionParameters <-observe({
-    #   params <- input$parameter.file
-    #   colnames(params)
-    # })
-    #   
-    #  updater <- observe({params <- input$parameter.file
-    #     colnamesParams <- colnames(input$parameter.file)
-    #     updateCheckboxGroupInput(session, "pevpiParameters", label = colnamesParams)
-    #   })
+      #nParams <- get("nParams", envir=cache)
+      buildSetStoreTable(setStore[1:x])
+    }, include.colnames = FALSE, sanitize.rownames.function =  bold.allrows)
+
+
     
     
     # Functions that make the reports

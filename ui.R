@@ -1,20 +1,23 @@
 
-fluidPage(
+navbarPage("SAVI",
   # Application title
-  headerPanel("SAVI - Sheffield Accelerated Value of Information"),
-  
+ # headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   
   # Main panel (on the right hand side)
-  mainPanel(
-    tabsetPanel(
-      tabPanel("Getting started",
+ # mainPanel(
+   # tabsetPanel(
+      tabPanel("Getting started", 
+               div(class="outer", tags$head(
+                 # Include our custom CSS
+                 includeCSS("styles.css")
+               ),
                h3("Basic user guide"),
                p(HTML("Welcome to this early draft version!")),
                p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
-                      black;'>WARNING: THIS IS AN EARLY DRAFT WEB-BASED IMPLIMENTATION. USE AT YOUR OWN RISK.</div>
+                      black;width:800px'>WARNING: This application is free and comes with NO WARRANTY. USE AT YOUR OWN RISK. </div>
                       </b>")), br(),
                
-               p(HTML("For more information see Mark Strong's website  
+               p(HTML("For more information on the method see Mark Strong's website  
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
                       target='_blank'>here</a>")), br(),
                
@@ -41,7 +44,7 @@ fluidPage(
                numericInput("horizon",label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 1, min = 1),
                br()
               # submitButton("Submit")
-               ),
+               )),
     
       
       
@@ -222,13 +225,13 @@ fluidPage(
                    actionButton("addSelection", "Add selection")),
                  
                  mainPanel(
-                   h3("selected parameter combinations"),
-                   #fluidRow(textOutput("selection")),
-                   textOutput("selection"),
+                   h3("Selected parameter combinations"),
+                   tableOutput("test"),
                    br(),
                    actionButton("calculate1", "Calculate EVPPI"),
                    br(),
                    actionButton("clear1",label="Clear Selection"))),
+                                 
                
                br(),
                h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
@@ -252,8 +255,7 @@ fluidPage(
                textInput("RdataFileName", strong("Filename"), value="SAVISession.Rdata"),
                br(), br(),
                downloadButton('saveSession', 'Save SAVI session')
-      )
-    )
-  )
+     )
+    #)#, width = 12)
 )
  

@@ -112,6 +112,10 @@ makeCeacPlot <- function(ceac.int, lambda.int, names, ...) {
     lines(ceac.int$l.seq, ceac.int$p[, i], col = i)
   }
   abline(v=lambda.int, lty=2)
+  for (i in 1:ceac.int$d){  
+    points(lambda.int, ceac.int$p[which(ceac.int$l.seq == lambda.int), i], pch=20, col="black")
+    text(lambda.int, ceac.int$p[which(ceac.int$l.seq == lambda.int), i], ceac.int$p[which(ceac.int$l.seq == lambda.int), i], pos=1, offset=0.1, cex=0.7)
+  }
   legend("topright", names, col = c(1:i), lty = 1)
 }
 
@@ -130,10 +134,12 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
   
   main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
   plot(inc_effects, inc_costs, pty="s", cex=0.4,
-       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), ...)
+       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="orangered", ...)
   abline(1, lambda, lty=2)
   abline(h=0)
   abline(v=0)
+  points(mean(inc_effects),mean(inc_costs), pch=20, col="black", cex=1.5)
+  text(mean(inc_effects),mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
 }
 
 makeEvpiPlot <- function(costs.int, effects.int, 
@@ -190,33 +196,6 @@ makeNbDensity <- function (costs.int, effects.int, lambda, ...) {
   legend("topright",colnames(nb),col=c(1:d), lty = 1)
 }
 
-makeInbBaseDens <- function (costs.int, effects.int, baseNum, lambda) {
-  nb <- createNb(costs.int, effects.int, lambda, FALSE)
-  c <- baseNum
-  inbOpt <- nb-nb[,c]
-  inbOpt <- as.matrix(inbOpt[,-c])
-  colnames(inbOpt) <- colnames(nb)[-c]
-  d <- ncol(inbOpt) + ifelse(FALSE, 1, 0)
-  xmax<-max(inbOpt)
-  xmin<-min(inbOpt)
-  ymax<-c(1:d)
-  for (i in 1:d){
-    den<-density(nb[, i])
-    ymax[i]<-max(den$y)
-  }
-  ymax<-max(ymax)
-  plot(density(inbOpt[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), 
-       ylim = c(0, ymax),xlab="Incremental Net Benefit",
-       main="Inc. Net Benefit Density vs. Base Strategy")
-  if (d>1) {
-  for (i in 2:d){
-    lines(density(inbOpt[, i]), col = i)
-  }    
-  }
-  # Need strategy names adding
-  legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)  
-}
-
 makeInbOptDens <- function (costs.int, effects.int, lambda) {
   nb <- createNb(costs.int, effects.int, lambda, FALSE)
   c <- which.max(as.matrix(colMeans(nb)))
@@ -233,35 +212,25 @@ makeInbOptDens <- function (costs.int, effects.int, lambda) {
   }
   ymax<-max(ymax)
   plot(density(inbOpt[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), 
-       ylim = c(0, ymax),xlab="Incremental Net Benefit",
-       main="Inc. Net Benefit Density vs. Optimal Strategy")
+       ylim = c(0, ymax),xlab="INB vs. Optimal Strategy",
+       main="Incremental Net Benefit Density")
   if (d>1) {
   for (i in 2:d){
     lines(density(inbOpt[, i]), col = i)
   }    
   }
   # Need strategy names adding
-  legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)  
+  legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)
+  abline(v=0, lty=2)
 }
 
-makeNbDensity <- function (costs.int, effects.int, ...) {
-   nb <- createNb(costs.int, effects.int, 20000, FALSE)
-   d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
-   xmax<-max(nb)
-   xmin<-min(nb)
-   ymax<-c(1:d)
-   for (i in 1:d){
-     den<-density(nb[, i])
-     ymax[i]<-max(den$y)
-     }
-   ymax<-max(ymax)
-   plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax))
-   for (i in 2:d){
-     lines(density(nb[, 2]), col = i)
-     }
-   # Need strategy names adding
-     legend("topright",c("Strat0","Strat1"),col=c(1:d), lty = 1)
-  }
+make2wayDensity <- function(costs.int, effects.int, lambda) {
+  ## makes a two way plot of Net Benefit and incremental density
+  opar <- par(mfrow = c(1,2))
+  makeNbDensity(costs.int, effects.int, lambda)
+  makeInbOptDens(costs.int, effects.int, lambda)
+  on.exit(par(opar))
+}
 
 ## Partial EVPI functions
 ## Author: Mark Strong

@@ -168,9 +168,9 @@ shinyServer(
       paste("This graph shows the standardised cost-effectiveness plane per person based on",input$nIterate,"model runs,
             in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
             The mean incremental cost of", input$t3, "versus", input$current,"is",input$currency,"X. This suggests that
-            ",input$t3,"is more/less costly over the",input$horizon,"year time horizon. There is some uncertainty due to model 
+            ",input$t3,"is more/less costly. There is some uncertainty due to model 
             parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
-            The probability that",input$t3,"is cost saving (i.e. cheaper over the",input$horizon,"year time horizon) compared 
+            The probability that",input$t3,"is cost saving compared 
             to",input$current,"is XX%.")
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
@@ -261,7 +261,7 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeCEPlanePlot(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambda2, xlab=input$effectDef, 
-                      ylab=input$costDef, col="orangered")
+                      ylab=input$costDef)
     })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.DARK RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
     
     output$plots2 <- renderPlot({
@@ -305,22 +305,10 @@ shinyServer(
     
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeNbDensity(get("costs", envir=cache), get("effects", envir=cache), 
+      make2wayDensity(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambda2)
     })
     
-    output$plots6 <- renderPlot({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      ### Need to replace 1 with usual care/base column number
-      makeInbBaseDens(get("costs", envir=cache), get("effects", envir=cache), 1,
-                      lambda=input$lambda2)
-    })
-
-    output$plots7 <- renderPlot({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeInbOptDens(get("costs", envir=cache), get("effects", envir=cache), 
-                      lambda=input$lambda2)
-    })
     
     observe({
       x <- input$parameterFile

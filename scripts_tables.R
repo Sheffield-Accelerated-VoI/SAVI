@@ -1,6 +1,5 @@
 # this file holds the table generating functions
 
-
 makeTableCePlane <- function(costs.int, effects.int, lambda) {
   incCost <- costs.int[,2] - costs.int[,1]
   incBen <- effects.int[,2] - effects.int[,1]
@@ -40,6 +39,7 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
   colnames(tableNetBenefit)<-colnames(costs.int)
   tableNetBenefit
 }
+
 
 
 # function for building up table of parameter sets for partial EVPI

@@ -366,7 +366,11 @@ shinyServer(
                        measure2 = input$unitBens)
     })
     
-    
+    output$plot7 <- renderPlot({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      makeEvppiBar(get("pEVPI", envir=cache), get("params", envir=cache))
+    })
+      
     observe({
       x <- input$parameterFile
       y <- input$loadSession

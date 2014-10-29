@@ -75,8 +75,6 @@ applyCalcSingleParamGam <- function(df, inb) {
   res
 }
 
-# plot generator functions
-
 makeCeac <- function(costs.int, effects.int, incremental.int) {
   ## generates the CEAC values
   l.seq <- seq(0, 60000, 1000)

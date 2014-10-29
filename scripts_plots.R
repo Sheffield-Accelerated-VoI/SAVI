@@ -1,6 +1,5 @@
 # this file holds the plotting functions
 
-
 makeCeacPlot <- function(ceac.int, lambda.int, names, ...) {
   ## makes the CEAC plot
   plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1), ...)
@@ -169,4 +168,12 @@ make2wayDensity <- function(costs.int, effects.int, lambda) {
   makeNbDensity(costs.int, effects.int, lambda)
   makeInbOptDens(costs.int, effects.int, lambda)
   on.exit(par(opar))
+}
+
+
+makeEvppiBar <- function(pEVPI.int, params) {
+  EVPPI <- matrix(pEVPI.int, ncol = ncol(params), nrow = 1)
+  colnames(EVPPI)<-params
+  barplot(EVPPI, horiz = TRUE, names.arg= colnames(EVPPI) , cex.names=0.5)  
+  
 }

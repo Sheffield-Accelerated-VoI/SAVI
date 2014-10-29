@@ -318,7 +318,7 @@ shinyServer(
     
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), 
+      makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambda2,
                    main=input$main3, 
                    xlab="Threshold willingness to pay", 
                    ylab="Overall EVPI per person affected (on costs scale)",
@@ -327,7 +327,7 @@ shinyServer(
     
     output$plots4 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), 
+      makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambda2,
                    main=input$main4, 
                    xlab="Threshold willingness to pay", 
                    ylab="Overall EVPI per person affected (on effects scale)",
@@ -348,6 +348,13 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make2wayDensity(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambda2)
+    })
+  
+    output$plots6 <- renderPlot({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      make4wayEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambda2, 
+                       prevalence=input$annualPrev, horizon=input$horizon, measure1 = input$currency, 
+                       measure2 = input$unitBens)
     })
     
     

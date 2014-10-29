@@ -148,7 +148,7 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
 }
 
 makeEvpiPlot <- function(costs.int, effects.int, 
-                          incremental.int = FALSE, costscale = TRUE, ...) {
+                          incremental.int = FALSE, costscale = TRUE, lambda, ...) {
   ## makes the overall EVPI plot
   l.seq <- seq(0, 60000, 1000)
   p <- c()
@@ -165,19 +165,62 @@ makeEvpiPlot <- function(costs.int, effects.int,
     p <- c(p, evpi)
   }	
   plot(l.seq, p, type="l", ...)
+  abline(v=lambda, lty=2)
+  points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
+  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), 
+       pos=1, offset=0.1)
 }
 
-make4wayPlot <- function(costs.int, effects.int, incremental.int, ceac.int, lambda.int, 
-                          main1, xlab1, ylab1, col1, 
-                          main2, xlab2, ylab2, col2) {
+makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda , prevalence, 
+                            measure) {
+  ## makes the overall EVPI plot
+  l.seq <- seq(0, 60000, 1000)
+  p <- c()
+  for (lambda.int in l.seq) {
+    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
+      inb.int <- inb.int - inb.int[, 1]
+    #inb.int
+    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int)))*prevalence
+    if(!costscale) evpi <- evpi / lambda.int
+    p <- c(p, evpi)
+  }  
+  plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", measure), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", measure))
+  abline(v=lambda, lty=2)
+  points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
+  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), 
+       pos=1, offset=0.1)
+}
+
+makeEvpiHorizonPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
+                                horizon, measure) {
+  ## makes the overall EVPI plot
+  l.seq <- seq(0, 60000, 1000)
+  p <- c()
+  for (lambda.int in l.seq) {
+    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
+      inb.int <- inb.int - inb.int[, 1]
+    #inb.int
+    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))) * prevalence * horizon
+    if(!costscale) evpi <- evpi / lambda.int
+    p <- c(p, evpi)
+  }  
+  plot(l.seq, p, type="l", main = paste("Overall EVPI over decision relevance ", measure), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", measure))
+  abline(v=lambda, lty=2)
+  points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
+  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), 
+       pos=1, offset=0.1)
+}
+
+make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon, measure1, 
+                             measure2) {
   ## makes a four way plot of CE plane, CEAC and EVPI
   opar <- par(mfrow = c(2,2))
-  makeCEPlanePlot(costs.int, effects.int, lambda.int, main = main1, xlab = xlab1, ylab = ylab1, col = col1)
-  makeCeacPlot(ceac.int, lambda.int, main = main1, xlab = xlab1, ylab = ylab1, col = col1)
-  makeEvpiPlot(costs.int, effects.int, incremental.int, costscale = TRUE,
-                main = main2,  xlab = xlab2, ylab = ylab2, col = col2)
-  makeEvpiPlot(costs.int, effects.int, incremental.int, costscale = FALSE,
-                main = main2,  xlab = xlab2, ylab = ylab2, col = col2)
+  makeEvpiPopPlot(costs.int, effects.int, costscale = TRUE, lambda, prevalence, measure1)
+  makeEvpiPopPlot(costs.int, effects.int, costscale = FALSE, lambda, prevalence, measure2)
+  makeEvpiHorizonPlot(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
+                      horizon, measure1)
+  makeEvpiHorizonPlot(costs.int, effects.int, costscale = FALSE, lambda, prevalence, 
+                      horizon, measure2)
   on.exit(par(opar))
 }
 
@@ -240,29 +283,23 @@ make2wayDensity <- function(costs.int, effects.int, lambda) {
 # table generator functions
 
 makeTableCePlane <- function(costs.int, effects.int, lambda) {
+  incCost <- costs.int[,2] - costs.int[,1]
+  incBen <- effects.int[,2] - effects.int[,1]
   npsa<-length(costs.int[,1])
   tableCePlane <- matrix(NA,ncol=ncol(costs.int)-1, nrow = 13)
   tableCePlane[1] <- format(lambda, digits=4, nsmall = 0)
   tableCePlane[2] <- colnames(costs.int)[1]
   tableCePlane[3] <- format(npsa)
-  tableCePlane[4] <- format(mean(effects.int[,2] - effects.int[,1]), digits=2, nsmall=4)
-  tableCePlane[5] <- format(mean(costs.int[,2] - costs.int[,1]), digits=2, nsmall=2)
-  tableCePlane[6] <- format(mean(costs.int[,2] - costs.int[,1]) /
-                            mean(effects.int[,2] - effects.int[,1]), digits=2, nsmall=2)
-  tableCePlane[7] <- format(quantile((effects.int[,2] - effects.int[,1]),0.025), digits=4, 
-                            nsmall=4)
-  tableCePlane[8] <- format(quantile((effects.int[,2] - effects.int[,1]),0.975), digits=4, 
-                            nsmall=4)
-  tableCePlane[9] <- format(quantile((costs.int[,2] - costs.int[,1]),0.025), digits=4, 
-                            nsmall=2)
-  tableCePlane[10] <- format(quantile((costs.int[,2] - costs.int[,1]),0.975), digits=4, 
-                            nsmall=2)
-  tableCePlane[11] <- format(length(which((costs.int[,2]-costs.int[,1])<0)) / npsa, digits=2,
-                             nsmall=3)
-  tableCePlane[12] <- format(length(which((effects.int[,2]-effects.int[,1])>0)) / npsa, 
-                             digits=2, nsmall=3)
-  tableCePlane[13] <- format(length(which((effects.int[,2]-effects.int[,1]) * lambda-
-                            (costs.int[,2]-costs.int[,1])>0)) / npsa, digits=2,
+  tableCePlane[4] <- format(mean(incBen), digits=2, nsmall=4)
+  tableCePlane[5] <- format(mean(incCost), digits=2, nsmall=2)
+  tableCePlane[6] <- format(mean(incCost) /  mean(incBen), digits=2, nsmall=2)
+  tableCePlane[7] <- format(quantile((incBen),0.025), digits=4, nsmall=4)
+  tableCePlane[8] <- format(quantile((incBen),0.975), digits=4, nsmall=4)
+  tableCePlane[9] <- format(quantile((incCost),0.025), digits=4,  nsmall=2)
+  tableCePlane[10] <- format(quantile((incCost),0.975), digits=4, nsmall=2)
+  tableCePlane[11] <- format(length(which((incCost)<0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[12] <- format(length(which((incBen)>0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[13] <- format(length(which((incBen) * lambda - (incCost)>0)) / npsa, digits=2,
                              nsmall=3)
   colnames(tableCePlane) <- colnames(costs.int)[2]
   tableCePlane
@@ -282,6 +319,7 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
     tableNetBenefit[8,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.975), digits=2, nsmall=4)
   }
   colnames(tableNetBenefit)<-colnames(costs.int)
+  tableNetBenefit
 }
 
 ## Partial EVPI functions

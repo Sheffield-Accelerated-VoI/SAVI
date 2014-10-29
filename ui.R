@@ -169,7 +169,8 @@ fluidPage(
                h1("Net Benefit Densities"),
                plotOutput("plots5", width="700px", height="400px"),
                br(),
-               h1("Expected Incremental Net Benefit versus Current Care"),
+               h1("Net Benefit Estimates"),
+               
                tableOutput("tableNetBenefit")
                
                ),
@@ -190,7 +191,7 @@ fluidPage(
                
                h3("Overall EVPI versus lambda"),
                textInput("main3", strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
-               plotOutput("plots3"),
+               plotOutput("plots3", width="500px", height="500px"),
                
                h3("The Expected Value of Removing all Current Decision Uncertainty: Overall Expected Value of Information"),
                tableOutput("tableEVPI"),               
@@ -198,7 +199,12 @@ fluidPage(
                
                h3("Overall EVPI versus lambda"),
                textInput("main4", strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
-               plotOutput("plots4")
+               plotOutput("plots4", width="500px", height="500px"),
+               br(),
+               
+               h3("Overall EVPI per population and time horizon"),
+               plotOutput("plots6", width="700px", height="600px")             
+        
 
                
       ),

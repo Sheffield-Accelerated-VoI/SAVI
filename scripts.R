@@ -164,7 +164,7 @@ makeEvpiPlot <- function(costs.int, effects.int,
     if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }	
-  plot(l.seq, p, type="l", ...)
+  plot(l.seq, p, type="l", xlim = c(0, 3*lambda), ...)
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
   text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), 

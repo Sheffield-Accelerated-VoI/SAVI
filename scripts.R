@@ -285,7 +285,7 @@ make2wayDensity <- function(costs.int, effects.int, lambda) {
 makeTableCePlane <- function(costs.int, effects.int, lambda) {
   incCost <- costs.int[,2] - costs.int[,1]
   incBen <- effects.int[,2] - effects.int[,1]
-  npsa<-length(costs.int[,1])
+  npsa <-length(costs.int[,1])
   tableCePlane <- matrix(NA,ncol=ncol(costs.int)-1, nrow = 13)
   tableCePlane[1] <- format(lambda, digits=4, nsmall = 0)
   tableCePlane[2] <- colnames(costs.int)[1]
@@ -322,73 +322,6 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
   tableNetBenefit
 }
 
-## Partial EVPI functions
-## Author: Mark Strong
-## Dec 2012
-## Requires packages MASS and mgcv 
-
-## We assume that the PSA sample is held in two objects.
-## The input parameter samples are held in a N x r matrix (or data frame), where N is the number of PSA runs
-## and r is the number of parameters. 
-
-## The corresponding net benefits are held in a N x D matrix (or data frame),
-## where D is the number of decision options.  
-
-
-
-##########################################################################################################
-## This is a generic function for estimating partial EVPI via GAM
-## NB is the matrix (or data frame) of net benefits
-## input.parameters is the matrix (or data frame) of input parameters
-
-## regression.model is the specification of the regression model (must be in quotes)
-## For parameters that are expected to interact use e.g. for two parameters "te(x1,x2)"  
-## For parameters that are not expected to interact use e.g. "s(x1)+s(x2)"  
-## If there are more than three parameters that are expected to interact set a maximum basis dimension of 4
-## This will avoid the model trying to estimate too many coefficients "te(x1,x2,x3,x4,k=4)"  
-## If there are more than six parameters that are expected to interact, the GP approach may be better.
-## In some scenarios it may be possible to group parameters together that will interact into separate sets
-## e.g. regression.model<-"te(x1,x2,x3)+te(x4,x5,x6)".
-###########################################################################################################
-
-
-
-
-
-evpi.gam<-function(NB, input.parameters, regression.model)
-{
-  require(mgcv)
-  
-  if(!is.null(dim(NB))) 
-  {
-    NB <- NB-NB[,1]
-  }
-  else
-  {
-    NB <- cbind(0,NB)
-  }
-  
-  D <- ncol(NB)
-  N <- nrow(NB)
-  g.hat <- vector("list",D)
-  g.hat[[1]] <- rep(0,N)   
-  
-  for(d in 2:D)
-  {
-    print(paste("estimating g.hat for incremental NB for option",d,"versus 1"))
-    f <- update(formula(NB[,d]~.),formula(paste(".~",regression.model)))
-    model <- gam(f,data=data.frame(input.parameters)) 
-    g.hat[[d]] <- model$fitted
-  }
-  
-  
-  perfect.info <- mean(do.call(pmax,g.hat)) 
-  baseline <- max(unlist(lapply(g.hat,mean)))
-  rm(g.hat);gc()
-  partial.evpi <- perfect.info - baseline ## estimate EVPI
-  
-  return(partial.evpi)
-}
 
 
 ##############################################################################
@@ -396,9 +329,7 @@ evpi.gam<-function(NB, input.parameters, regression.model)
 ## S is the simulation size for the Monte Carlo computation of SE and bias 
 ##############################################################################
 
-evpi.gam.SE.bias <- function(NB, input.parameters, regression.model, S=1000)
-{
-  require(mgcv);require(MASS)
+estimateEvpiAndErrorUsingGAM <- function(NB, regression.model, S=1000) {
   
   if(!is.null(dim(NB))) 
   {
@@ -414,41 +345,42 @@ evpi.gam.SE.bias <- function(NB, input.parameters, regression.model, S=1000)
   g.hat <- beta.hat <- Xstar <- V <- tilde.g <- vector("list",D)
   g.hat[[1]] <- rep(0,N)
   
+  input.parameters <- get("params", envir=cache)
+  
   for(d in 2:D)
   {
     print(paste("estimating g.hat for incremental NB for option",d,"versus 1"))
-    f <- update(formula(NB[,d]~.),formula(paste(".~",regression.model)))
-    model <- gam(f,data=data.frame(input.parameters)) 
+    f <- update(formula(NB[,d]~.), formula(paste(".~",regression.model)))
+    model <- gam(f, data=data.frame(input.parameters)) 
     g.hat[[d]] <- model$fitted
     beta.hat[[d]] <- model$coef
     Xstar[[d]] <- predict(model,type="lpmatrix")
     V[[d]] <- model$Vp
   }
-  
-  
-  perfect.info <- mean(do.call(pmax,g.hat)) 
-  baseline <- max(unlist(lapply(g.hat,mean)))
+   
+  perfect.info <- mean(do.call(pmax, g.hat)) 
+  baseline <- max(unlist(lapply(g.hat, mean)))
   partial.evpi <- perfect.info - baseline ## estimate EVPI
-  rm(g.hat);gc()
+  rm(g.hat); gc()
   
   print("computing standard error and upward bias via Monte Carlo")
   for(d in 2:D)
   {
-    sampled.coef <- mvrnorm(S,beta.hat[[d]],V[[d]])
+    sampled.coef <- mvrnorm(S, beta.hat[[d]], V[[d]])
     tilde.g[[d]] <- sampled.coef%*%t(Xstar[[d]])	
   }
   
   tilde.g[[1]] <- matrix(0,nrow=S,ncol=N)
-  rm(V,beta.hat,Xstar,sampled.coef);gc()
+  rm(V, beta.hat, Xstar, sampled.coef);gc()
   
-  sampled.perfect.info <- rowMeans(do.call(pmax,tilde.g))
-  sampled.baseline <- do.call(pmax,lapply(tilde.g,rowMeans)) 
-  rm(tilde.g);gc()
+  sampled.perfect.info <- rowMeans(do.call(pmax, tilde.g))
+  sampled.baseline <- do.call(pmax, lapply(tilde.g, rowMeans)) 
+  rm(tilde.g); gc()
   sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
   SE <- sd(sampled.partial.evpi)
-  upward.bias <- mean(sampled.partial.evpi) - partial.evpi
+  #upward.bias <- mean(sampled.partial.evpi) - partial.evpi
   
-  return(list(partial.evpi=partial.evpi,SE=SE,upward.bias=upward.bias))
+  return(list(partial.evpi=partial.evpi, SE=SE)) #,upward.bias=upward.bias))
   
 }
 
@@ -487,24 +419,26 @@ bold.allrows <- function(x) {
 }
 
 calSubsetEvpi <- function(sets, lambda, cache) {
+  numParams <- length(sets) # number of parameters in the set
+  regressionFunction <- ifelse(numParams > 5, "gpFunc", "gamFunc")
   f <- formulaGenerator(sets)
-  # lambda <- input$lambda
   costs <- get("costs", envir = cache)
   effects <- get("effects", envir = cache)
-  params <- get("params", envir = cache)
+  # params <- get("params", envir = cache)
   nb <- effects * lambda - costs
   inb <- nb - nb[ ,1]
-  modelFitted <- c()
-  for (i in 2:ncol(inb)) {
-    y <- inb[, i]
-    modelFitted[[i]] <- fitted(gam(formula(f), data = params))
-  }
-  modelFitted[[1]] <- 0
-  dfModelFitted <- data.frame(modelFitted)
-  evpi <- mean(do.call(pmax, dfModelFitted)) - max(colMeans(dfModelFitted))
-  evpi
- # 0
+  #evpi <- estimateEvpiAndErrorUsingGAM(nb, )$partial.evpi
+  evpi<-0
 }
+
+gamFunc <- function(sets, y, cache) {
+  f <- formulaGenerator(sets)
+  model <- gam(formula(f), data=get("params", envir=cache))
+  model$fitted
+}
+
+gpFunc <- function(sets, y, cache) {0} # for now
+
 
 formulaGenerator <- function(namesList) {
     form <- paste("te(", namesList, ")+", sep="", collapse="")

@@ -9,10 +9,6 @@ fluidPage(
  # mainPanel(
    # tabsetPanel(
       tabPanel("Getting started", 
-               #div(class="outer", tags$head(
-                 # Include our custom CSS
-               #   includeCSS("styles.css")
-               # ),
                h3("Basic user guide"),
                p(HTML("Welcome to this early draft version!")),
                p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
@@ -23,77 +19,97 @@ fluidPage(
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
                       target='_blank'>here</a>")), br(),
                
-               fileInput('loadSession', label = h4('Load previously saved session')),
-                            
+               fileInput('loadSession', label = h4('Load previously saved session'))
                
-               p(HTML("Please add some information about your model")),
+      ),
+ 
+      tabPanel("About the model", 
+
+               h4("Specify details about your model here"),
+               br(),br(),
                textInput("modelName",label = h5("Name of your model"),value ="My Model"),
-               numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 1000, min = 0, step = 10),
-               numericInput("horizon", label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 10, min = 1),
-               numericInput("lambdaOverall", label = h5("Value of one unit of health effect (lambda)"),  value = 20000, min = 10, step = 100),
-               #numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
                textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
-               #textInput("t3",label = h5("Names of other strategies"),value ="Intervention 1"),#Need some way of adding more than one name to box
-               #numericInput("nParam",label = h5("Number of uncertain model parameters that vary as inputs in your PSA run?"), value = 0, min = 0),
-               #numericInput("nIterate",label = h5("Number of Monte Carlo iterations used in PSA"),value = 1000, min = 0, step = 100),
-               #selectInput("indSim",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
-               #numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
+               textInput("t3",label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
+               numericInput("lambdaOverall", label = h5("Threshold value of one unit of health effect (lambda)"),  value = 20000, min = 0, step = 1000),
                textInput("effectDef",label = h5("Definition of effectiveness measure"),value ="Discounted Lifetime QALYs"),
                textInput("costDef",label = h5("Definition of cost measure"),value ="Discounted Lifetime Costs (£)"),
+               numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 1000, min = 0, step = 10),
+               numericInput("horizon", label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 10, min = 1),
+               #numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
+               #selectInput("indSim",label = h5("Is your model an individual level simulation?"), choices = list("yes","no"), selected = "no"),
+               #numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
                textInput("currency",label = h5("Units used for costs"),value ="£"),
                textInput("unitBens",label = h5("Units used for benefits"),value ="QALY"),
                #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
-               #lambda set using sliders rather than here.
                textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"),value = "England"),
 
                br()
-              # submitButton("Submit")
                ),
     
       
       
-      tabPanel("Import files",     # Button to import parameter data
-               h3("Parameter importation"),
-               p(HTML("To run the application, import your data set using the 
-                      import buttons below. You data must
-                      be supplied on the form of a csv file. If the importation is
-                      done properly, the data are displayed in the next tab")),
+      tabPanel("Import files",     # Button to import parameter data         
+               
+               p(HTML("<div style='border:1px solid
+                      black;width:800px;padding-left: 1em'><h4>Setting up your files for import</h4>
+                      Import your PSA samples of parameters, costs and effects using the 
+                      import buttons below.
+                      <br>Please supply the PSA samples in the form of three csv files.
+                      <br><br>
+                        SAVI assumes that the first row of the parameter file contains the parameter names.<br>
+                        SAVI assumes that the first row of the costs file and the first row of the effects file
+                        both contain the decision option names.
+                      <br><br>Check the import in the next tab<br>
+                        </div>")), 
+               
+#                p(HTML("To run the application, import your samples of parameters, costs and effects using the 
+#                       import buttons below.
+#                       <br>Please supply the samples in the form of three csv files.
+#                       <br>Check the import in the next tab")),
+#                
+#                p(HTML("SAVI assumes that the first row of the parameter file contains the parameter names.<br>
+#                         SAVI assumes that the first row of the costs file and the first row of the effects file
+#                         both contain the decision option names.")),
+#                
+               
+               br(),br(),
+               h4("Parameter importation"),
                fileInput('parameterFile', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
-               checkboxInput('header1', 'Is there a header row?', TRUE),
-               checkboxInput('rownames1', 'Does the first column contain row names?', FALSE),
+               #checkboxInput('header1', 'Is there a header row?', TRUE),
+               #checkboxInput('rownames1', 'Does the first column contain row names?', FALSE),
                #selectInput('sep', 'Separator:',
                #	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ','),
                #selectInput('quote', 'Quote:',
                #            c('None'='none', 'Double Quote'="\"'", 'Single Quote'="\''"),
                #             selected="\"'"),
                #selectInput('dec', 'Decimal mark', c(Dot='.', Comma=','), '.'),
-               br(),
+               #br(),
                
                
                # Button to import costs  data    
-               h3("Costs importation"),
+               h4("Costs importation"),
                fileInput('costsFile', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
-               checkboxInput('header2', 'Is there a header row?', TRUE),
-               checkboxInput('rownames2', 'Does the first column contain row names?', FALSE),
+               #checkboxInput('header2', 'Is there a header row?', TRUE),
+               #checkboxInput('rownames2', 'Does the first column contain row names?', FALSE),
                #selectInput('sep2', 'Separator:',
                #	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ','),
                #selectInput('quote2', 'Quote:',
                #       c(None='','Double Quote'='"','Single Quote'="'"),
                #            '"'),
                #selectInput('dec2', 'Decimal mark', c(Dot='.', Comma=','), '.'),
-               br(),
+               #br(),
                
                # Button to import effects data
-               h3("Effects importation"),
+               h4("Effects importation"),
                fileInput('effectsFile', 'Choose CSV File',
                          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
-               checkboxInput('header3', 'Is there a header row?', TRUE),
-               checkboxInput('rownames3', 'Does the first column contain row names?', FALSE),
+               #checkboxInput('header3', 'Is there a header row?', TRUE),
+               #checkboxInput('rownames3', 'Does the first column contain row names?', FALSE),
                #selectInput('sep3', 'Separator:',
                #	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ','),
                #selectInput('quote3', 'Quote:',
@@ -101,7 +117,7 @@ fluidPage(
                #            '"'),
                #selectInput('dec3', 'Decimal mark', c(Dot='.', Comma=','), '.')
                
-               h3("Are uploaded costs and effects incremental or absolute?"),
+               h4("Are uploaded costs and effects incremental or absolute?"),
                radioButtons('incremental', label="", c("Incremental" = "TRUE", "Absolute" = "FALSE"), "FALSE")
                ),
       
@@ -126,7 +142,7 @@ fluidPage(
       
       tabPanel("PSA Results",
                h1("Cost-Effectiveness Plane"),
-               textOutput("textCEplane1"),
+               p(HTML("<div id='textCEplane1' class='shiny-text-output'></div>")),
                br(),
                textOutput("textCEplane2"),
                br(),
@@ -139,10 +155,10 @@ fluidPage(
                
         sidebarLayout(
               sidebarPanel(
-                          sliderInput("lambda2", label = h5("Specify lambda"), 1000, 100000, 20000, 1000, width="500px"),
+                          #sliderInput("lambda2", label = h5("Specify lambda"), 1000, 100000, 20000, 1000, width="500px"),
                           #submitButton("Change"), # this button stops everything else auto-updating!
-                          br(),
-                          br(),
+                          #br(),
+                          #br(),
                           p(strong("Strategies Compared"),textOutput("textCEplane4")),
                           br(),
                           p(strong("Summary")),
@@ -210,8 +226,11 @@ fluidPage(
       ),
 
       tabPanel("EVPPI single parameters",
-               h3("Specify lambda"),
-               sliderInput('lambda', label="", 0, 60000, 20000, 1000),
+               #h3("Specify lambda"),
+               #sliderInput('lambdaSingleEvppiTab', label="", 0, 60000, 20000, 1000),
+               h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
+               tableOutput("tableEVPPI"),
+               
                h3("Partial EVPI for single parameters"),
                tableOutput("summary")
       ),
@@ -242,12 +261,7 @@ fluidPage(
                    br(),
                    tableOutput("selectedEvpiTable"),
                    br(),
-                   actionButton("clearSubsetsEvpi",label="Clear Selections"))),
-                                 
-               br(),    
-               h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
-               tableOutput("tableEVPPI")
-               
+                   actionButton("clearSubsetsEvpi",label="Clear Selections")))         
       ),
     
       # Numerical summary of the dataset,

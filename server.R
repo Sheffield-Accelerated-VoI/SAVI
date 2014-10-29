@@ -46,6 +46,7 @@ shinyServer(
     assign("effects", NULL, envir = cache) 
     assign("counterAdd", 1, envir = cache)     
     assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
+    assign("subsetEvpiValues", NULL, envir=cache)
     
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
@@ -417,8 +418,14 @@ shinyServer(
       counterAdd <- get("counterAdd", envir = cache)
       setStore <- get("setStore", envir=cache)
 
-      #subsetEvpiValues <- calSubsetEvpi(setStore[1:counterAdd])
-      subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      #first pull down the existing values
+      print(subsetEvpiValues <- get("subsetEvpiValues", envir = cache))
+      if (is.null(subsetEvpiValues)) {
+        subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      } else {
+        newEvpiValue <- t(sapply(setStore[NROW(subsetEvpiValues):counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+        subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
+      }
       #subsetEvpiValues <- unlist(lapply(resultsList, function(x) x$evpi)
       #subsetEvpiValues <- unlist(lapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
       assign("subsetEvpiValues", subsetEvpiValues, envir = cache)

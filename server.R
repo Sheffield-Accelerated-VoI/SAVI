@@ -1,9 +1,14 @@
 # source all the functions we need
 
 source("scripts.R")
+source("scripts_GPfunctions.R") # separate file to hold the GPfunctions
+source("scripts_GAMfunctions.R")
+source("scripts_plots.R")
+source("scripts_tables.R")
 
 # load the libraries we need
 
+library(MASS)
 library(mgcv)
 library(knitr)
 library(rmarkdown)
@@ -409,7 +414,9 @@ shinyServer(
       setStore <- get("setStore", envir=cache)
 
       #subsetEvpiValues <- calSubsetEvpi(setStore[1:counterAdd])
-      subsetEvpiValues <- unlist(lapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      #subsetEvpiValues <- unlist(lapply(resultsList, function(x) x$evpi)
+      #subsetEvpiValues <- unlist(lapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
       assign("subsetEvpiValues", subsetEvpiValues, envir = cache)
       assign("setStoreMatchEvpiValues", setStore, envir = cache) # cache these for the report in case they change
       
@@ -417,7 +424,7 @@ shinyServer(
       #df <- data.frame(EVPI = subsetEvpiValues, sets)
       #names(df) <- c("EVPI", rep("", ncol(sets)))
       
-      df <- data.frame(EVPI = subsetEvpiValues)      
+      df <- data.frame(subsetEvpiValues)   
       rownames(df) <- paste("Set", 1:counterAdd)
       df
     }, sanitize.rownames.function =  bold.allrows)  

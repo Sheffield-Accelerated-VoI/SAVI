@@ -280,6 +280,15 @@ make2wayDensity <- function(costs.int, effects.int, lambda) {
   on.exit(par(opar))
 }
 
+
+makeEvppiBar <- function(pEVPI.int, params) {
+  EVPPI <- matrix(pEVPI.int, ncol = ncol(params), nrow = 1)
+  colnames(EVPPI)<-params
+  barplot(EVPPI, horiz = TRUE, names.arg= colnames(EVPPI) , cex.names=0.5)  
+  
+}
+
+
 # table generator functions
 
 makeTableCePlane <- function(costs.int, effects.int, lambda) {

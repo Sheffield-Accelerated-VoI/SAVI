@@ -232,7 +232,11 @@ fluidPage(
                tableOutput("tableEVPPI"),
                
                h3("Partial EVPI for single parameters"),
-               tableOutput("summary")
+               tableOutput("summary"),
+               
+               h3("Partial EVPI barplot for single parameters"),
+               plotOutput("plot7", width="500px", height="500px")
+               
       ),
       
       tabPanel("EVPPI groups",

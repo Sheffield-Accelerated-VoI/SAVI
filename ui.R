@@ -143,8 +143,10 @@ fluidPage(
                h1("Cost-Effectiveness Plane"),
                p(HTML("<div id='textCEplane1' class='shiny-text-output'></div>")),
                br(),
+               
                textOutput("textCEplane2"),
                br(),
+               
                textOutput("textCEplane3"),
                h6("Reference"),
                p("Section 5.1 in Briggs, Claxton & Sculpher. Decision Modelling for Health Economic Evaluation 
@@ -160,6 +162,7 @@ fluidPage(
                           #br(),
                           p(strong("Strategies Compared"),textOutput("textCEplane4")),
                           br(),
+                          
                           p(strong("Summary")),
                           textOutput("textCEplane5")
                           ),
@@ -173,40 +176,51 @@ fluidPage(
                tableOutput("tableCEplane"),
                br(),
                br(),
+        
                h1("Cost-Effectiveness Acceptability Curve (CEAC)"),
                textOutput("textCEAC1"),
                h6("Reference"),
                p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
                  Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),
                br(),
+        
                plotOutput("plots2", width="500px", height="500px"),    
                br(),
+        
                h1("Net Benefit"),
                textOutput("textNB1"),
                br(),
+        
                textOutput("textNB2"),
                br(),
+        
                p("This is particularly useful when comparing several strategies because the analyst and decision maker can 
                see in one single measure the expected net value of each strategy, rather than looking at many comparisons of 
                incremental cost-effectiveness ratios between different options.  Under the rules of decision theory, the strategy 
                with the highest expected net benefit is the one which a decision maker would choose as the optimal strategy."),
                br(),
+        
                h3("Summary of Absolute Net Benefit Statistics"),
                tableOutput("tableNetBenefit"),
                br(),
+        
                textOutput("textNB3"),
                br(),
+        
                plotOutput("plots5a", width="500px", height="500px"),
                br(),
+        
                h1("Net Benefit Densities"),
                plotOutput("plots5", width="700px", height="400px"),
                br(),
                p("Analysis of the expected incremental net benefit helps to visualise whether particular strategies are better than others 
                and how certain a decision maker can be about the differences."),
                br(),
+        
                p("If the credible intervals are small relative to the size of the bars and one decision stands out as being highest in terms 
                of expected incremental net benefit then the decision maker has an easy choice and there is little decision uncertainty."),
                br(),
+        
                p("If the credible intervals are large compared to the size of the bars and there are several strategies with ‘overlapping’ 
                credible intervals, then several strategies are close in terms of their expected value to a decision maker, and given the 
                relatively large decision uncertainty, it might be valuable to consider further research to reduce uncertainty. The value of 
@@ -215,6 +229,7 @@ fluidPage(
                information – overall EVPI) or for particular uncertain parameters within the PSA (expected value of perfect parameter 
                information – EVPPI). "),
                br(),
+        
                h3("Summary of Incremental Net Benefit Statistics"),
                tableOutput("tableNetBenefit")
 
@@ -234,14 +249,48 @@ fluidPage(
                #sliderInput('lambda2', label="", -6, 6, 4, 0.1),
                #plotOutput("plots4way", width="600px", height="600px"),    
                
-               h3("Overall EVPI versus lambda"),
-               textInput("main3", strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
-               plotOutput("plots3", width="500px", height="500px"),
+               p("The Table below quantifies the expected value to decision makers of removing all current decision uncertainty.  
+                 This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this
+                  topic compared with previous decisions."),
+               br(),
+               
+               h6("Understanding the EVPI – providing a non technical intuition for the meaning"),
+               br(),
+               
+               p("The calculation begins with the existing confidence intervals (or credible intervals) for the model parameters as used 
+                 in the probabilistic sensitivity analysis.  We then imagine a world in which we become absolutely (perfectly) certain 
+                 about all of the model parameters i.e. the confidence interval for every single parameter is ‘shrunk right down to zero.’  
+                 The decision maker would then be absolutely certain which strategy to select and would choose the one with highest net 
+                 benefit.  One can visualise this idea by imagining that instead of seeing the cloud of dots on the cost-effectiveness plane 
+                 (representing current uncertainty in costs and benefits) and having to choose, the decision maker now knows exactly which 
+                 ‘dot’ is the true value (because all of the uncertainty is removed) and so can be certain to choose the strategy which 
+                 gives the best net benefit. In a two strategy comparison of new versus current care, if the ‘true dot’ turns out to be 
+                 below and to the right of the threshold λ line, then the decision maker would select the new strategy.  If the ‘true dot’ 
+                 is above and to the left, then current care would be selected.  Under the current uncertainty, the decision maker will 
+                 choose the strategy based on the expected costs and benefits (essentially on whether the ‘centre of gravity’ of the cloud 
+                 is above or below the threshold line)."),
+               br(),
+               
+               textOutput("textEVPI1"),
+               br(),
+               
+               textOutput("textEVPI2"),
+               br(),
+               
+               textOutput("textEVPI3"),
+               br(),
+               
+               textOutput("textEVPI4"),
+               br(),
                
                h3("The Expected Value of Removing all Current Decision Uncertainty: Overall Expected Value of Information"),
                tableOutput("tableEVPI"),               
                br(),
                
+               h3("Overall EVPI versus lambda"),
+               textInput("main3", strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
+               plotOutput("plots3", width="500px", height="500px"),
+
                h3("Overall EVPI versus lambda"),
                textInput("main4", strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
                plotOutput("plots4", width="500px", height="500px"),

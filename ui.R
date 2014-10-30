@@ -59,7 +59,7 @@ fluidPage(
                         SAVI assumes that the first row of the parameter file contains the parameter names.<br>
                         SAVI assumes that the first row of the costs file and the first row of the effects file
                         both contain the decision option names.
-                      <br><br>Check the import in the next tab<br>
+                      <br><br>Check the import in the next tab<br><br>
                         </div>")), 
                
 #                p(HTML("To run the application, import your samples of parameters, costs and effects using the 

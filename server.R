@@ -25,7 +25,6 @@ shinyServer(
     print("cache is")
     print(cache <- new.env())
     
-    
     print("shinyServer called")
     print("session is")
     print(session)
@@ -55,13 +54,13 @@ shinyServer(
     #   load.effects <- function() read.csv("effects.csv")
     # ########### 
     
-  load("SAVISession.Rdata", envir=cache)
+ # load("SAVISession.Rdata", envir=cache)
     #  Function that loads saved session
     observe({
       inFile = input$loadSession
       if (is.null(inFile))
         return(NULL)
-      assign("savedSession", 1, envir=TRUE)
+      assign("savedSession", 1, envir=cache)
       load(inFile$datapath, envir=cache)
       #print(lapply(ls(envir=cache), function(x) object.size(get(x, envir=cache))))
       #print(ls(envir=cache))
@@ -298,6 +297,7 @@ shinyServer(
    output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      tableEVPPI <- matrix(NA, nrow = ncol(get("params", envir=cache)), ncol = 4)
+     #if ()
      tableEVPPI[, 1] <- get("pEVPI", envir=cache)
      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", paste("EVPPI for", input$jurisdiction, "Per Year"), paste("EVPPI for", 
                                input$jurisdiction, "over", input$horizon, "years"))
@@ -414,7 +414,7 @@ shinyServer(
     # Output the subset EVPI table
     output$selectedEvpiTable <- renderTable({
       x <- input$calculateSubsetsEvpi
-      if(x==0 & get("savedSession", envir=cache)==0) return(NULL)
+      if(x==0) return(NULL)
       counterAdd <- get("counterAdd", envir = cache)
       setStore <- get("setStore", envir=cache)
 
@@ -423,7 +423,7 @@ shinyServer(
       if (is.null(subsetEvpiValues)) {
         subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
       } else {
-        newEvpiValue <- t(sapply(setStore[NROW(subsetEvpiValues):counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
         subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
       }
       #subsetEvpiValues <- unlist(lapply(resultsList, function(x) x$evpi)

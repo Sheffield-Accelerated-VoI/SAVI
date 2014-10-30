@@ -228,7 +228,7 @@ fluidPage(
                #h3("Specify lambda"),
                #sliderInput('lambdaSingleEvppiTab', label="", 0, 60000, 20000, 1000),
                h3("Partial EVPI for each parameter separately"),
-               h4("This is the expected value of removing current uncertainty on each parameter in turn."),
+               h4("This is the expected value of removing current uncertainty about each parameter."),
                tableOutput("tableEVPPI"),
                
                #h3("Partial EVPI for single parameters"),

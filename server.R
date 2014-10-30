@@ -67,7 +67,7 @@ shinyServer(
       load(inFile$datapath, envir=cache)
       #print(lapply(ls(envir=cache), function(x) object.size(get(x, envir=cache))))
       #print(ls(envir=cache))
-    })   
+    })
     
     #  Function that imports parameters - NEED TO DO _ SANITY CHECK
     #loadParameters <- 
@@ -107,6 +107,7 @@ shinyServer(
         dat <- read.csv(inFile$datapath)#, header=input$header2)#, sep=input$sep, dec=input$dec)
         assign("costs", dat, envir = cache)
         assign("nInt", ncol(dat), envir=cache)
+
 #      }
     })
     
@@ -127,7 +128,7 @@ shinyServer(
  #     }
     })
     
-      # data sanity checks
+   #   data sanity checks
     
       observe({
         if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -162,7 +163,7 @@ shinyServer(
 
 
 
-    # Functions that render the data files and pass them to ui.R
+#    Functions that render the data files and pass them to ui.R
     
     output$checktable1 <- renderTable({
       x <- input$parameterFile 
@@ -222,56 +223,79 @@ shinyServer(
   
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("This graph shows the standardised cost-effectiveness plane per person based on ", nrow(get("params", envir=cache)), 
             " model runs, in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-            The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, iCost(get("costs", envir=cache)), 
-            ". This suggests that ",input$t3," is more/less costly. There is some uncertainty due to model 
-            parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
-            The probability that ", input$t3, " is cost saving compared 
-            to ",input$current," is XX%.", sep="")
-    })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+            The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, incValue(get("costs", envir=cache)), 
+            ". This suggests that ",input$t3," is ", moreLess(get("costs", envir=cache)), " costly. There is some uncertainty due to model 
+            parameters, with the 97.5% confidence interval for the incremental cost ranging from ", cI(get("costs", envir=cache), 0.025), 
+            " to ", cI(get("costs", envir=cache), 0.975),". The probability that ", input$t3, " is cost saving compared to ",input$current,
+            " is ", pCostsaving(get("costs", envir=cache)), ".", sep="")
+    })                       
     
     output$textCEplane2 <- renderText({
-
-      paste("The mean incremental benefit of", input$t3, "versus", input$current, "is", input$t6, "X.  This suggests that",input$t3,"
-            is more/or less beneficial.  Again, there is some uncertainty due to 
-            model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
-            The probability that",input$t3,"is more beneficial than",input$current,"is XX%.")
-    })                        ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("The mean incremental benefit of ", input$t3, " versus ", input$current, " is ", incValue(get("effects", envir=cache)), " ", 
+            input$unitBens, "s.  This suggests that ",input$t3," is ", moreLess(get("effects", envir=cache)), " beneficial.  
+            Again, there is some uncertainty due to model parameters, with the 97.5% confidence interval for the incremental benefit ranging 
+            from ", confIntCE(get("effects", envir=cache), 0.025), " to ", confIntCE(get("effects", envir=cache), 0.975),". The probability that ",input$t3,
+            " is more beneficial than ",input$current," is ", pMoreben(get("effects", envir=cache)), ".", sep="")
+    })                        
     
     output$textCEplane3 <- renderText({
-      paste("The incremental expected cost per unit of benefit is estimated at ",
-            input$currency, "XX_ICER", input$unitBens, ". This 
-            is above/below the threshold of ", input$currency, input$lambdaOverall,
-            " per ", input$unitBens, " indicating that ", input$t3,
-            "would (not) be considered cost-effective at this threshold. There is uncertainty with a XX% probability that", 
-            input$t3,"is more cost-effective (XX% of the probabilistic model run ‘dots’ are below and to the right of the diagonal threshold line).", sep="")
-    })                         ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+      if (!valuesImportedFLAG(cache, input)) return(NULL)      
+      paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(get("costs", envir=cache), 
+            get("effects", envir=cache)), ". This is ", aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall),  
+            " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", input$t3, " ",
+            wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " be considered cost-effective 
+            at this threshold. There is uncertainty with a ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), 
+            " probability that ", input$t3, " is more cost-effective (", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), 
+            " of the probabilistic model run dots are below and to the right of the diagonal threshold line).", sep="")
+    })                         
     
     output$textCEplane4 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL) 
       paste(input$t3,"vs.",input$current)
     })
     
     output$textCEplane5 <- renderText({
-      paste("$XX%$ probability that",input$t3,"is more cost-effective than",input$current,"at a threshold 
-            of",input$currency,input$lambdaOverall,"per",input$unitBens)
-    })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste(pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " probability that ",input$t3," is more cost-effective 
+      than ",input$current," at a threshold of ",input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
+    })                       
     
     output$textCEAC1 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
-            value for cost-effectiveness of",input$currency,input$lambdaOverall,"per",input$unitBens,"the strategy with the highest probability of being most cost-effective 
-            is X, with a probability of XX%. More details on how to interpret CEACs are available from the literature")
-    })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
-    
-    output$textCEAC2 <- renderText({
-      paste(input$current)
+            value for cost-effectiveness of ",input$currency, input$lambdaOverall," per ",input$unitBens," the strategy with the highest 
+            probability of being most cost-effective is X, with a probability of ", pCE(get("costs", envir=cache), get("effects", envir=cache), 
+            input$lambdaOverall), ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
-    
-    output$textCEAC3 <- renderText({
-      paste(input$t3)
-    })                       
-    
-    
+                       
+    output$textNB1 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("Net benefit is a calculation that puts ", input$costDef, " and ", input$effectDef, " onto the same scale.  This is done by calculating 
+            the monetary value of ", input$effectDef, " using a simple multiplication i.e. ", input$unitBens, "s * lambda, where:", sep="")
+    })  
+
+    output$textNB2 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("Net benefit for a strategy = ", input$unitBens, "s * ", input$lambdaOverall, " - Cost (" ,input$currency, ").", sep="")
+    }) 
+
+    output$textNB3 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 95% credible 
+            interval for each one.  The strategy with highest expected net benefit is estimated to be $SmaxexpNB$, with an expected net benefit of 
+            ", input$currency, netBencosts(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
+            " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(get("costs", envir=cache), get("effects", envir=cache), 
+            input$lambdaOverall, get("nInt", envir=cache)), input$unitBens, "s. The 95% credible interval suggests that the net benefit of $SmaxexpNB$ 
+            could range from ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025),
+            " to ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " (",
+            confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025), " ", input$unitBens, "s to ",
+            confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " ", input$unitBens, "s on effect scale).", sep="")
+    }) 
+
     
     # Functions that make tables  
     output$tableCEplane <- renderTable({
@@ -301,13 +325,14 @@ shinyServer(
      rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
                                     paste("Mean", input$costDef), 
                                     paste("Expected Net Benefit at", 
-                                          input$currency,input$lambdaOverall, "per",input$unitBens), 
+                                          input$currency, input$lambdaOverall, "per", input$unitBens), 
                                     "95% Lower CI (on Costs Scale)", 
                                     "95% Upper CI (on Costs Scale)", 
                                     "Expected Net Benefit on Effects Scale", 
                                     "95% Lower CI (on Effects Scale)", 
                                     "95% Upper CI (on Effects Scale)")
      tableNetBenefit
+
    })  
    
    output$tableEVPI <- renderTable({

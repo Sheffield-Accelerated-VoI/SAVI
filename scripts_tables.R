@@ -37,7 +37,6 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
     tableNetBenefit[8,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.975), digits=2, nsmall=4)
   }
   colnames(tableNetBenefit)<-colnames(costs.int)
-  tableNetBenefit
 }
 
 

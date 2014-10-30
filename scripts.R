@@ -17,26 +17,24 @@ valuesImportedFLAG <- function(cache, input){
 }
 
 
-createInb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
+createInb <- function(costs.int, effects.int, lambda, incremental = FALSE) {
   ## this function creates the INB matrix
-#  repository <<- "CRAN"
   inb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
   if(incremental) {
     inb <- cbind(0, inb)
   } else {
     inb <- inb - inb[, 1]
   }
-  # assign("inb", inb, envir=cache)
   return(inb)
 }
 
-createNb <- function(costs.int, effects.int, lambda = 20000, incremental = FALSE) {
+createNb <- function(costs.int, effects.int, lambda, incremental = FALSE) {
    ## this function creates the NB matrix
      nb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
      return(nb)
 }
 
-calcEvpi <- function(costs.int, effects.int, lambda = 20000) {
+calcEvpi <- function(costs.int, effects.int, lambda) {
   ## this function creates the NB matrix
   nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
   evpi <- mean(do.call(pmax, nb)) - max(colMeans(nb))
@@ -64,14 +62,14 @@ calcSingleParamGAM <- function(inputParam, inb) {
   partial.evpi
 }
 
-applyCalcSingleParamGam <- function(df, inb) {
+applyCalcSingleParamGam <- function(parameterDf, inb) {
   ## this function applies singleParamGAM over the parameters
-  df <- as.matrix(df)
-  numVar <- sapply(1:ncol(df),function(x){is.numeric(df[, x])})
+  parameterDf <- as.matrix(parameterDf)
+  numVar <- sapply(1:ncol(parameterDf),function(x){is.numeric(parameterDf[, x])})
   if (sum(numVar)==0) {
     return(NULL)
     stop("PSA parameters are non-numeric!")
-  } else res <- apply(df[, numVar], 2, calcSingleParamGAM, inb)
+  } else res <- apply(parameterDf[, numVar], 2, calcSingleParamGAM, inb)
   res
 }
 
@@ -118,11 +116,10 @@ word_document_local <- function (fig_width = 5, fig_height = 4, fig_caption = FA
 
 calSubsetEvpi <- function(sets, lambda, cache) {
   numParams <- length(sets) # number of parameters in the set
-  regressionFunction <- ifelse(numParams > 5, "gpFunc", "gamFunc")
+  regressionFunction <- ifelse(numParams > 4, "gpFunc", "gamFunc")
   f <- formulaGenerator(sets)
   costs <- get("costs", envir = cache)
   effects <- get("effects", envir = cache)
-  # params <- get("params", envir = cache)
   nb <- effects * lambda - costs
   inb <- nb - nb[ ,1]
   output <- get(regressionFunction)(nb, sets, s=1000, cache)

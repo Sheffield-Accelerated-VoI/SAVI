@@ -24,13 +24,13 @@ makeA.Gaussian <- function(X, phi) { # function to make A matrix with the Gaussi
 # function to calculate posterior density
 
 
-post.density <- function(hyperparams, NB, input.matrix) {
+post.density <- function(hyperparams, NB, input.m) {
   
-  input.matrix <- as.matrix(input.matrix, drop = FALSE)
+  input.m <- as.matrix(input.m, drop = FALSE)
   
-  N <- nrow(input.matrix)
-  p <- NCOL(input.matrix)
-  H <- cbind(1, input.matrix)
+  N <- nrow(input.m)
+  p <- NCOL(input.m)
+  H <- cbind(1, input.m)
   q <- ncol(H)
   
   a.sigma <- 0.001; b.sigma <- 0.001  ##  hyperparameters for IG prior for sigma^2
@@ -38,7 +38,7 @@ post.density <- function(hyperparams, NB, input.matrix) {
   delta <- exp(hyperparams)[1:p]
   nu <- exp(hyperparams)[p + 1]
   
-  A <- makeA.Gaussian(input.matrix, delta)
+  A <- makeA.Gaussian(input.m, delta)
   Astar <- A + nu * diag(N)
   T <- chol(Astar)
   y <- backsolve(t(T), NB, upper.tri = FALSE)
@@ -53,4 +53,119 @@ post.density <- function(hyperparams, NB, input.matrix) {
   return(l)
 }
 
-gpFunc <- function(sets, y, s=1000, cache) {list(EVPI=0, SE=0)} # for now
+
+estimate.hyperparameters <- function(NB, inputs) {
+  
+  p <- NCOL(inputs)
+  D <- ncol(NB)
+  
+  hyperparameters <- vector("list", D)
+  hyperparameters[[1]] <- NA
+  
+  for(d in 2:D) {
+    initial.values <- rep(0, p + 1)
+    repeat {
+      print(paste("calling optim function for net benefit", d))
+      log.hyperparameters <- optim(initial.values, fn=post.density, 
+                                   NB=NB[, d], input.m=inputs,
+                                   method="Nelder-Mead",
+                                   control=list(fnscale=-1, maxit=10000, trace=0))$par
+      if (sum(abs(initial.values - log.hyperparameters)) < 0.05) {
+        hyperparameters[[d]] <- exp(log.hyperparameters)
+        break
+      }	
+      initial.values <- log.hyperparameters
+    }
+  }
+  
+  return(hyperparameters)
+  
+}
+
+gpFunc <- function(NB, sets, s=1000, cache) {
+  
+  input.parameters <- get("params", envir=cache)
+  inputs.of.interest <- sets
+
+  if(!is.null(dim(NB))) 
+  {
+    NB <- NB-NB[,1]
+  }
+  else
+  {
+    NB <- cbind(0, NB)
+  }
+  
+  NB <- as.matrix(NB)
+  p <- length(inputs.of.interest)
+
+  D <- ncol(NB)
+  
+  input.matrix <- as.matrix(input.parameters[,inputs.of.interest,drop=FALSE])
+  colmin <- apply(input.matrix, 2, min)
+  colmax <- apply(input.matrix, 2, max)
+  colrange <- colmax-colmin
+  input.matrix <- sweep(input.matrix,2,colmin,"-")
+  input.matrix <- sweep(input.matrix,2,colrange,"/")
+  N <- nrow(input.matrix)
+  p <- ncol(input.matrix)
+  H <- cbind(1,input.matrix)
+  q <- ncol(H)
+  
+  m <- min(20 * p, 100)
+  hyperparameters <- estimate.hyperparameters(NB[1:m, ], input.matrix[1:m, ])
+    
+  V <- g.hat <- vector("list",D)
+  g.hat[[1]] <- rep(0,N)
+  
+  for(d in 2:D)
+  {
+    print(paste("estimating g.hat for incremental NB for option",d,"versus 1"))
+    delta.hat <- hyperparameters[[d]][1:p]
+    nu.hat <- hyperparameters[[d]][p+1]
+    #A <- exp(-(as.matrix(dist(t(t(input.matrix)/delta.hat),
+    #   upper=TRUE,diag=TRUE))^2))
+    A <- makeA.Gaussian(input.matrix, delta.hat)
+    Astar <- A+nu.hat*diag(N)
+    Astarinv <- chol2inv(chol(Astar))
+    rm(Astar);gc()
+    AstarinvY <- Astarinv%*%NB[,d]
+    tHAstarinv <- t(H)%*%Astarinv
+    tHAHinv <- solve(tHAstarinv%*%H)
+    betahat <- tHAHinv%*%(tHAstarinv%*%NB[,d])
+    Hbetahat <- H%*%betahat
+    resid <- NB[,d]-Hbetahat
+    g.hat[[d]] <- Hbetahat+A%*%(Astarinv%*%resid)
+    AAstarinvH <- A%*%t(tHAstarinv)
+    sigmasqhat <- as.numeric(t(resid)%*%Astarinv%*%resid)/(N-q-2)
+    V[[d]] <- sigmasqhat*(nu.hat*diag(N)-nu.hat^2*Astarinv+
+                            (H-AAstarinvH)%*%(tHAHinv%*%t(H-AAstarinvH)))
+    rm(A,Astarinv,AstarinvY,tHAstarinv,tHAHinv,betahat,Hbetahat,resid,sigmasqhat);gc()
+  }
+  
+  perfect.info <- mean(do.call(pmax,g.hat)) 
+  baseline <- max(unlist(lapply(g.hat,mean)))
+  
+  partial.evpi <- perfect.info - baseline
+  
+    print("computing standard error and upward bias via Monte Carlo")
+    tilde.g <- vector("list",D)
+    tilde.g[[1]] <- matrix(0, nrow=s, ncol=N)     
+    
+    for(d in 2:D)
+    {
+      tilde.g[[d]] <- mvrnorm(s, g.hat[[d]][1:(min(N,1000))],V[[d]][1:(min(N,1000)),1:(min(N,1000))])
+    }
+    
+    sampled.perfect.info <- rowMeans(do.call(pmax,tilde.g))
+    sampled.baseline <- do.call(pmax,lapply(tilde.g,rowMeans)) 
+    rm(tilde.g);gc()
+    sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
+    SE <- sd(sampled.partial.evpi)
+    g.hat.short <- lapply(g.hat,function(x) x[1:(min(N,1000))])
+    mean.partial.evpi <- mean(do.call(pmax,g.hat.short)) - max(unlist(lapply(g.hat.short,mean)))
+    # upward.bias <- mean(sampled.partial.evpi) - mean.partial.evpi 
+    rm(V,g.hat);gc()
+    return(list(EVPI=partial.evpi, SE=SE))
+
+}

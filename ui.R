@@ -58,7 +58,7 @@ fluidPage(
                         SAVI assumes that the first row of the parameter file contains the parameter names.<br>
                         SAVI assumes that the first row of the costs file and the first row of the effects file
                         both contain the decision option names.
-                      <br><br>Check the import in the next tab<br>
+                      <br><br>Check the import in the next tab<br><br>
                         </div>")), 
                
 #                p(HTML("To run the application, import your samples of parameters, costs and effects using the 
@@ -181,12 +181,16 @@ fluidPage(
                br(),
                plotOutput("plots2", width="500px", height="500px"),    
                br(),
+               h1("Summary Net Benefit statistics"),
+               tableOutput("tableNetBenefit"),
+               br(),
+               plotOutput("plots5a", width="500px", height="500px"),
+               br(),
                h1("Net Benefit Densities"),
                plotOutput("plots5", width="700px", height="400px"),
-               br(),
-               h1("Net Benefit Estimates"),
+               br()
                
-               tableOutput("tableNetBenefit")
+
                
                ),
       
@@ -227,11 +231,12 @@ fluidPage(
       tabPanel("EVPPI single parameters",
                #h3("Specify lambda"),
                #sliderInput('lambdaSingleEvppiTab', label="", 0, 60000, 20000, 1000),
-               h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
+               h3("Partial EVPI for each parameter separately"),
+               h4("This is the expected value of removing current uncertainty about each parameter."),
                tableOutput("tableEVPPI"),
                
-               h3("Partial EVPI for single parameters"),
-               tableOutput("summary"),
+               #h3("Partial EVPI for single parameters"),
+               #tableOutput("summary"),
                
                h3("Partial EVPI barplot for single parameters"),
                plotOutput("plot7", width="500px", height="500px")

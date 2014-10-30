@@ -62,6 +62,6 @@ gamFunc <- function(NB, sets, s=1000, cache) {
 formulaGenerator <- function(namesList) {
   form <- paste(namesList, ",", sep="", collapse="")
   form <- substr(form, 1, nchar(form) - 1)
-  form <- paste("te(", form, ")", sep="")
+  form <- paste("te(", form, ", k=4)", sep="")
   form
 }

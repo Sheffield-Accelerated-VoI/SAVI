@@ -26,7 +26,6 @@ shinyServer(
     print("cache is")
     print(cache <- new.env())
     
-    
     print("shinyServer called")
     print("session is")
     print(session)
@@ -47,6 +46,7 @@ shinyServer(
     assign("effects", NULL, envir = cache) 
     assign("counterAdd", 1, envir = cache)     
     assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
+    assign("subsetEvpiValues", NULL, envir=cache)
     
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
@@ -55,13 +55,13 @@ shinyServer(
     #   load.effects <- function() read.csv("effects.csv")
     # ########### 
     
-  load("SAVISession.Rdata", envir=cache)
+ # load("SAVISession.Rdata", envir=cache)
     #  Function that loads saved session
     observe({
       inFile = input$loadSession
       if (is.null(inFile))
         return(NULL)
-      assign("savedSession", 1, envir=TRUE)
+      assign("savedSession", 1, envir=cache)
       load(inFile$datapath, envir=cache)
       #print(lapply(ls(envir=cache), function(x) object.size(get(x, envir=cache))))
       #print(ls(envir=cache))
@@ -287,6 +287,7 @@ shinyServer(
      
      overallEvpi <- calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
               lambda=input$lambdaOverall)
+     assign("overallEvpi", overallEvpi, envir = cache)
      evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 
                      overallEvpi * input$annualPrev * 10, overallEvpi * input$annualPrev * 15,
                      overallEvpi * input$annualPrev * 20,
@@ -298,10 +299,26 @@ shinyServer(
    
    output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     tableEVPPI <- matrix(NA, nrow = ncol(get("params", envir=cache)), ncol = 4)
-     tableEVPPI[, 1] <- get("pEVPI", envir=cache)
-     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", paste("EVPPI for", input$jurisdiction, "Per Year"), paste("EVPPI for", 
-                               input$jurisdiction, "over", input$horizon, "years"))
+     lambda <- input$lambdaOverall # re-run if labmda changes
+     params <- get("params", envir=cache)
+     costs <- get("costs", envir=cache)
+     effects <- get("effects", envir=cache)
+
+     overallEvpi <- calcEvpi(costs, effects, lambda)
+     assign("overallEvpi", overallEvpi, envir = cache)
+     
+     inb <- createInb(costs, effects, lambda)
+     pEVPI <- applyCalcSingleParamGam(params, inb)
+     assign("pEVPI", pEVPI, envir=cache)
+     
+     tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 4)
+     tableEVPPI[, 1] <- round(pEVPI, 2)
+     tableEVPPI[, 2] <- round(pEVPI / overallEvpi , 2)
+     tableEVPPI[, 3] <- signif(pEVPI * input$annualPrev, 4)
+     tableEVPPI[, 4] <- signif(pEVPI * input$annualPrev * input$horizon, 4)
+     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", 
+                               paste("EVPPI for ", input$jurisdiction, " Per Year"), 
+                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(get("params", envir=cache))
      tableEVPPI
    }) 
@@ -355,6 +372,12 @@ shinyServer(
                                        col2=input$color4)
     })
     
+    output$plots5a <- renderPlot({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
+                      lambda=input$lambdaOverall)
+    })
+
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make2wayDensity(get("costs", envir=cache), get("effects", envir=cache), 
@@ -415,12 +438,18 @@ shinyServer(
     # Output the subset EVPI table
     output$selectedEvpiTable <- renderTable({
       x <- input$calculateSubsetsEvpi
-      if(x==0 & get("savedSession", envir=cache)==0) return(NULL)
+      if(x==0) return(NULL)
       counterAdd <- get("counterAdd", envir = cache)
       setStore <- get("setStore", envir=cache)
 
-      #subsetEvpiValues <- calSubsetEvpi(setStore[1:counterAdd])
-      subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      #first pull down the existing values
+      print(subsetEvpiValues <- get("subsetEvpiValues", envir = cache))
+      if (is.null(subsetEvpiValues)) {
+        subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      } else {
+        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+        subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
+      }
       #subsetEvpiValues <- unlist(lapply(resultsList, function(x) x$evpi)
       #subsetEvpiValues <- unlist(lapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
       assign("subsetEvpiValues", subsetEvpiValues, envir = cache)

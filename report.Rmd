@@ -18,6 +18,8 @@ In section 4 the results of single parameter Partial Expected Value of Perfect I
 ## 2.1 Probabilistic Sensitivity Analysis Summary
 ```{r, echo=FALSE}
 # print(pEVPI)
+print(counterAdd)
+print(input$modelName)
 numberRuns <- 1
 chosenInt2 <- chosenInt1 <- currency <- meanIncCost <- modelYears <- lowerIncCost <-probCostSaving<-meanIncBenefit<-benefitUnit<-probBenefit<-threshold<-meanICER<-probCEInt2<-probCEInt1<-probMaxInt<-maxInt<-lowerNbcMaxInt<-upperNbcMaxInt<-meanNbcMaxInt<-percentCEInt2<-percentCEInt1<-nInt<-baseInt<-nPsa<-decisionYears<-99
 ```

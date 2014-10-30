@@ -5,6 +5,7 @@ source("scripts_GPfunctions.R") # separate file to hold the GPfunctions
 source("scripts_GAMfunctions.R")
 source("scripts_plots.R")
 source("scripts_tables.R")
+source("scripts_text.R")
 
 # load the libraries we need
 
@@ -184,19 +185,19 @@ shinyServer(
   
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
-      paste("This graph shows the standardised cost-effectiveness plane per person based on",input$nIterate,"model runs,
-            in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-            The mean incremental cost of ", input$t3, " versus ", input$current," is ",input$currency,"X. This suggests that
-            ",input$t3,"is more/less costly. There is some uncertainty due to model 
+      paste("This graph shows the standardised cost-effectiveness plane per person based on ", print(nrow(get("params", envir=cache))), 
+            " model runs, in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
+            The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, iCost(get("costs", envir=cache)), 
+            ". This suggests that ",input$t3," is more/less costly. There is some uncertainty due to model 
             parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
-            The probability that", input$t3, "is cost saving compared 
-            to",input$current,"is XX%.", sep="")
+            The probability that ", input$t3, " is cost saving compared 
+            to ",input$current," is XX%.", sep="")
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
     output$textCEplane2 <- renderText({
 
       paste("The mean incremental benefit of", input$t3, "versus", input$current, "is", input$t6, "X.  This suggests that",input$t3,"
-            is more/or less beneficial over the",input$n7,"year time horizon.  Again, there is some uncertainty due to 
+            is more/or less beneficial.  Again, there is some uncertainty due to 
             model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
             The probability that",input$t3,"is more beneficial than",input$current,"is XX%.")
     })                        ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS

@@ -185,6 +185,7 @@ shinyServer(
   
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("This graph shows the standardised cost-effectiveness plane per person based on ", nrow(get("params", envir=cache)), 
             " model runs, in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
             The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, incValue(get("costs", envir=cache)), 
@@ -195,6 +196,7 @@ shinyServer(
     })                       
     
     output$textCEplane2 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("The mean incremental benefit of ", input$t3, " versus ", input$current, " is ", incValue(get("effects", envir=cache)), " ", 
             input$unitBens, "s.  This suggests that ",input$t3," is ", moreLess(get("effects", envir=cache)), " beneficial.  
             Again, there is some uncertainty due to model parameters, with the 97.5% confidence interval for the incremental benefit ranging 
@@ -203,7 +205,8 @@ shinyServer(
     })                        
     
     output$textCEplane3 <- renderText({
-            paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(get("costs", envir=cache), 
+      if (!valuesImportedFLAG(cache, input)) return(NULL)      
+      paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(get("costs", envir=cache), 
             get("effects", envir=cache)), ". This is ", aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall),  
             " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", input$t3, " ",
             wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " be considered cost-effective 

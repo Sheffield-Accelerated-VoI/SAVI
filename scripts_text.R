@@ -8,7 +8,7 @@ incValue <- function(data) {
 
 # 2) More/Less Detector (for costs and benefits)
 moreLess <- function(data) {
-  moreLess <- if (mean(data[,2] > data[,1])) {"more"}
+  moreLess <- if (mean(data[,2]) > mean(data[,1])) {"more"}
               else {"less"}
   moreLess
 }

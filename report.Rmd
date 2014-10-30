@@ -18,26 +18,90 @@ In section 4 the results of single parameter Partial Expected Value of Perfect I
 ## 2.1 Probabilistic Sensitivity Analysis Summary
 ```{r, echo=FALSE}
 # print(pEVPI)
-numberRuns <- 1
-chosenInt2 <- chosenInt1 <- currency <- meanIncCost <- modelYears <- lowerIncCost <-probCostSaving<-meanIncBenefit<-benefitUnit<-probBenefit<-threshold<-meanICER<-probCEInt2<-probCEInt1<-probMaxInt<-maxInt<-lowerNbcMaxInt<-upperNbcMaxInt<-meanNbcMaxInt<-percentCEInt2<-percentCEInt1<-nInt<-baseInt<-nPsa<-decisionYears<-99
+print(counterAdd)
+#print(input$modelName)
+chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIncBenefit<-probBenefit<-meanICER<-probCEInt2<-probCEInt1<-probMaxInt<-maxInt<-lowerNbcMaxInt<-upperNbcMaxInt<-meanNbcMaxInt<-percentCEInt2<-percentCEInt1<-baseInt<-99
+# Generate PSA table
+  incCost <- costs[,2] - costs[,1]
+  incBen <- effects[,2] - effects[,1]
+  npsa <-length(costs.int[,1])
+  tableCePlane <- matrix(NA,ncol=ncol(costs)-1, nrow = 13)
+  tableCePlane[1] <- format(lambda, digits=4, nsmall = 0)
+  tableCePlane[2] <- colnames(costs.int)[1]
+  tableCePlane[3] <- format(npsa)
+  tableCePlane[4] <- format(mean(incBen), digits=2, nsmall=4)
+  tableCePlane[5] <- format(mean(incCost), digits=2, nsmall=2)
+  tableCePlane[6] <- format(mean(incCost) /  mean(incBen), digits=2, nsmall=2)
+  tableCePlane[7] <- format(quantile((incBen),0.025), digits=4, nsmall=4)
+  tableCePlane[8] <- format(quantile((incBen),0.975), digits=4, nsmall=4)
+  tableCePlane[9] <- format(quantile((incCost),0.025), digits=4,  nsmall=2)
+  tableCePlane[10] <- format(quantile((incCost),0.975), digits=4, nsmall=2)
+  tableCePlane[11] <- format(length(which((incCost)<0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[12] <- format(length(which((incBen)>0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[13] <- format(length(which((incBen) * lambda - (incCost)>0)) / npsa, digits=2,
+                             nsmall=3)
+  colnames(tableCePlane) <- colnames(costs)[2]
+  table(tableCePlane)
 ```
 
 ## 2.2 Cost-Effectiveness Plane
-The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r numberRuns` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r chosenInt2` versus `r chosenInt1` is `r currency` `r meanIncCost`.  This suggests that strategy 1 is more/less costly over the `r modelYears` years time horizon.  There is some uncertainty due to model parameters, with the 95% credible interal for the incremental cost ranging from (`r currency` `r lowerIncCost` CI, `r currency` `r lowerIncCost` CI).  The probability that `r chosenInt2` is cost saving (i.e. cheaper over the `r modelYears` years time horizon) compared to `r chosenInt1` is `r probCostSaving`. The mean incremental benefit of `r chosenInt2` versus `r chosenInt1` is `r meanIncBenefit` `r benefitUnit` .  This suggests that `r chosenInt2` is more/or less beneficial over the `r modelYears` years time horizon.  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r lowerIncCost` `r benefitUnit` CI , `r lowerIncCost` `r benefitUnit` CI).  The probability that `r chosenInt2` is more beneficial (i.e. provides more `r benefitUnit` over the `r modelYears` years time horizon) compared to `r chosenInt1` is `r probBenefit`. 
+The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r nIterate` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r chosenInt2` versus `r input$current` is `r input$currency` `r meanIncCost`.  There is some uncertainty due to model parameters, with the 95% credible interval for the incremental cost ranging from (`r input$currency` `r lowerIncCost` , `r input$currency` `r lowerIncCost`).  The probability that `r chosenInt2` is cost saving compared to `r input$current` is `r probCostSaving`. The mean incremental benefit of `r chosenInt2` versus `r input$current` is `r meanIncBenefit` `r input$unitBens` .  This suggests that `r chosenInt2` is more/or less beneficial.  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r lowerIncCost` `r input$unitBens` , `r lowerIncCost` `r input$unitBens`).  The probability that `r chosenInt2` is more beneficial compared to `r input$current` is `r probBenefit`. 
 
-The incremental expected cost per unit of benefit is estimated at `r currency` `r meanICER` per `r benefitUnit`.  This is above/below the threshold of `r currency` `r threshold` per `r benefitUnit` that `r chosenInt2` would (not) be considered cost-effective at this threshold.  There is uncertainty with a `r probCEInt2` probability that `r chosenInt2` is more cost-effective (`r percentCEInt2` % of the probabilistic model run ‘dots’ are below and to the right of the diagonal threshold line).  
+The incremental expected cost per unit of benefit is estimated at `r input$currency` `r meanICER` per `r input$unitBens`.  This is above/below the threshold of `r input$currency` `r format(input$lambdaOverall,digits=4)` per `r input$unitBens` that `r chosenInt2` would (not) be considered cost-effective at this threshold.  There is uncertainty with a `r probCEInt2` probability that `r chosenInt2` is more cost-effective (`r percentCEInt2` % of the probabilistic model run dots are below and to the right of the diagonal thresholdline).  
 
 ```{r, echo=FALSE}
-#plot(plotsCeplane)
+  inc_costs <- costs[, 2] - costs[, 1]
+  inc_effects <- effects[, 2] - effects[, 1]
+  lambda<-input$lambdaOverall
+  
+  m.costs <- max(abs(inc_costs))
+  m.effects <- max(abs(inc_effects))
+  m2.effects <- m.costs / lambda
+  m2.costs <- m.effects * lambda
+  m3.costs <- max(m.costs, m2.costs)
+  m3.effects <- max(m.effects, m2.effects)
+  
+  main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
+  plot(inc_effects, inc_costs, pty="s", cex=0.4,
+       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="orangered",
+       xlab=input$effectDef, ylab=input$costDef, main = "Cost-effectiveness plane")
+  abline(1, lambda, lty=2)
+  abline(h=0)
+  abline(v=0)
+  points(mean(inc_effects),mean(inc_costs), pch=20, col="black", cex=1.5)
+  text(mean(inc_effects),mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
 ```
 
 See section 5.1 in Briggs, Claxton, Sculpher.  Decision Modelling for Health Economic Evaluation (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (17 Aug 2006).  ISBN-13: 978-0198526629
 
 ## 2.3 The Cost-Effectiveness Acceptability Curve
-The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all strategies are cost-effective at varying thresholds.  The results show that at a threshold value for cost-effectiveness of `r currency` `r threshold` per `r benefitUnit` the strategy with the highest probability of being most cost-effective is `r maxInt`, with a probability of `r probMaxInt`.
+The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all strategies are cost-effective at varying thresholds.  The results show that at a threshold value for cost-effectiveness of `r input$currency` `r format(input$lambdaOverall, digits = 4)` per `r input$unitBens`, the strategy with the highest probability of being most cost-effective is `r maxInt`, with a probability of `r probMaxInt`.
 
 ```{r, echo=FALSE}
-#plot(plotsCeac)
+  l.seq <- seq(0, 60000, 1000)
+  d <- ncol(costs) 
+  p <- c()
+  p.ce <- matrix(ncol = d, nrow = length(l.seq))
+  for (i in 1:length(l.seq)) {
+    lambda.int <- l.seq[i]
+    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
+    inb.int <- inb.int - inb.int[, 1]
+    inb.int
+    for(j in 1:d) {
+      p.ce[i, j] <- sum(apply(inb.int, 1, which.max) == j) / nrow(inb.int)
+    }
+  }  
+  ceac.int<-list(p=p.ce, l.seq=l.seq, d=d)
+  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1))
+  for (i in 2:ceac.int$d){
+    lines(ceac.int$l.seq, ceac.int$p[, i], col = i)
+  }
+  abline(v=input$lambdaOverall, lty=2)
+  for (i in 1:ceac.int$d){  
+    points(input$lambdaOverall, ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], pch=20, col="black")
+    text(input$lambdaOverall, ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], pos=1, offset=0.1, cex=0.7)
+  }
+  legend("topright", colnames(costs), col = c(1:i), lty = 1)
 ```
 
 More details for how to interpret CEACs are available from the literature
@@ -45,115 +109,198 @@ More details for how to interpret CEACs are available from the literature
 Fenwick & Byford. (2005) A guide to cost-effectiveness acceptability curves. The British Journal of Psychiatry. 187: 106-108.
 
 ## 2.4 Net Benefit of Each Strategy
-Net benefit (NB) is a calculation to put the costs and the `r benefitUnit`s onto the same scale.  This is done by calculating the monetary value of the `r benefitUnit`s using a simple multiplication i.e. `r benefitUnit`s * lambda, where 
+## 2.4.1 Absolute Net Benefit
+Net benefit (NB) is a calculation to put the costs and the `r input$unitBens`s onto the same scale.  This is done by calculating the monetary value of the `r input$unitBens`s using a simple multiplication i.e. `r input$unitBens`s * lambda=`r input$currency` `r format(input$lambdaOverall, digits = 4)` per `r input$unitBens`, where 
 
 ```{r, echo=FALSE}
 #$$
-#NB= `r benefitUnit`*\lambda - Costs
+#NB= `r input$unitBens`*\lambda - Costs
 #$$
 ```
-
-and lambda=`r currency` `r threshold` per `r benefitUnit`
 
 This is particularly useful when comparing several strategies because the analyst and decision maker can see in one single measure the expected net value of each strategy, rather than looking at many comparisons of incremental cost-effectiveness ratios between different options.  Under the rules of decision theory, the strategy with the highest expected net benefit is the one which a decision maker would choose as the optimal startegy.
 
-The graph shows the expected net benefit of the `r nInt` strategies.  The strategy with highest expected net benefit is estimated to be `r maxInt`, with an expected net benefit of `r currency` `r meanNbcMaxInt` (equivalent to a net benefit on the effectiveness scale (using `r benefitUnit` valued at lambda) of `r meanNbcMaxInt` `r benefitUnit`s.  The 95% credible interval suggests that the net benefit of `r maxInt` could range from `r currency` `r lowerNbcMaxInt` to `r currency` `r upperNbcMaxInt`.
-
-```{r, echo=FALSE}
-#plot(plotNB)
-```
 
 ```{r, echo=FALSE}
 #print(tableNBSummary)
 ```
 
-## 2.5.1 Incremental Net Benefit of compared with usual care/base comparator
-Incremental Net benefit (NB) is a calculation to compare strategies with the costs and the `r benefitUnit`s on the same scale. Analysis of the expected incremental net benefit helps to visualise whether particular strategies are better than others and how certain a decision maker can be about the differences.
-
-The graph shows the incremental expected net benefit of the strategies compared with `r baseInt`.  
-
-```{r, echo=FALSE}
-#plot(plotIncUsualNB)
-```
-
-```{r, echo=FALSE}
-#print(tableincUsualNBSummary)
-```
-
-## 2.5.2 Incremental Net Benefit of compared with the optimal comparator
+## 2.4.2 Incremental Net Benefit of compared with the optimal comparator
 The graph shows the incremental expected net benefit of the strategies compared with `r maxInt`.  
 
 ```{r, echo=FALSE}
-#plot(plotIncmaxNB)
+  lambda<-input$lambdaOverall
+  nb <- as.matrix(effects) * lambda - as.matrix(costs)
+  c <- which.max(as.matrix(colMeans(nb)))
+  inbOpt <- nb-nb[,c]
+  means <- colMeans(inbOpt)
+  sd <- apply(inbOpt, 2, sd)
+  colnames(inbOpt) <- colnames(nb)
+  mp <- barplot(means, main = "Expected Incremental Net Benefit vs. Optimal Strategy", 
+          xlab = "Stragegy", ylab = "INB vs. Optimal Strategy",, ylim = c(min(means)-max(sd),max(means)+max(sd))) 
+  segments(mp, means - sd, mp, means + sd, lwd=2)
+  segments(mp - 0.1, means - sd, mp + 0.1, means - sd, lwd=2)
+  segments(mp - 0.1, means + sd, mp + 0.1, means + sd, lwd=2)
+
 ```
 
+## 2.5 Net Benefit Density Plots
+## 2.5.1 Absolute Net Benefit
+The absolute monetary net benefit density is calculated for each of the `r nInt` strategy comparators. The absolute Net Benefit density plot illustrates the overlaid densities for the `r nIterate` simulation runs in the Probabistic Sensitivity Analysis. This graph illustrates how much overlap their is in the simulated Net Benefit of all strategies. However, the overlap between densities may be due to correlation in simulated outcomes, therefore it is necessary to examine the incremental differences between strategies (as discussed in Naversnik K, 2014).
+
 ```{r, echo=FALSE}
-#print(tableincmaxNBSummary)
+  lambda<-input$lambdaOverall
+  nb <- as.matrix(effects) * lambda - as.matrix(costs)
+  d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
+  xmax<-max(nb)
+  xmin<-min(nb)
+  ymax<-c(1:d)
+  for (i in 1:d){
+    den<-density(nb[, i])
+    ymax[i]<-max(den$y)
+  }
+  ymax<-max(ymax)
+  plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax), 
+       xlab="Net Benefit",main="Net Benefit Densities")
+  for (i in 2:d){
+    lines(density(nb[, 2]), col = i)
+  }
+  # Need strategy names adding
+  legend("topright",colnames(nb),col=c(1:d), lty = 1)
 ```
 
-## 2.6 Absolute Net Benefit Density Plot
-The absolute monetary net benefit density is calculated for each of the `r nInt` strategy comparators. The absolite Net Benefit density plot illustrates the overlaid densities for the `r nPsa` simulation runs in the Probabistic Sensitivity Analysis. This graph illustrates how much overlap their is in the simulated Net Benefit of all strategies. However, the overlap between densities may be due to correlation in simulated outcomes, therefore it is necessary to examine the incremental differences between strategies (Naveršnik K).
+
+## 2.5.2 Incremental Net Benefit Density Compared with Optimal Strategy
+Densities for the incremental net benefit of each strategy compared with `r maxInt` (the strategy with maximum expected net benefit) are presented. In this graph it is possible compare strategy densities with correlation removed. It is possible to observe which strategies have simulated Net Benefit greater than the optimal strategy. If there are several strategies with overlapping densities, then several strategies are close in terms of their expected value to a decision maker, and given the relatively large decision uncertainty it might be valuable to consider further research to reduce uncertainty.  The value of reducing uncertainty to the decision maker by undertaking further research is the subject of the analyses using expected value of information calculations.  These calculations can consider all decision uncertainty (the overall expected value of perfect information (EVPI)) or for particular uncertain parameters within the PSA (expected value of perfect parameter information (EVPPI)). 
 
 ```{r, echo=FALSE}
-#plot(plotsNbDensity)
-```
-
-## 2.7 Incremental Net Benefit Density compared with usual care/ base comparator
-Densities for the incremental net benefit of each strategy compared with `r baseInt` (the strategy identified as the usual care/ base comparator setting) are presented. The graph illustrates which strategies have simulated Net Benefit less than or greater than the usual care comparator. 
-
-```{r, echo=FALSE}
-#plot(plotsInbUsualDensity)
-```
-
-## 2.8 Incremental Net Benefit Density Compared with Optimal Strategy
-Densities for the incremental net benefit of each strategy compared with `r maxInt` (the strategy with maximum expected net benefit) are presented. In this graph it is possible compare strategy densities with correlation removed. It is possible to observe which strategies have simulated Net Benefit greater than the optimal strategy. If there are several strategies with ‘overlapping’ densities, then several strategies are close in terms of their expected value to a decision maker, and given the relatively large decision uncertainty it might be valuable to consider further research to reduce uncertainty.  The value of reducing uncertainty to the decision maker by undertaking further research is the subject of the analyses using expected value of information calculations.  These calculations can consider all decision uncertainty (the overall expected value of perfect information – overall EVPI) or for particular uncertain parameters within the PSA (expected value of perfect parameter information – EVPPI). 
-
-```{r, echo=FALSE}
-#plot(plotsInbOptDensity)
+  lambda<-input$lambdaOverall
+  nb <- as.matrix(effects) * lambda - as.matrix(costs)
+  c <- which.max(as.matrix(colMeans(nb)))
+  inbOpt <- nb-nb[,c]
+  inbOpt <- as.matrix(inbOpt[,-c])
+  colnames(inbOpt) <- colnames(nb)[-c]
+  d <- ncol(inbOpt) + ifelse(FALSE, 1, 0)
+  xmax<-max(inbOpt)
+  xmin<-min(inbOpt)
+  ymax<-c(1:d)
+  for (i in 1:d){
+    den<-density(nb[, i])
+    ymax[i]<-max(den$y)
+  }
+  ymax<-max(ymax)
+  plot(density(inbOpt[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), 
+       ylim = c(0, ymax),xlab="INB vs. Optimal Strategy",
+       main="Incremental Net Benefit Density")
+  if (d>1) {
+    for (i in 2:d){
+      lines(density(inbOpt[, i]), col = i)
+    }    
+  }
+  # Need strategy names adding
+  legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)
+  abline(v=0, lty=2)
 ```
 
 More information about illustrating uncertainty for multiple strategies with correlated output are available in the literature.
 
-Naveršnik K (2014) Output correlations in probabilistic models with multiple alternatives. Eur J Health Econ. 2014 Jan 4.
+Naversnik K (2014) Output correlations in probabilistic models with multiple alternatives. Eur J Health Econ. 2014 Jan 4.
 
 # 3. Putting a value on the decision uncertainty: Overall Expected Value of Perfect Information Calculation
 ## 3.1 Understanding the EVPI
-The calculation begins with the existing confidence intervals (or credible intervals) for the model parameters as used in the probabilistic sensitivity analysis.  We then imagine a world in which we become absolutely (perfectly) certain about all of the model parameters i.e. the confidence interval for every single parameter is ‘shrunk right down to zero.’  The decision maker would then be absolutely certain which strategy to select and would choose the one with highest net benefit.  One can visualise this idea by imagining that instead of seeing the cloud of dots on the cost-effectiveness plane (representing current uncertainty in costs and benefits) and having to choose, the decision maker now knows exactly which ‘dot’ is the true value (because all of the uncertainty is removed) and so can be certain to choose the strategy which gives the best net benefit. In a two strategy comparison of new versus current care, if the ‘true dot’ turns out to be below and to the right of the threshold lambda line, then the decision maker would select the new strategy.  If the ‘true dot’ is above and to the left, then current care would be selected.  Under the current uncertainty, the decision maker will choose the strategy based on the expected costs and benefits (essentially on whether the ‘centre of gravity’ of the cloud is above or below the threshold line). 
+The calculation begins with the existing confidence intervals (or credible intervals) for the model parameters as used in the probabilistic sensitivity analysis.  We then imagine a world in which we become absolutely (perfectly) certain about all of the model parameters i.e. the confidence interval for every single parameter is zero.  The decision maker would then be absolutely certain which strategy to select and would choose the one with highest net benefit.  One can visualise this idea by imagining that instead of seeing the cloud of dots on the cost-effectiveness plane (representing current uncertainty in costs and benefits) and having to choose, the decision maker now knows exactly which dot is the true value (because all of the uncertainty is removed) and so can be certain to choose the strategy which gives the best net benefit. In a two strategy comparison of new versus current care, if the true dot turns out to be below and to the right of the thresholdlambda line, then the decision maker would select the new strategy.  If the true dot is above and to the left, then current care would be selected.  Under the current uncertainty, the decision maker will choose the strategy based on the expected costs and benefits (essentially on whether the centre of gravity of the cloud is above or below the threshold line). 
 
 ## 3.2 Overall EVPI
 
 
 ```{r, echo=FALSE}
-EvpiBenefitPerson<-EvpiCostPerson<-EvpiCostPop<-juristiction<-prevalence<-EvpiCostPopYears<-99
+EvpiBenefitPerson<-EvpiCostPerson<-EvpiCostPop<-prevalence<-EvpiCostPopYears<-99
 ```
-The overall EVPI per person affected by the decision is estimated at `r currency` `r EvpiCostPerson` per person.  This is equivalent to `r EvpiBenefitPerson` per person’s worth of decision uncertainty on the `r benefitUnit` scale.
+The overall EVPI per person affected by the decision is estimated at `r input$currency` `r EvpiCostPerson` per person.  This is equivalent to `r EvpiBenefitPerson` `r input$unitBens` per person in decision uncertainty when valuing uncertainty on the `r input$unitBens` scale.
 
-Assuming an annual number of people affected by the decision of `r prevalence`, the overall EVPI per year is `r currency` `r EvpiCostPop` for `r juristiction`. 
+Assuming an annual number of people affected by the decision of `r input$annualPrev`, the overall EVPI per year is `r input$currency` `r EvpiCostPop` for `r input$juristiction`. 
 
-When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified decision relevance horizon of `r decisionYears` years, the overall expected value of removing decision uncertainty for `r juristiction` would in total be `r currency` `r EvpiCostPopYears`.
+When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified decision relevance horizon of `r input$horizon` years, the overall expected value of removing decision uncertainty for `r input$juristiction` would in total be `r input$currency` `r EvpiCostPopYears`.
 
-Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because the return on investment from the research – as measured by the health gain and cost savings of enabling decision makers ability to switch and select other strategies when evidence obtained reduces decision uncertainty – is expected to be no higher than the figure of `r currency` `r EvpiCostPopYears`.
+Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because the return on investment from the research, as measured by the health gain and cost savings of enabling decision makers ability to switch and select other strategies when evidence obtained reduces decision uncertainty, is expected to be no higher than the figure of `r input$currency` `r EvpiCostPopYears`.
 
-The EVPI estimates in the table below quantifies the expected value to decision makers within the jurisdiction of removing all current decision uncertainty at a threshold of `r currency` `r threshold` per `r benefitUnit`.  This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate for varying willingness to pay threshokds are illustrated in the figures below. 
+The EVPI estimates in the table below quantifies the expected value to decision makers within the jurisdiction of removing all current decision uncertainty at a threshold of `r input$currency` `r format(input$lambdaOverall,digits=4)` per `r input$unitBens`.  This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate for varying willingness to pay thresholds are illustrated in the figures below. 
 
 ```{r, echo=FALSE}
 #print(tableEvpi)
 ```
 
 ```{r, echo=FALSE}
-#plot(plotEvpiCostPerson)
+  ## makes the overall EVPI plot
+  lambda.int<-input$lambdaOverall 
+  l.seq <- seq(0, 60000, 1000)
+  p <- c()
+  for (lambda.int in l.seq) {
+    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
+    inb.int <- inb.int - inb.int[, 1]
+    #inb.int
+    evpi <- mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))
+    p <- c(p, evpi)
+  }  
+  plot(l.seq, p, type="l", xlim = c(0, 3*lambda))
+  abline(v=lambda, lty=2)
+  points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
+  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), pos=1, offset=0.1)
 ```
 
 ```{r, echo=FALSE}
-#plot(plotEvpiCostPop)
+  ## makes the overall EVPI plot
+  lambda.int<-input$lambdaOverall 
+  l.seq <- seq(0, 60000, 1000)
+  p <- c()
+  for (lambda.int in l.seq) {
+    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
+    inb.int <- inb.int - inb.int[, 1]
+    #inb.int
+    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int)))*prevalence
+    p <- c(p, evpi)
+  }  
+  plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))
+  abline(v=lambda, lty=2)
+  points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
+  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), pos=1, offset=0.1)
+  
 ```
 
 ```{r, echo=FALSE}
-#plot(plotEvpiBenefitPop)
+  ## makes the overall EVPI plot
+  lambda.int<-input$lambdaOverall 
+  l.seq <- seq(0, 60000, 1000)
+  p <- c()
+  for (lambda.int in l.seq) {
+    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
+    inb.int <- inb.int - inb.int[, 1]
+    #inb.int
+    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))) * input$annualPrev
+    evpi <- evpi / lambda.int
+    p <- c(p, evpi)
+  }  
+  plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", input$unitBens), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$unitBens))
+  abline(v=lambda, lty=2)
+  points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
+  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), pos=1, offset=0.1)
 ```
 
 ```{r, echo=FALSE}
-#plot(plotEvpiCostPepYears)
+  l.seq <- seq(0, 60000, 1000)
+  p <- c()
+  for (lambda.int in l.seq) {
+    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
+    inb.int <- inb.int - inb.int[, 1]
+    #inb.int
+    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))) * input$annualPrev * input$horizon
+    p <- c(p, evpi)
+  }  
+  plot(l.seq, p, type="l", main = paste("Overall EVPI over decision relevance ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))
+  abline(v=lambda, lty=2)
+  points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
+  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), 
+       pos=1, offset=0.1)
 ```
 
 # 4. Which parameters are causing most of the decision uncertainty and what is the potential value of reducing uncertainty by collecting more data: Partial Expected Value of Perfect Information
@@ -165,5 +312,8 @@ print(pEVPI)
 ```
 
 ```{r, echo=FALSE}
-#plot(plotEvppiSingle)
+#  EVPPI <- matrix(pEVPI[order(pEVPI)], ncol = length(pEVPI), nrow = 1)
+#  colnames(EVPPI)<-colnames(params[order(pEVPI)])
+#  barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  
+  
 ```

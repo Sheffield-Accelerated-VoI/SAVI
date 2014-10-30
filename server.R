@@ -105,6 +105,7 @@ shinyServer(
         dat <- read.csv(inFile$datapath)#, header=input$header2)#, sep=input$sep, dec=input$dec)
         assign("costs", dat, envir = cache)
         assign("nInt", ncol(dat), envir=cache)
+
 #      }
     })
     

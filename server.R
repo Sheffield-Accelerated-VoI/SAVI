@@ -185,31 +185,32 @@ shinyServer(
   
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
-      paste("This graph shows the standardised cost-effectiveness plane per person based on ", print(nrow(get("params", envir=cache))), 
+      paste("This graph shows the standardised cost-effectiveness plane per person based on ", nrow(get("params", envir=cache)), 
             " model runs, in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-            The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, iCost(get("costs", envir=cache)), 
-            ". This suggests that ",input$t3," is more/less costly. There is some uncertainty due to model 
-            parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
-            The probability that ", input$t3, " is cost saving compared 
-            to ",input$current," is XX%.", sep="")
-    })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+            The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, incValue(get("costs", envir=cache)), 
+            ". This suggests that ",input$t3," is ", moreLess(get("costs", envir=cache)), " costly. There is some uncertainty due to model 
+            parameters, with the 97.5% confidence interval for the incremental cost ranging from ", cI(get("costs", envir=cache), 0.025), 
+            " to ", cI(get("costs", envir=cache), 0.975),". The probability that ", input$t3, " is cost saving compared to ",input$current,
+            " is ", pCostsaving(get("costs", envir=cache)), ".", sep="")
+    })                       
     
     output$textCEplane2 <- renderText({
-
-      paste("The mean incremental benefit of", input$t3, "versus", input$current, "is", input$t6, "X.  This suggests that",input$t3,"
-            is more/or less beneficial.  Again, there is some uncertainty due to 
-            model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
-            The probability that",input$t3,"is more beneficial than",input$current,"is XX%.")
-    })                        ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+      paste("The mean incremental benefit of ", input$t3, " versus ", input$current, " is ", incValue(get("effects", envir=cache)), " ", 
+            input$unitBens, "s.  This suggests that ",input$t3," is ", moreLess(get("effects", envir=cache)), " beneficial.  
+            Again, there is some uncertainty due to model parameters, with the 97.5% confidence interval for the incremental benefit ranging 
+            from ", cI(get("effects", envir=cache), 0.025), " to ", cI(get("effects", envir=cache), 0.975),". The probability that ",input$t3,
+            " is more beneficial than ",input$current," is ", pMoreben(get("effects", envir=cache)), ".", sep="")
+    })                        
     
     output$textCEplane3 <- renderText({
-      paste("The incremental expected cost per unit of benefit is estimated at ",
-            input$currency, "XX_ICER", input$unitBens, ". This 
-            is above/below the threshold of ", input$currency, input$lambdaOverall,
-            " per ", input$unitBens, " indicating that ", input$t3,
-            "would (not) be considered cost-effective at this threshold. There is uncertainty with a XX% probability that", 
-            input$t3,"is more cost-effective (XX% of the probabilistic model run ‘dots’ are below and to the right of the diagonal threshold line).", sep="")
-    })                         ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
+            paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(get("costs", envir=cache), 
+            get("effects", envir=cache)), ". This is ", aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall),  
+            " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", input$t3, " ",
+            wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " be considered cost-effective 
+            at this threshold. There is uncertainty with a ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), 
+            " probability that ", input$t3, " is more cost-effective (", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), 
+            " of the probabilistic model run ‘dots’ are below and to the right of the diagonal threshold line).", sep="")
+    })                         
     
     output$textCEplane4 <- renderText({
       paste(input$t3,"vs.",input$current)

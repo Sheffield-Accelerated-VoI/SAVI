@@ -1,22 +1,22 @@
 # this file holds the table generating functions
 
 makeTableCePlane <- function(costs.int, effects.int, lambda) {
-  incCost <- costs.int[,2] - costs.int[,1]
-  incBen <- effects.int[,2] - effects.int[,1]
-  npsa <-length(costs.int[,1])
-  tableCePlane <- matrix(NA,ncol=ncol(costs.int)-1, nrow = 13)
+  incCost <- costs.int[, 2] - costs.int[, 1]
+  incBen <- effects.int[, 2] - effects.int[, 1]
+  npsa <- length(costs.int[, 1])
+  tableCePlane <- matrix(NA, ncol=ncol(costs.int)-1, nrow = 13)
   tableCePlane[1] <- format(lambda, digits=4, nsmall = 0)
   tableCePlane[2] <- colnames(costs.int)[1]
   tableCePlane[3] <- format(npsa)
   tableCePlane[4] <- format(mean(incBen), digits=2, nsmall=4)
   tableCePlane[5] <- format(mean(incCost), digits=2, nsmall=2)
   tableCePlane[6] <- format(mean(incCost) /  mean(incBen), digits=2, nsmall=2)
-  tableCePlane[7] <- format(quantile((incBen),0.025), digits=4, nsmall=4)
-  tableCePlane[8] <- format(quantile((incBen),0.975), digits=4, nsmall=4)
-  tableCePlane[9] <- format(quantile((incCost),0.025), digits=4,  nsmall=2)
-  tableCePlane[10] <- format(quantile((incCost),0.975), digits=4, nsmall=2)
-  tableCePlane[11] <- format(length(which((incCost)<0)) / npsa, digits=2, nsmall=3)
-  tableCePlane[12] <- format(length(which((incBen)>0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[7] <- format(quantile((incBen), 0.025), digits=4, nsmall=4)
+  tableCePlane[8] <- format(quantile((incBen), 0.975), digits=4, nsmall=4)
+  tableCePlane[9] <- format(quantile((incCost), 0.025), digits=4,  nsmall=2)
+  tableCePlane[10] <- format(quantile((incCost), 0.975), digits=4, nsmall=2)
+  tableCePlane[11] <- format(length(which((incCost) < 0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[12] <- format(length(which((incBen) > 0)) / npsa, digits=2, nsmall=3)
   tableCePlane[13] <- format(length(which((incBen) * lambda - (incCost)>0)) / npsa, digits=2,
                              nsmall=3)
   colnames(tableCePlane) <- colnames(costs.int)[2]

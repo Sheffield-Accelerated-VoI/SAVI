@@ -29,12 +29,12 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
   
   main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
   plot(inc_effects, inc_costs, pty="s", cex=0.4,
-       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="orangered", ...)
+       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="blue", ...)
   abline(1, lambda, lty=2)
   abline(h=0)
   abline(v=0)
-  points(mean(inc_effects),mean(inc_costs), pch=20, col="black", cex=1.5)
-  text(mean(inc_effects),mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
+  points(mean(inc_effects), mean(inc_costs), pch=20, col="black", cex=1.5)
+  #text(mean(inc_effects), mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
 }
 
 makeEvpiPlot <- function(costs.int, effects.int, 
@@ -114,7 +114,7 @@ make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon
   on.exit(par(opar))
 }
 
-makeInbOptBar <- function(costs.int, effects.int, lambda) {
+makeInbOptBar <- function(costs.int, effects.int, lambda) { # NOT SURE ABOUT THIS - NEED TO DISCUSS
   nb <- createNb(costs.int, effects.int, lambda, FALSE)
   c <- which.max(as.matrix(colMeans(nb)))
   inbOpt <- nb-nb[,c]
@@ -122,7 +122,8 @@ makeInbOptBar <- function(costs.int, effects.int, lambda) {
   sd <- apply(inbOpt, 2, sd)
   colnames(inbOpt) <- colnames(nb)
   mp <- barplot(means, main = "Expected Incremental Net Benefit vs. Optimal Strategy", 
-          xlab = "Stragegy", ylab = "INB vs. Optimal Strategy",, ylim = c(min(means)-max(sd),max(means)+max(sd))) 
+          xlab = "Stragegy", ylab = "INB vs. Optimal Strategy", ylim = c(min(means)-max(sd),
+                                                                         max(means)+max(sd))) 
   segments(mp, means - sd, mp, means + sd, lwd=2)
   segments(mp - 0.1, means - sd, mp + 0.1, means - sd, lwd=2)
   segments(mp - 0.1, means + sd, mp + 0.1, means + sd, lwd=2)

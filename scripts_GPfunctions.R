@@ -96,21 +96,23 @@ gpFunc <- function(NB, sets, s=1000, cache) {
     NB <- cbind(0, NB)
   }
   
-  NB <- as.matrix(NB)
+  
   p <- length(inputs.of.interest)
 
+ 
+  maxSample <- min(5000, nrow(NB)) # to avoidd trying to invert huge matrix
+  NB <- as.matrix(NB[1:maxSample, ])
   D <- ncol(NB)
-  maxSample <- min(5000, nrow(NB)) # to aoivd trying to invert huge matrix
   
   input.matrix <- as.matrix(input.parameters[1:maxSample, inputs.of.interest,drop=FALSE])
   colmin <- apply(input.matrix, 2, min)
   colmax <- apply(input.matrix, 2, max)
-  colrange <- colmax-colmin
-  input.matrix <- sweep(input.matrix,2,colmin,"-")
-  input.matrix <- sweep(input.matrix,2,colrange,"/")
+  colrange <- colmax - colmin
+  input.matrix <- sweep(input.matrix, 2, colmin,"-")
+  input.matrix <- sweep(input.matrix, 2, colrange,"/")
   N <- nrow(input.matrix)
   p <- ncol(input.matrix)
-  H <- cbind(1,input.matrix)
+  H <- cbind(1, input.matrix)
   q <- ncol(H)
   
   m <- min(20 * p, 100)
@@ -123,27 +125,27 @@ gpFunc <- function(NB, sets, s=1000, cache) {
   
   for(d in 2:D)
   {
-    print(paste("estimating g.hat for incremental NB for option",d,"versus 1"))
+    print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
     delta.hat <- hyperparameters[[d]][1:p]
     nu.hat <- hyperparameters[[d]][p+1]
     #A <- exp(-(as.matrix(dist(t(t(input.matrix)/delta.hat),
     #   upper=TRUE,diag=TRUE))^2))
     A <- makeA.Gaussian(input.matrix, delta.hat)
-    Astar <- A+nu.hat*diag(N)
+    Astar <- A + nu.hat * diag(N)
     Astarinv <- chol2inv(chol(Astar))
-    rm(Astar);gc()
+    rm(Astar); gc()
     AstarinvY <- Astarinv%*%NB[,d]
     tHAstarinv <- t(H)%*%Astarinv
     tHAHinv <- solve(tHAstarinv%*%H)
     betahat <- tHAHinv%*%(tHAstarinv%*%NB[,d])
     Hbetahat <- H%*%betahat
-    resid <- NB[,d]-Hbetahat
+    resid <- NB[,d] - Hbetahat
     g.hat[[d]] <- Hbetahat+A%*%(Astarinv%*%resid)
     AAstarinvH <- A%*%t(tHAstarinv)
-    sigmasqhat <- as.numeric(t(resid)%*%Astarinv%*%resid)/(N-q-2)
-    V[[d]] <- sigmasqhat*(nu.hat*diag(N)-nu.hat^2*Astarinv+
+    sigmasqhat <- as.numeric(t(resid)%*%Astarinv%*%resid)/(N - q - 2)
+    V[[d]] <- sigmasqhat*(nu.hat*diag(N) - nu.hat ^ 2 * Astarinv +
                             (H-AAstarinvH)%*%(tHAHinv%*%t(H-AAstarinvH)))
-    rm(A,Astarinv,AstarinvY,tHAstarinv,tHAHinv,betahat,Hbetahat,resid,sigmasqhat);gc()
+    rm(A, Astarinv, AstarinvY, tHAstarinv, tHAHinv, betahat, Hbetahat, resid, sigmasqhat);gc()
   }
   
   perfect.info <- mean(do.call(pmax,g.hat)) 

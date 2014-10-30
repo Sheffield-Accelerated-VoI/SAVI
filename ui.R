@@ -158,7 +158,7 @@ fluidPage(
                           #submitButton("Change"), # this button stops everything else auto-updating!
                           #br(),
                           #br(),
-                          p(strong("Strategies Compared"),textOutput("textCEplane4")),
+                          p(strong("Strategies Compared"), textOutput("textCEplane4")),
                           br(),
                           p(strong("Summary")),
                           textOutput("textCEplane5")
@@ -184,8 +184,8 @@ fluidPage(
                h1("Summary Net Benefit statistics"),
                tableOutput("tableNetBenefit"),
                br(),
-               plotOutput("plots5a", width="500px", height="500px"),
-               br(),
+#                plotOutput("plots5a", width="500px", height="500px"),
+#                br(),
                h1("Net Benefit Densities"),
                plotOutput("plots5", width="700px", height="400px"),
                br()
@@ -259,17 +259,17 @@ fluidPage(
                    actionButton("addSelection", "Add selection"),
                    br(),
                    br(),
-                   br(),
                    actionButton("calculateSubsetsEvpi", "Calculate EVPPI values")),
                  
                  mainPanel(
-                   h3("Selected parameter combinations"),
+                   h4("Selected parameter combinations"),
                    br(),
                    tableOutput("selectedTable"),
                    br(),
-                   tableOutput("selectedEvpiTable"),
-                   br(),
-                   actionButton("clearSubsetsEvpi",label="Clear Selections")))         
+                   h4("Partial EVPI values"),
+                   tableOutput("selectedEvpiTable")#,
+#                    br(),
+#                    actionButton("clearSubsetsEvpi",label="Clear Selections")))         
       ),
     
       # Numerical summary of the dataset,

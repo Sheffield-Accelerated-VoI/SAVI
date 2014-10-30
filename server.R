@@ -38,6 +38,8 @@ shinyServer(
     
     # initialise cached variable values
     
+    print(ls())
+    
     assign("savedSession", 0, envir=cache)
     assign("nIterate", 0, envir = cache)
     assign("pEVPI", NULL, envir = cache)
@@ -185,7 +187,7 @@ shinyServer(
   
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
-      paste("This graph shows the standardised cost-effectiveness plane per person based on ", print(nrow(get("params", envir=cache))), 
+      paste("This graph shows the standardised cost-effectiveness plane per person based on ", nrow(get("params", envir=cache)), 
             " model runs, in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
             The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, iCost(get("costs", envir=cache)), 
             ". This suggests that ",input$t3," is more/less costly. There is some uncertainty due to model 
@@ -330,7 +332,7 @@ shinyServer(
       makeCEPlanePlot(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambdaOverall, xlab=input$effectDef, 
                       ylab=input$costDef)
-    })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.DARK RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
+    })  
     
     output$plots2 <- renderPlot({
     
@@ -371,11 +373,11 @@ shinyServer(
                                        col2=input$color4)
     })
     
-    output$plots5a <- renderPlot({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
-                      lambda=input$lambdaOverall)
-    })
+#     output$plots5a <- renderPlot({ # NEED TO DISCUSS THIS - MS
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
+#                       lambda=input$lambdaOverall)
+#     })
 
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -420,7 +422,7 @@ shinyServer(
       #nCurrentSelection <- length(currentSelection)
       #nParams <- get("nParams", envir = cache)
       #completedCurrentSelection <- c(currentSelection, rep("", nParams - nCurrentSelection))
-      setStore[[counterAdd]] <-currentSelection
+      setStore[[counterAdd]] <- currentSelection
       assign("setStore", setStore, envir = cache)
       assign("counterAdd", counterAdd, envir=cache)   
     })

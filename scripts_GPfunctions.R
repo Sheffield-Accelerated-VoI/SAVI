@@ -100,8 +100,9 @@ gpFunc <- function(NB, sets, s=1000, cache) {
   p <- length(inputs.of.interest)
 
   D <- ncol(NB)
+  maxSample <- min(5000, nrow(NB)) # to aoivd trying to invert huge matrix
   
-  input.matrix <- as.matrix(input.parameters[,inputs.of.interest,drop=FALSE])
+  input.matrix <- as.matrix(input.parameters[1:maxSample, inputs.of.interest,drop=FALSE])
   colmin <- apply(input.matrix, 2, min)
   colmax <- apply(input.matrix, 2, max)
   colrange <- colmax-colmin
@@ -113,7 +114,9 @@ gpFunc <- function(NB, sets, s=1000, cache) {
   q <- ncol(H)
   
   m <- min(20 * p, 100)
-  hyperparameters <- estimate.hyperparameters(NB[1:m, ], input.matrix[1:m, ])
+  setForHyperparamEst <- 1:m # sample(1:N, m, replace=FALSE)
+  hyperparameters <- estimate.hyperparameters(NB[setForHyperparamEst, ], 
+                                              input.matrix[setForHyperparamEst, ])
     
   V <- g.hat <- vector("list",D)
   g.hat[[1]] <- rep(0,N)

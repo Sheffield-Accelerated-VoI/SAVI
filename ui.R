@@ -40,7 +40,6 @@ fluidPage(
                #numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
                textInput("currency",label = h5("Units used for costs"),value ="£"),
                textInput("unitBens",label = h5("Units used for benefits"),value ="QALY"),
-               #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
                textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"),value = "England"),
 
                br()
@@ -59,7 +58,7 @@ fluidPage(
                         SAVI assumes that the first row of the parameter file contains the parameter names.<br>
                         SAVI assumes that the first row of the costs file and the first row of the effects file
                         both contain the decision option names.
-                      <br><br>Check the import in the next tab<br>
+                      <br><br>Check the import in the next tab<br><br>
                         </div>")), 
                
 #                p(HTML("To run the application, import your samples of parameters, costs and effects using the 
@@ -232,11 +231,12 @@ fluidPage(
       tabPanel("EVPPI single parameters",
                #h3("Specify lambda"),
                #sliderInput('lambdaSingleEvppiTab', label="", 0, 60000, 20000, 1000),
-               h3("The Expected Value of Removing Current Decision Uncertainty on Particular Parameters: EVPPI"),
+               h3("Partial EVPI for each parameter separately"),
+               h4("This is the expected value of removing current uncertainty on each parameter in turn."),
                tableOutput("tableEVPPI"),
                
-               h3("Partial EVPI for single parameters"),
-               tableOutput("summary"),
+               #h3("Partial EVPI for single parameters"),
+               #tableOutput("summary"),
                
                h3("Partial EVPI barplot for single parameters"),
                plotOutput("plot7", width="500px", height="500px")

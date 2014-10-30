@@ -5,6 +5,7 @@ source("scripts_GPfunctions.R") # separate file to hold the GPfunctions
 source("scripts_GAMfunctions.R")
 source("scripts_plots.R")
 source("scripts_tables.R")
+source("scripts_text.R")
 
 # load the libraries we need
 
@@ -24,7 +25,6 @@ shinyServer(
     
     print("cache is")
     print(cache <- new.env())
-    
     
     print("shinyServer called")
     print("session is")
@@ -46,6 +46,7 @@ shinyServer(
     assign("effects", NULL, envir = cache) 
     assign("counterAdd", 1, envir = cache)     
     assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
+    assign("subsetEvpiValues", NULL, envir=cache)
     
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
@@ -54,13 +55,13 @@ shinyServer(
     #   load.effects <- function() read.csv("effects.csv")
     # ########### 
     
-  load("SAVISession.Rdata", envir=cache)
+ # load("SAVISession.Rdata", envir=cache)
     #  Function that loads saved session
     observe({
       inFile = input$loadSession
       if (is.null(inFile))
         return(NULL)
-      assign("savedSession", 1, envir=TRUE)
+      assign("savedSession", 1, envir=cache)
       load(inFile$datapath, envir=cache)
       #print(lapply(ls(envir=cache), function(x) object.size(get(x, envir=cache))))
       #print(ls(envir=cache))
@@ -184,19 +185,19 @@ shinyServer(
   
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
-      paste("This graph shows the standardised cost-effectiveness plane per person based on",input$nIterate,"model runs,
-            in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-            The mean incremental cost of ", input$t3, " versus ", input$current," is ",input$currency,"X. This suggests that
-            ",input$t3,"is more/less costly. There is some uncertainty due to model 
+      paste("This graph shows the standardised cost-effectiveness plane per person based on ", print(nrow(get("params", envir=cache))), 
+            " model runs, in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
+            The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, iCost(get("costs", envir=cache)), 
+            ". This suggests that ",input$t3," is more/less costly. There is some uncertainty due to model 
             parameters, with the 95% CI for the incremental cost ranging from (lower CI, upper CI).  
-            The probability that", input$t3, "is cost saving compared 
-            to",input$current,"is XX%.", sep="")
+            The probability that ", input$t3, " is cost saving compared 
+            to ",input$current," is XX%.", sep="")
     })                       ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
     
     output$textCEplane2 <- renderText({
 
       paste("The mean incremental benefit of", input$t3, "versus", input$current, "is", input$t6, "X.  This suggests that",input$t3,"
-            is more/or less beneficial over the",input$n7,"year time horizon.  Again, there is some uncertainty due to 
+            is more/or less beneficial.  Again, there is some uncertainty due to 
             model parameters, with the 95% CI for the incremental benefit ranging from (lower credible interval, upper CI).
             The probability that",input$t3,"is more beneficial than",input$current,"is XX%.")
     })                        ###THIS FUNCTION STILL NEEDS TO BE MADE REACTIVE TO RESULTS
@@ -297,6 +298,7 @@ shinyServer(
    output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      tableEVPPI <- matrix(NA, nrow = ncol(get("params", envir=cache)), ncol = 4)
+     #if ()
      tableEVPPI[, 1] <- get("pEVPI", envir=cache)
      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", paste("EVPPI for", input$jurisdiction, "Per Year"), paste("EVPPI for", 
                                input$jurisdiction, "over", input$horizon, "years"))
@@ -419,12 +421,18 @@ shinyServer(
     # Output the subset EVPI table
     output$selectedEvpiTable <- renderTable({
       x <- input$calculateSubsetsEvpi
-      if(x==0 & get("savedSession", envir=cache)==0) return(NULL)
+      if(x==0) return(NULL)
       counterAdd <- get("counterAdd", envir = cache)
       setStore <- get("setStore", envir=cache)
 
-      #subsetEvpiValues <- calSubsetEvpi(setStore[1:counterAdd])
-      subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      #first pull down the existing values
+      print(subsetEvpiValues <- get("subsetEvpiValues", envir = cache))
+      if (is.null(subsetEvpiValues)) {
+        subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      } else {
+        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+        subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
+      }
       #subsetEvpiValues <- unlist(lapply(resultsList, function(x) x$evpi)
       #subsetEvpiValues <- unlist(lapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
       assign("subsetEvpiValues", subsetEvpiValues, envir = cache)

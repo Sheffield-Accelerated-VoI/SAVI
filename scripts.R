@@ -118,11 +118,10 @@ word_document_local <- function (fig_width = 5, fig_height = 4, fig_caption = FA
 
 calSubsetEvpi <- function(sets, lambda, cache) {
   numParams <- length(sets) # number of parameters in the set
-  regressionFunction <- ifelse(numParams > 5, "gpFunc", "gamFunc")
+  regressionFunction <- ifelse(numParams > 4, "gpFunc", "gamFunc")
   f <- formulaGenerator(sets)
   costs <- get("costs", envir = cache)
   effects <- get("effects", envir = cache)
-  # params <- get("params", envir = cache)
   nb <- effects * lambda - costs
   inb <- nb - nb[ ,1]
   output <- get(regressionFunction)(nb, sets, s=1000, cache)

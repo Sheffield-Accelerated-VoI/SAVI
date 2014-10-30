@@ -114,8 +114,21 @@ make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon
   on.exit(par(opar))
 }
 
+makeInbOptBar <- function(costs.int, effects.int, lambda) {
+  nb <- createNb(costs.int, effects.int, lambda, FALSE)
+  c <- which.max(as.matrix(colMeans(nb)))
+  inbOpt <- nb-nb[,c]
+  means <- colMeans(inbOpt)
+  sd <- apply(inbOpt, 2, sd)
+  colnames(inbOpt) <- colnames(nb)
+  mp <- barplot(means, main = "Expected Incremental Net Benefit vs. Optimal Strategy", 
+          xlab = "Stragegy", ylab = "INB vs. Optimal Strategy",, ylim = c(min(means)-max(sd),max(means)+max(sd))) 
+  segments(mp, means - sd, mp, means + sd, lwd=2)
+  segments(mp - 0.1, means - sd, mp + 0.1, means - sd, lwd=2)
+  segments(mp - 0.1, means + sd, mp + 0.1, means + sd, lwd=2)
+}
 
-makeNbDensity <- function (costs.int, effects.int, lambda, ...) {
+makeNbDensity <- function (costs.int, effects.int, lambda) {
   nb <- createNb(costs.int, effects.int, lambda, FALSE)
   d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
   xmax<-max(nb)
@@ -126,7 +139,8 @@ makeNbDensity <- function (costs.int, effects.int, lambda, ...) {
     ymax[i]<-max(den$y)
   }
   ymax<-max(ymax)
-  plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax),xlab="Net Benefit",main="Net Benefit Densities")
+  plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax), 
+       xlab="Net Benefit",main="Net Benefit Densities")
   for (i in 2:d){
     lines(density(nb[, 2]), col = i)
   }
@@ -172,8 +186,8 @@ make2wayDensity <- function(costs.int, effects.int, lambda) {
 
 
 makeEvppiBar <- function(pEVPI.int, params) {
-  EVPPI <- matrix(pEVPI.int, ncol = ncol(params), nrow = 1)
-  colnames(EVPPI)<-params
-  barplot(EVPPI, horiz = TRUE, names.arg= colnames(EVPPI) , cex.names=0.5)  
+  EVPPI <- matrix(pEVPI.int[order(pEVPI.int)], ncol = length(pEVPI.int), nrow = 1)
+  colnames(EVPPI)<-colnames(params[order(pEVPI.int)])
+  barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  
   
 }

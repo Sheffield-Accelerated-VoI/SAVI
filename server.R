@@ -353,6 +353,12 @@ shinyServer(
                                        col2=input$color4)
     })
     
+    output$plots5a <- renderPlot({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
+                      lambda=input$lambdaOverall)
+    })
+
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make2wayDensity(get("costs", envir=cache), get("effects", envir=cache), 

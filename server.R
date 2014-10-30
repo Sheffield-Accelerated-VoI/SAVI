@@ -90,8 +90,8 @@ shinyServer(
         assign("nIterate", nrow(dat), envir=cache)
 #    }
     })
-    
-    #  Function that imports costs    
+
+#  Function that imports costs    
     #loadCosts <- 
       observe({
       inFile = input$costsFile
@@ -127,6 +127,41 @@ shinyServer(
  #     }
     })
     
+      # data sanity checks
+    
+      observe({
+        if (!valuesImportedFLAG(cache, input)) return(NULL)
+        
+        dummy1 <- input$parameterFile
+        dummy2 <- input$loadSession
+        params <- as.matrix(get("params", envir=cache))
+  
+        # first remove the constants
+        const <- which(apply(params, 2, var) == 0)
+        if (const > 0) {
+          print(paste("Constant value: removing column(s)", paste(colnames(params)[const], collapse=", "), sep = " ")) 
+          params <- params[, -const]        
+        }
+        
+        # check for linear dependence
+        rankifremoved <- sapply(1:ncol(params), function (x) qr(params[,-x])$rank)
+        while(length(unique(rankifremoved)) > 1) {
+        linearCombs <- which(rankifremoved == max(rankifremoved))
+        # print(linearCombs)
+        print(paste("Linear dependence: removing column", colnames(params)[max(linearCombs)]))
+        params <- params[, -max(linearCombs)]
+        rankifremoved <- sapply(1:ncol(params), function (x) qr(params[,-x])$rank)
+
+        }
+        
+        assign("params", params, envir = cache)
+        
+      })
+
+
+
+
+
     # Functions that render the data files and pass them to ui.R
     
     output$checktable1 <- renderTable({
@@ -243,7 +278,8 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       tableCEplane <- makeTableCePlane(get("costs", envir=cache), get("effects", 
                             envir=cache), lambda=input$lambdaOverall)
-      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), "Comparator", 
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), 
+                            "Comparator", 
                             "Number of PSA runs", 
                             paste("Mean inc. Effect per Person (", input$unitBens, ")"), 
                             paste("Mean inc. Cost per Person (", input$currency, ")"),
@@ -345,6 +381,7 @@ shinyServer(
                    names=colnames(get("costs", envir=cache)))
     })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
     
+
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall,

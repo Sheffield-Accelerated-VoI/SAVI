@@ -267,7 +267,7 @@ fluidPage(
                    tableOutput("selectedTable"),
                    br(),
                    h4("Partial EVPI values"),
-                   tableOutput("selectedEvpiTable")#,
+                   tableOutput("selectedEvpiTable")))#,
 #                    br(),
 #                    actionButton("clearSubsetsEvpi",label="Clear Selections")))         
       ),

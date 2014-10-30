@@ -40,7 +40,6 @@ fluidPage(
                #numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
                textInput("currency",label = h5("Units used for costs"),value ="£"),
                textInput("unitBens",label = h5("Units used for benefits"),value ="QALY"),
-               #numericInput("n5",label = h5("Value of lambda (the threshold value of cost that the decision maker is willing to pay for one unit of effectiveness)"), value = 20000, min = 0, step = 1000),
                textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"),value = "England"),
 
                br()

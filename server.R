@@ -37,7 +37,7 @@ shinyServer(
     assign("costs", NULL, envir = cache)  
     assign("effects", NULL, envir = cache) 
     assign("counterAdd", 1, envir = cache)     
-    assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
+    assign("setStore", NULL, envir = cache) # up to 100 sets for the group inputs
     
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
@@ -46,7 +46,7 @@ shinyServer(
     #   load.effects <- function() read.csv("effects.csv")
     # ########### 
     
-  load("SAVISession.Rdata", envir=cache)
+  #load("SAVISession.Rdata", envir=cache)
     #  Function that loads saved session
     observe({
       inFile = input$loadSession

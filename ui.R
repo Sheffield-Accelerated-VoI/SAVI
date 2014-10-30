@@ -181,12 +181,16 @@ fluidPage(
                br(),
                plotOutput("plots2", width="500px", height="500px"),    
                br(),
+               h1("Summary Net Benefit statistics"),
+               tableOutput("tableNetBenefit"),
+               br(),
+               plotOutput("plots5a", width="500px", height="500px"),
+               br(),
                h1("Net Benefit Densities"),
                plotOutput("plots5", width="700px", height="400px"),
-               br(),
-               h1("Net Benefit Estimates"),
+               br()
                
-               tableOutput("tableNetBenefit")
+
                
                ),
       

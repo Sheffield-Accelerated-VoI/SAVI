@@ -181,17 +181,43 @@ fluidPage(
                br(),
                plotOutput("plots2", width="500px", height="500px"),    
                br(),
-               h1("Summary Net Benefit statistics"),
+               h1("Net Benefit"),
+               textOutput("textNB1"),
+               br(),
+               textOutput("textNB2"),
+               br(),
+               p("This is particularly useful when comparing several strategies because the analyst and decision maker can 
+               see in one single measure the expected net value of each strategy, rather than looking at many comparisons of 
+               incremental cost-effectiveness ratios between different options.  Under the rules of decision theory, the strategy 
+               with the highest expected net benefit is the one which a decision maker would choose as the optimal strategy."),
+               br(),
+               h3("Summary of Absolute Net Benefit Statistics"),
                tableOutput("tableNetBenefit"),
+               br(),
+               textOutput("textNB3"),
                br(),
                plotOutput("plots5a", width="500px", height="500px"),
                br(),
                h1("Net Benefit Densities"),
                plotOutput("plots5", width="700px", height="400px"),
-               br()
-               
+               br(),
+               p("Analysis of the expected incremental net benefit helps to visualise whether particular strategies are better than others 
+               and how certain a decision maker can be about the differences."),
+               br(),
+               p("If the credible intervals are small relative to the size of the bars and one decision stands out as being highest in terms 
+               of expected incremental net benefit then the decision maker has an easy choice and there is little decision uncertainty."),
+               br(),
+               p("If the credible intervals are large compared to the size of the bars and there are several strategies with ‘overlapping’ 
+               credible intervals, then several strategies are close in terms of their expected value to a decision maker, and given the 
+               relatively large decision uncertainty, it might be valuable to consider further research to reduce uncertainty. The value of 
+               reducing uncertainty to the decision maker by undertaking further research is the subject of the analyses using expected value 
+               of information calculations. These calculations can consider all decision uncertainty (the overall expected value of perfect 
+               information – overall EVPI) or for particular uncertain parameters within the PSA (expected value of perfect parameter 
+               information – EVPPI). "),
+               br(),
+               h3("Summary of Incremental Net Benefit Statistics"),
+               tableOutput("tableNetBenefit")
 
-               
                ),
       
       # Graphic

@@ -96,24 +96,6 @@ makeCeac <- function(costs.int, effects.int, incremental.int) {
 }
 
 
-word_document_local <- function (fig_width = 5, fig_height = 4, fig_caption = FALSE, 
-                                 highlight = "default", reference_docx = "default", pandoc_args = NULL) {
-  knitr <- knitr_options(opts_chunk = list(dev = "postscript", dpi = 600, 
-                                           fig.width = fig_width, fig.height = fig_height))
-  args <- c()
-  if (!is.null(highlight)) 
-    highlight <- match.arg(highlight, rmarkdown:::highlighters())
-  args <- c(args, rmarkdown::pandoc_highlight_args(highlight))
-  if (!is.null(reference_docx) && !identical(reference_docx, 
-                                             "default")) {
-    args <- c(args, "--reference-docx", rmarkdown::pandoc_path_arg(reference_docx))
-  }
-  args <- c(args, pandoc_args)
-  output_format(knitr = knitr, pandoc = rmarkdown::pandoc_options(to = "docx", 
-                                                       from = rmarkdown:::from_rmarkdown(fig_caption), 
-                                                       args = args))
-}
-
 calSubsetEvpi <- function(sets, lambda, cache) {
   numParams <- length(sets) # number of parameters in the set
   regressionFunction <- ifelse(numParams > 4, "gpFunc", "gamFunc")
@@ -128,6 +110,24 @@ calSubsetEvpi <- function(sets, lambda, cache) {
 
 
 
+# 
+# word_document_local <- function (fig_width = 5, fig_height = 4, fig_caption = FALSE, 
+#                                  highlight = "default", reference_docx = "default", pandoc_args = NULL) {
+#   knitr <- knitr_options(opts_chunk = list(dev = "postscript", dpi = 600, 
+#                                            fig.width = fig_width, fig.height = fig_height))
+#   args <- c()
+#   if (!is.null(highlight)) 
+#     highlight <- match.arg(highlight, rmarkdown:::highlighters())
+#   args <- c(args, rmarkdown::pandoc_highlight_args(highlight))
+#   if (!is.null(reference_docx) && !identical(reference_docx, 
+#                                              "default")) {
+#     args <- c(args, "--reference-docx", rmarkdown::pandoc_path_arg(reference_docx))
+#   }
+#   args <- c(args, pandoc_args)
+#   output_format(knitr = knitr, pandoc = rmarkdown::pandoc_options(to = "docx", 
+#                                                                   from = rmarkdown:::from_rmarkdown(fig_caption), 
+#                                                                   args = args))
+# }
 
 
 

@@ -160,7 +160,7 @@ fluidPage(
                           #submitButton("Change"), # this button stops everything else auto-updating!
                           #br(),
                           #br(),
-                          p(strong("Strategies Compared"),textOutput("textCEplane4")),
+                          p(strong("Strategies Compared"), textOutput("textCEplane4")),
                           br(),
                           
                           p(strong("Summary")),
@@ -209,10 +209,11 @@ fluidPage(
         
                plotOutput("plots5a", width="500px", height="500px"),
                br(),
-        
+
                h1("Net Benefit Densities"),
                plotOutput("plots5", width="700px", height="400px"),
                br(),
+        
                p("Analysis of the expected incremental net benefit helps to visualise whether particular strategies are better than others 
                and how certain a decision maker can be about the differences."),
                br(),
@@ -231,7 +232,7 @@ fluidPage(
                br(),
         
                h3("Summary of Incremental Net Benefit Statistics"),
-               tableOutput("tableNetBenefit")
+               #tableOutput("tableNetBenefitInc") Not yet made
 
                ),
       
@@ -334,17 +335,17 @@ fluidPage(
                    actionButton("addSelection", "Add selection"),
                    br(),
                    br(),
-                   br(),
                    actionButton("calculateSubsetsEvpi", "Calculate EVPPI values")),
                  
                  mainPanel(
-                   h3("Selected parameter combinations"),
+                   h4("Selected parameter combinations"),
                    br(),
                    tableOutput("selectedTable"),
                    br(),
-                   tableOutput("selectedEvpiTable"),
-                   br(),
-                   actionButton("clearSubsetsEvpi",label="Clear Selections")))         
+                   h4("Partial EVPI values"),
+                   tableOutput("selectedEvpiTable")))#,
+#                    br(),
+#                    actionButton("clearSubsetsEvpi",label="Clear Selections")))         
       ),
     
       # Numerical summary of the dataset,

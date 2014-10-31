@@ -29,12 +29,12 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
   
   main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
   plot(inc_effects, inc_costs, pty="s", cex=0.4,
-       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="orangered", ...)
+       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue", ...)
   abline(1, lambda, lty=2)
   abline(h=0)
   abline(v=0)
-  points(mean(inc_effects),mean(inc_costs), pch=20, col="black", cex=1.5)
-  text(mean(inc_effects),mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
+  points(mean(inc_effects), mean(inc_costs), pch=20, col="blue", cex=1)
+  #text(mean(inc_effects), mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
 }
 
 makeEvpiPlot <- function(costs.int, effects.int, 
@@ -43,22 +43,22 @@ makeEvpiPlot <- function(costs.int, effects.int,
   l.seq <- seq(0, 60000, 1000)
   p <- c()
   for (lambda.int in l.seq) {
-    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
+    inb.int <- data.frame(as.matrix(effects.int) * lambda.int - as.matrix(costs.int))
     if(incremental.int) {
       inb.int <- cbind(0, inb.int)
     } else {
       inb.int <- inb.int - inb.int[, 1]
     }
     #inb.int
-    evpi <- mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))
+    evpi <- mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))
     if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }  
   plot(l.seq, p, type="l", xlim = c(0, 3*lambda), ...)
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
-  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), 
-       pos=1, offset=0.1)
+  #text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), 
+  #     pos=1, offset=0.1)
 }
 
 makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda , prevalence, 
@@ -114,7 +114,7 @@ make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon
   on.exit(par(opar))
 }
 
-makeInbOptBar <- function(costs.int, effects.int, lambda) {
+makeInbOptBar <- function(costs.int, effects.int, lambda) { # NOT SURE ABOUT THIS - NEED TO DISCUSS
   nb <- createNb(costs.int, effects.int, lambda, FALSE)
   c <- which.max(as.matrix(colMeans(nb)))
   inbOpt <- nb-nb[,c]
@@ -122,7 +122,8 @@ makeInbOptBar <- function(costs.int, effects.int, lambda) {
   sd <- apply(inbOpt, 2, sd)
   colnames(inbOpt) <- colnames(nb)
   mp <- barplot(means, main = "Expected Incremental Net Benefit vs. Optimal Strategy", 
-          xlab = "Stragegy", ylab = "INB vs. Optimal Strategy",, ylim = c(min(means)-max(sd),max(means)+max(sd))) 
+          xlab = "Stragegy", ylab = "INB vs. Optimal Strategy", ylim = c(min(means)-max(sd),
+                                                                         max(means)+max(sd))) 
   segments(mp, means - sd, mp, means + sd, lwd=2)
   segments(mp - 0.1, means - sd, mp + 0.1, means - sd, lwd=2)
   segments(mp - 0.1, means + sd, mp + 0.1, means + sd, lwd=2)

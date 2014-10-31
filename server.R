@@ -38,6 +38,8 @@ shinyServer(
     
     # initialise cached variable values
     
+    print(ls())
+    
     assign("savedSession", 0, envir=cache)
     assign("nIterate", 0, envir = cache)
     assign("pEVPI", NULL, envir = cache)
@@ -47,7 +49,7 @@ shinyServer(
     assign("counterAdd", 1, envir = cache)     
     assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
     assign("subsetEvpiValues", NULL, envir=cache)
-    
+
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
     #   load.parameters <- function() read.csv("parameters.csv")                                   
@@ -55,7 +57,9 @@ shinyServer(
     #   load.effects <- function() read.csv("effects.csv")
     # ########### 
     
- # load("SAVISession.Rdata", envir=cache)
+
+  #load("SAVISession.Rdata", envir=cache)
+
     #  Function that loads saved session
     observe({
       inFile = input$loadSession
@@ -65,7 +69,7 @@ shinyServer(
       load(inFile$datapath, envir=cache)
       #print(lapply(ls(envir=cache), function(x) object.size(get(x, envir=cache))))
       #print(ls(envir=cache))
-    })   
+    })
     
     #  Function that imports parameters - NEED TO DO _ SANITY CHECK
     #loadParameters <- 
@@ -88,8 +92,8 @@ shinyServer(
         assign("nIterate", nrow(dat), envir=cache)
 #    }
     })
-    
-    #  Function that imports costs    
+
+#  Function that imports costs    
     #loadCosts <- 
       observe({
       inFile = input$costsFile
@@ -126,7 +130,42 @@ shinyServer(
  #     }
     })
     
-    # Functions that render the data files and pass them to ui.R
+   #   data sanity checks
+    
+      observe({
+        if (!valuesImportedFLAG(cache, input)) return(NULL)
+        
+        dummy1 <- input$parameterFile
+        dummy2 <- input$loadSession
+        params <- as.matrix(get("params", envir=cache))
+  
+        # first remove the constants
+        const <- which(apply(params, 2, var) == 0)
+        if (const > 0) {
+          print(paste("Constant value: removing column(s)", paste(colnames(params)[const], collapse=", "), sep = " ")) 
+          params <- params[, -const]        
+        }
+        
+        # check for linear dependence
+        rankifremoved <- sapply(1:ncol(params), function (x) qr(params[,-x])$rank)
+        while(length(unique(rankifremoved)) > 1) {
+        linearCombs <- which(rankifremoved == max(rankifremoved))
+        # print(linearCombs)
+        print(paste("Linear dependence: removing column", colnames(params)[max(linearCombs)]))
+        params <- params[, -max(linearCombs)]
+        rankifremoved <- sapply(1:ncol(params), function (x) qr(params[,-x])$rank)
+
+        }
+        
+        assign("params", params, envir = cache)
+        
+      })
+
+
+
+
+
+#    Functions that render the data files and pass them to ui.R
     
     output$checktable1 <- renderTable({
       x <- input$parameterFile 
@@ -292,7 +331,8 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       tableCEplane <- makeTableCePlane(get("costs", envir=cache), get("effects", 
                             envir=cache), lambda=input$lambdaOverall)
-      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), "Comparator", 
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), 
+                            "Comparator", 
                             "Number of PSA runs", 
                             paste("Mean inc. Effect per Person (", input$unitBens, ")"), 
                             paste("Mean inc. Cost per Person (", input$currency, ")"),
@@ -314,13 +354,14 @@ shinyServer(
      rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
                                     paste("Mean", input$costDef), 
                                     paste("Expected Net Benefit at", 
-                                          input$currency,input$lambdaOverall, "per",input$unitBens), 
+                                          input$currency, input$lambdaOverall, "per", input$unitBens), 
                                     "95% Lower CI (on Costs Scale)", 
                                     "95% Upper CI (on Costs Scale)", 
                                     "Expected Net Benefit on Effects Scale", 
                                     "95% Lower CI (on Effects Scale)", 
                                     "95% Upper CI (on Effects Scale)")
      tableNetBenefit
+
    })  
    
    output$tableEVPI <- renderTable({
@@ -381,7 +422,7 @@ shinyServer(
       makeCEPlanePlot(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambdaOverall, xlab=input$effectDef, 
                       ylab=input$costDef)
-    })  ###NEED TO ADD POINT FOR MEAN ON PLOT - SHOULD BE LARGER AND BRIGHTER (E.G.DARK RED, STANDARD SIZE AND SOLID WOULD WORK WELL)
+    })  
     
     output$plots2 <- renderPlot({
     
@@ -394,6 +435,7 @@ shinyServer(
                    names=colnames(get("costs", envir=cache)))
     })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
     
+
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall,
@@ -422,11 +464,11 @@ shinyServer(
                                        col2=input$color4)
     })
     
-    output$plots5a <- renderPlot({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
-                      lambda=input$lambdaOverall)
-    })
+#     output$plots5a <- renderPlot({ # NEED TO DISCUSS THIS - MS
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
+#                       lambda=input$lambdaOverall)
+#     })
 
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -471,7 +513,7 @@ shinyServer(
       #nCurrentSelection <- length(currentSelection)
       #nParams <- get("nParams", envir = cache)
       #completedCurrentSelection <- c(currentSelection, rep("", nParams - nCurrentSelection))
-      setStore[[counterAdd]] <-currentSelection
+      setStore[[counterAdd]] <- currentSelection
       assign("setStore", setStore, envir = cache)
       assign("counterAdd", counterAdd, envir=cache)   
     })

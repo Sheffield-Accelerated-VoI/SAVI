@@ -231,7 +231,7 @@ fluidPage(
                information – EVPPI)."),
                br(),
         
-               h3("Summary of Incremental Net Benefit Statistics"),
+               h3("Summary of Incremental Net Benefit Statistics")
                #tableOutput("tableNetBenefitInc") Not yet made
 
                ),

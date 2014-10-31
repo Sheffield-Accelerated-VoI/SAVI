@@ -274,57 +274,57 @@ shinyServer(
             input$lambdaOverall), ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
                        
-    output$textNB1 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Net benefit is a calculation that puts ", input$costDef, " and ", input$effectDef, " onto the same scale.  This is done by calculating 
-            the monetary value of ", input$effectDef, " using a simple multiplication i.e. ", input$unitBens, "s * lambda, where:", sep="")
-    })  
+#    output$textNB1 <- renderText({
+#      if (!valuesImportedFLAG(cache, input)) return(NULL)
+#      paste("Net benefit is a calculation that puts ", input$costDef, " and ", input$effectDef, " onto the same scale.  This is done by calculating 
+#            the monetary value of ", input$effectDef, " using a simple multiplication i.e. ", input$unitBens, "s * lambda, where:", sep="")
+#    })  
 
-    output$textNB2 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Net benefit for a strategy = ", input$unitBens, "s * ", input$lambdaOverall, " - Cost (" ,input$currency, ").", sep="")
-    }) 
+#    output$textNB2 <- renderText({
+#      if (!valuesImportedFLAG(cache, input)) return(NULL)
+#      paste("Net benefit for a strategy = ", input$unitBens, "s * ", input$lambdaOverall, " - Cost (" ,input$currency, ").", sep="")
+#    }) 
 
-    output$textNB3 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 95% credible 
-            interval for each one.  The strategy with highest expected net benefit is estimated to be $SmaxexpNB$, with an expected net benefit of 
-            ", input$currency, netBencosts(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
-            " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(get("costs", envir=cache), get("effects", envir=cache), 
-            input$lambdaOverall, get("nInt", envir=cache)), input$unitBens, "s. The 95% credible interval suggests that the net benefit of $SmaxexpNB$ 
-            could range from ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025),
-            " to ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " (",
-            confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025), " ", input$unitBens, "s to ",
-            confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " ", input$unitBens, "s on effect scale).", sep="")
-    }) 
+#    output$textNB3 <- renderText({
+#      if (!valuesImportedFLAG(cache, input)) return(NULL)
+#      paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 95% credible 
+#            interval for each one.  The strategy with highest expected net benefit is estimated to be $SmaxexpNB$, with an expected net benefit of 
+#            ", input$currency, netBencosts(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
+#            " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(get("costs", envir=cache), get("effects", envir=cache), 
+#            input$lambdaOverall, get("nInt", envir=cache)), input$unitBens, "s. The 95% credible interval suggests that the net benefit of $SmaxexpNB$ 
+#            could range from ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025),
+#            " to ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " (",
+#            confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025), " ", input$unitBens, "s to ",
+#            confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " ", input$unitBens, "s on effect scale).", sep="")
+#    }) 
 
-    output$textEVPI1 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("The overall EVPI per person affected by the decision is estimated at ", input$currency, ". $overall EVPIperperson$.  This is equivalent to 
-            $overallEVPIusingeffectneasure$ per person’s worth of decision uncertainty on the ", input$unitBens, " scale.", sep="")
-    })     
+#    output$textEVPI1 <- renderText({
+#      if (!valuesImportedFLAG(cache, input)) return(NULL)
+#      paste("The overall EVPI per person affected by the decision is estimated at ", input$currency, ". $overall EVPIperperson$.  This is equivalent to 
+#            $overallEVPIusingeffectneasure$ per person’s worth of decision uncertainty on the ", input$unitBens, " scale.", sep="")
+#    })     
 
-    output$textEVPI2 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency, "
-            $overall EVPIper jusrisdictionperyear$ for ", input$jurisdiction, ".", sep="")
-    }) 
+#    output$textEVPI2 <- renderText({
+#      if (!valuesImportedFLAG(cache, input)) return(NULL)
+#      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency, "
+#            $overall EVPIper jusrisdictionperyear$ for ", input$jurisdiction, ".", sep="")
+#    }) 
 
-    output$textEVPI3 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
-            will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified 
-            decision relevance horizon of ", input$horizon, " years, the overall expected value of removing decision uncertainty for ", 
-            input$jurisdiction, " would in total be ", input$currency, " $overallevpidecisionrelevance$.", sep="")
-    }) 
+#    output$textEVPI3 <- renderText({
+#      if (!valuesImportedFLAG(cache, input)) return(NULL)
+#      paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
+#            will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified 
+#            decision relevance horizon of ", input$horizon, " years, the overall expected value of removing decision uncertainty for ", 
+#            input$jurisdiction, " would in total be ", input$currency, " $overallevpidecisionrelevance$.", sep="")
+#    }) 
 
-    output$textEVPI4 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because 
-            the return on investment from the research – as measured by the health gain and cost savings of enabling decision makers ability to switch and 
-            select other strategies when evidence obtained reduces decision uncertainty – is expected to be no higher than the figure of ", input$currency, 
-            " $overallevpidecisionrelevance$.", sep="")
-    }) 
+#    output$textEVPI4 <- renderText({
+#      if (!valuesImportedFLAG(cache, input)) return(NULL)
+#      paste("Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because 
+#            the return on investment from the research – as measured by the health gain and cost savings of enabling decision makers ability to switch and 
+#            select other strategies when evidence obtained reduces decision uncertainty – is expected to be no higher than the figure of ", input$currency, 
+#            " $overallevpidecisionrelevance$.", sep="")
+#    }) 
 
     # Functions that make tables  
     output$tableCEplane <- renderTable({

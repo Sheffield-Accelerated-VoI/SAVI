@@ -20,7 +20,16 @@ gamFunc <- function(NB, sets, s=1000, cache) {
   g.hat[[1]] <- 0
   
   input.parameters <- get("params", envir=cache)
-  regression.model <- formulaGenerator(sets)
+  regression.model <- formulaGenerator(colnames(input.parameters)[sets])
+  
+  if(length(sets) == 1 & var(input.parameters[sets]) == 0) return(list(EVPI=0, SE=0))
+  
+  varSets <- apply(input.parameters[sets], 2, var)
+  
+  if (length(apply(varSets, 2, var) == 0)) > 0 {
+    
+    
+  }
   
   for(d in 2:D)
   {

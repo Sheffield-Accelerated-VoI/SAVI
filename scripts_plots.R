@@ -1,17 +1,18 @@
 # this file holds the plotting functions
 
-makeCeacPlot <- function(ceac.int, lambda.int, names, ...) {
+makeCeacPlot <- function(ceac.int, lambda.int, names.int, ...) {
   ## makes the CEAC plot
   plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1), ...)
   for (i in 2:ceac.int$d){
-    lines(ceac.int$l.seq, ceac.int$p[, i], col = i)
+    lines(ceac.int$l.seq, ceac.int$p[, i], col = i, lty = i)
   }
   abline(v=lambda.int, lty=2)
-  for (i in 1:ceac.int$d){  
-    points(lambda.int, ceac.int$p[which(ceac.int$l.seq == lambda.int), i], pch=20, col="black")
-    text(lambda.int, ceac.int$p[which(ceac.int$l.seq == lambda.int), i], ceac.int$p[which(ceac.int$l.seq == lambda.int), i], pos=1, offset=0.1, cex=0.7)
-  }
-  legend("topright", names, col = c(1:i), lty = 1)
+  # too difficult to see
+#   for (i in 1:ceac.int$d){  
+#     points(lambda.int, ceac.int$p[which(ceac.int$l.seq == lambda.int), i], pch=20, col="black")
+#     text(lambda.int, ceac.int$p[which(ceac.int$l.seq == lambda.int), i], ceac.int$p[which(ceac.int$l.seq == lambda.int), i], pos=1, offset=0.1, cex=0.7)
+#   }
+  legend("topright", names.int, col = 1:i, lty = 1:i)
 }
 
 makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
@@ -37,19 +38,13 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
   #text(mean(inc_effects), mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
 }
 
-makeEvpiPlot <- function(costs.int, effects.int, 
-                         incremental.int = FALSE, costscale = TRUE, lambda, ...) {
+makeEvpiPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, ...) {
   ## makes the overall EVPI plot
-  l.seq <- seq(0, 60000, 1000)
+  l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
     inb.int <- data.frame(as.matrix(effects.int) * lambda.int - as.matrix(costs.int))
-    if(incremental.int) {
-      inb.int <- cbind(0, inb.int)
-    } else {
-      inb.int <- inb.int - inb.int[, 1]
-    }
-    #inb.int
+
     evpi <- mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))
     if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
@@ -61,16 +56,15 @@ makeEvpiPlot <- function(costs.int, effects.int,
   #     pos=1, offset=0.1)
 }
 
-makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda , prevalence, 
+makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
                             measure) {
   ## makes the overall EVPI plot
-  l.seq <- seq(0, 60000, 1000)
+  l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
-    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
-    inb.int <- inb.int - inb.int[, 1]
-    #inb.int
-    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int)))*prevalence
+    inb.int <- data.frame(as.matrix(effects.int) * lambda.int - as.matrix(costs.int))
+     
+    evpi <- (mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))) * prevalence
     if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }  
@@ -84,13 +78,12 @@ makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda , p
 makeEvpiHorizonPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
                                 horizon, measure) {
   ## makes the overall EVPI plot
-  l.seq <- seq(0, 60000, 1000)
+  l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
-    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
-    inb.int <- inb.int - inb.int[, 1]
-    #inb.int
-    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))) * prevalence * horizon
+    inb.int <- data.frame(as.matrix(effects.int) * lambda.int - as.matrix(costs.int))
+
+    evpi <- (mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))) * prevalence * horizon
     if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }  
@@ -115,25 +108,31 @@ make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon
 }
 
 makeInbOptBar <- function(costs.int, effects.int, lambda) { # NOT SURE ABOUT THIS - NEED TO DISCUSS
-  nb <- createNb(costs.int, effects.int, lambda, FALSE)
+  nb <- createNb(costs.int, effects.int, lambda)
   c <- which.max(as.matrix(colMeans(nb)))
   inbOpt <- nb-nb[,c]
   means <- colMeans(inbOpt)
   sd <- apply(inbOpt, 2, sd)
+  lCI <- apply(inbOpt, 2, quantile, 0.025)
+  uCI <- apply(inbOpt, 2, quantile, 0.975)
   colnames(inbOpt) <- colnames(nb)
-  mp <- barplot(means, main = "Expected Incremental Net Benefit vs. Optimal Strategy", 
-          xlab = "Stragegy", ylab = "INB vs. Optimal Strategy", ylim = c(min(means)-max(sd),
-                                                                         max(means)+max(sd))) 
-  segments(mp, means - sd, mp, means + sd, lwd=2)
-  segments(mp - 0.1, means - sd, mp + 0.1, means - sd, lwd=2)
-  segments(mp - 0.1, means + sd, mp + 0.1, means + sd, lwd=2)
+  mp <- barplot(means, 
+          main = paste("Expected Incremental Net Benefit vs. Optimal Strategy\nOptimal Strategy is Strategy",c), 
+          xlab = "Strategy", ylab = "INB vs. Optimal Strategy", ylim = c(min(lCI), max(uCI)),
+          col=0, border=0, names.arg = 1:length(lCI)) 
+  segments(mp - 0.2, means, mp + 0.2, means, lwd=2)
+  segments(mp, lCI, mp, uCI, lwd=2)
+  segments(mp - 0.1, lCI, mp + 0.1, lCI, lwd=2)
+  segments(mp - 0.1, uCI, mp + 0.1, uCI, lwd=2)
+  abline(h=0, lty=2)
+
 }
 
 makeNbDensity <- function (costs.int, effects.int, lambda) {
-  nb <- createNb(costs.int, effects.int, lambda, FALSE)
+  nb <- createNb(costs.int, effects.int, lambda)
   d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
-  xmax<-max(nb)
-  xmin<-min(nb)
+  xmax<-max(nb) + 0.1 * (max(nb) - min(nb))
+  xmin<-min(nb) - 0.1 * (max(nb) - min(nb))
   ymax<-c(1:d)
   for (i in 1:d){
     den<-density(nb[, i])
@@ -143,37 +142,37 @@ makeNbDensity <- function (costs.int, effects.int, lambda) {
   plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax), 
        xlab="Net Benefit",main="Net Benefit Densities")
   for (i in 2:d){
-    lines(density(nb[, 2]), col = i)
+    lines(density(nb[, 2]), col = i, lty = i)
   }
   # Need strategy names adding
-  legend("topright",colnames(nb),col=c(1:d), lty = 1)
+  legend("topleft", colnames(nb), col=c(1:d), lty = 1:d, cex=0.7)
 }
 
 makeInbOptDens <- function (costs.int, effects.int, lambda) {
-  nb <- createNb(costs.int, effects.int, lambda, FALSE)
+  nb <- createNb(costs.int, effects.int, lambda)
   c <- which.max(as.matrix(colMeans(nb)))
-  inbOpt <- nb-nb[,c]
-  inbOpt <- as.matrix(inbOpt[,-c])
+  inbOpt <- nb - nb[,c]
+  inbOpt <- as.matrix(inbOpt[, -c])
   colnames(inbOpt) <- colnames(nb)[-c]
-  d <- ncol(inbOpt) + ifelse(FALSE, 1, 0)
-  xmax<-max(inbOpt)
-  xmin<-min(inbOpt)
-  ymax<-c(1:d)
+  d <- ncol(inbOpt) + ifelse(FALSE, 1, 0) # what does this ifelse do?
+  xmax <- max(inbOpt) + 0.1 * (max(inbOpt) - min(inbOpt))
+  xmin <- min(inbOpt) - 0.1 * (max(inbOpt) - min(inbOpt))
+  ymax <- 1:d
   for (i in 1:d){
-    den<-density(nb[, i])
-    ymax[i]<-max(den$y)
+    den <- density(inbOpt[, i])
+    ymax[i] <- max(den$y)
   }
-  ymax<-max(ymax)
+  ymax <- max(ymax)
   plot(density(inbOpt[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), 
-       ylim = c(0, ymax),xlab="INB vs. Optimal Strategy",
+       ylim = c(0, ymax), xlab="INB vs. Optimal Strategy",
        main="Incremental Net Benefit Density")
   if (d>1) {
     for (i in 2:d){
-      lines(density(inbOpt[, i]), col = i)
+      lines(density(inbOpt[, i]), col = i, lty = i)
     }    
   }
   # Need strategy names adding
-  legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)
+  legend("topleft", colnames(inbOpt), col=1:d, lty = 1:d, cex=0.7)
   abline(v=0, lty=2)
 }
 
@@ -188,7 +187,7 @@ make2wayDensity <- function(costs.int, effects.int, lambda) {
 
 makeEvppiBar <- function(pEVPI.int, params) {
   EVPPI <- matrix(pEVPI.int[order(pEVPI.int)], ncol = length(pEVPI.int), nrow = 1)
-  colnames(EVPPI)<-colnames(params[order(pEVPI.int)])
+  colnames(EVPPI) <- colnames(params[order(pEVPI.int)])
   barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  
   
 }

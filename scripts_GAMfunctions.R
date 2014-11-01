@@ -20,16 +20,25 @@ gamFunc <- function(NB, sets, s=1000, cache) {
   g.hat[[1]] <- 0
   
   input.parameters <- get("params", envir=cache)
+  paramSet <- cbind(input.parameters[, sets])
+  constantParams <- (apply(paramSet, 2, var) == 0)
+  # to sort
+#   if (sum(constantParams) == length(sets)) return(0) # if all regressors are constant
+#   
+#   if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
+#   
+#   # check for linear dependence and remove 
+#   paramSet <- cbind(params[, sets])
+#   rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+#   while(length(unique(rankifremoved)) > 1) {
+#     linearCombs <- which(rankifremoved == max(rankifremoved))
+#     # print(linearCombs)
+#     print(paste("Linear dependence: removing column", colnames(params)[max(linearCombs)]))
+#     params <- params[, -max(linearCombs)]
+#     rankifremoved <- sapply(1:ncol(params), function (x) qr(params[,-x])$rank)
+#   }
+#   
   regression.model <- formulaGenerator(colnames(input.parameters)[sets])
-  
-  if(length(sets) == 1 & var(input.parameters[sets]) == 0) return(list(EVPI=0, SE=0))
-  
-  varSets <- apply(input.parameters[sets], 2, var)
-  
-  if (length(apply(varSets, 2, var) == 0)) > 0 {
-    
-    
-  }
   
   for(d in 2:D)
   {

@@ -13,6 +13,7 @@ library(MASS)
 library(mgcv)
 library(knitr)
 library(rmarkdown)
+library(xtable)
 
 print("server.R called")
 
@@ -49,6 +50,7 @@ shinyServer(
     assign("counterAdd", 1, envir = cache)     
     assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
     assign("subsetEvpiValues", NULL, envir=cache)
+    assign("setStoreMatchEvpiValues", NULL, envir=cache)
 
     # assign null values to the about the model variables in the cache
     assign("modelName", NULL, envir = cache)

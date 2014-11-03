@@ -14,19 +14,14 @@ In section 3 the results of the Expected Value of Perfect Information (EVPI) ana
 
 In section 4 the results of single parameter Partial Expected Value of Perfect Information (EVPPI) are reported. The results of the analysis of multiple parameter EVPPI, selected in the application are provided. 
 
-```{r, echo=FALSE}
-subsetEvpiValues
-    
-
-
+```{r, echo=FALSE, results='hide'}
+lambda <- lambdaOverall
+npsa <- nIterate
 ```
 
 # 2. Exploring Current Uncertainty: Probabilistic Sensitivity Analysis Results
 ## 2.1 Probabilistic Sensitivity Analysis Summary
-```{r, echo=FALSE}
-# print(pEVPI)
-print(counterAdd)
-#print(input$modelName)
+```{r, echo=FALSE, results='asis'}
 chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIncBenefit<-probBenefit<-meanICER<-probCEInt2<-probCEInt1<-probMaxInt<-maxInt<-lowerNbcMaxInt<-upperNbcMaxInt<-meanNbcMaxInt<-percentCEInt2<-percentCEInt1<-baseInt<-99
 # Generate PSA table
 #  colnames(tableCePlane) <- colnames(costs)[2]
@@ -35,7 +30,7 @@ chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIn
 #   incBen <- effects[,2] - effects[,1]
 #   npsa <-length(costs[,1])
 #   tableCePlane <- matrix(NA,ncol=ncol(costs)-1, nrow = 13)
-#   tableCePlane[1] <- format(lambda, digits=4, nsmall = 0)
+#   tableCePlane[1] <- format(lambdaOverall, digits=4, nsmall = 0)
 #   tableCePlane[2] <- colnames(costs.int)[1]
 #   tableCePlane[3] <- format(npsa)
 #   tableCePlane[4] <- format(mean(incBen), digits=2, nsmall=4)
@@ -47,10 +42,16 @@ chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIn
 #   tableCePlane[10] <- format(quantile((incCost),0.975), digits=4, nsmall=2)
 #   tableCePlane[11] <- format(length(which((incCost)<0)) / npsa, digits=2, nsmall=3)
 #   tableCePlane[12] <- format(length(which((incBen)>0)) / npsa, digits=2, nsmall=3)
-#   tableCePlane[13] <- format(length(which((incBen) * lambda - (incCost)>0)) / npsa, digits=2,
+#   tableCePlane[13] <- format(length(which((incBen) * lambdaOverall - (incCost)>0)) / npsa, digits=2,
 #                              nsmall=3)
 #   colnames(tableCePlane) <- colnames(costs)[2]
 
+  incCost <- (costs - costs[, 1])[, -1, drop=FALSE]
+  incBen <- (effects - effects[, 1])[, -1, drop=FALSE]
+  inb <- incBen * lambda - incCost
+  npsa <- NROW(costs)
+
+makeTableCePlane <- function(costs, effects, lambda) {
   incCost <- (costs - costs[, 1])[, -1, drop=FALSE]
   incBen <- (effects - effects[, 1])[, -1, drop=FALSE]
   inb <- incBen * lambda - incCost
@@ -83,9 +84,11 @@ chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIn
                             "Probability cost saving", 
                             "Probability more benefit", 
                             "Probability cost-effective")
-  table(tableCePlane)
+  tableCePlane
+  }
+  print(xtable(makeTableCePlane(costs, effects, lambdaOverall)))
 
-#table(makeTableCePlane(costs, effects, input$lambdaOverall))
+#table(
 
 
 ```
@@ -441,6 +444,11 @@ The EVPI estimates in the table below quantifies the expected value to decision 
 ## 4.1 Group parameter EVPPI
 
 ```{r, echo=FALSE}
-tableEvpiValues<-cbind(setStoreMatchEvpiValues, subsetEvpiValues)
+if(!is.null(setStoreMatchEvpiValues)) {
+tableEvpiValues <- cbind(setStoreMatchEvpiValues, subsetEvpiValues)
 colnames(tableEvpiValues) <- c("Parameters","Partial EVPI per person","standard error")
+}
+```
+
+
 

@@ -86,7 +86,8 @@ makeTableCePlane <- function(costs, effects, lambda) {
                             "Probability cost-effective")
   tableCePlane
   }
-  print(xtable(makeTableCePlane(costs, effects, lambdaOverall)))
+
+  print(makeTableCePlane(costs, effects, lambdaOverall))
 
 #table(
 

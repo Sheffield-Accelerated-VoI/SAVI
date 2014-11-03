@@ -54,15 +54,22 @@ post.density <- function(hyperparams, NB, input.m) {
 }
 
 
-estimate.hyperparameters <- function(NB, inputs) {
+estimate.hyperparameters <- function(NB, inputs, session) {
   
   p <- NCOL(inputs)
   D <- ncol(NB)
   
   hyperparameters <- vector("list", D)
   hyperparameters[[1]] <- NA
+
+  progress1 <- shiny::Progress$new(session, min=1, max=D)
+  on.exit(progress1$close())
+  progress1$set(message = 'Calculation in progress',
+                detail = 'This may take a while...')
+  progress1$set(value = 1)
   
   for(d in 2:D) {
+    progress1$set(value = d)
     initial.values <- rep(0, p + 1)
     repeat {
       print(paste("calling optim function for net benefit", d))
@@ -82,11 +89,33 @@ estimate.hyperparameters <- function(NB, inputs) {
   
 }
 
-gpFunc <- function(NB, sets, s=1000, cache) {
+gpFunc <- function(NB, sets, s=1000, cache, session) {
   
   input.parameters <- get("params", envir=cache)
-  inputs.of.interest <- sets
+  paramSet <- cbind(input.parameters[, sets])
+  constantParams <- (apply(paramSet, 2, var) == 0)
 
+  #remove constants
+  if (sum(constantParams) == length(sets)) return(list(EVPI=0, SE=0)) # if all regressors are constant
+  if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
+  
+  # check for linear dependence and remove 
+  paramSet <- cbind(cbind(input.parameters)[, sets]) # now with constants removed
+  rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+  while(length(unique(rankifremoved)) > 1) {
+    linearCombs <- which(rankifremoved == max(rankifremoved))
+    # print(linearCombs)
+    print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
+    paramSet <- cbind(paramSet[, -max(linearCombs)])
+    sets <- sets[-max(linearCombs)]
+    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(params[,-x])$rank)
+  }  
+  
+  inputs.of.interest <- sets
+  p <- length(inputs.of.interest)
+  
+  
+  
   if(!is.null(dim(NB))) 
   {
     NB <- NB-NB[,1]
@@ -97,10 +126,7 @@ gpFunc <- function(NB, sets, s=1000, cache) {
   }
   
   
-  p <- length(inputs.of.interest)
-
- 
-  maxSample <- min(5000, nrow(NB)) # to avoidd trying to invert huge matrix
+  maxSample <- min(5000, nrow(NB)) # to avoid trying to invert huge matrix
   NB <- as.matrix(NB[1:maxSample, ])
   D <- ncol(NB)
   
@@ -115,16 +141,26 @@ gpFunc <- function(NB, sets, s=1000, cache) {
   H <- cbind(1, input.matrix)
   q <- ncol(H)
   
+
+  
   m <- min(20 * p, 100)
   setForHyperparamEst <- 1:m # sample(1:N, m, replace=FALSE)
   hyperparameters <- estimate.hyperparameters(NB[setForHyperparamEst, ], 
-                                              input.matrix[setForHyperparamEst, ])
+                                              input.matrix[setForHyperparamEst, ], session)
     
   V <- g.hat <- vector("list",D)
   g.hat[[1]] <- rep(0,N)
   
+
+  progress1 <- shiny::Progress$new(session, min=1, max=D)
+  #on.exit(progress1$close())
+  progress1$set(message = 'Calculation in progress',
+                detail = 'This may take a while...')
+  progress1$set(value = 1)
+  
   for(d in 2:D)
   {
+    progress1$set(value = d)
     print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
     delta.hat <- hyperparameters[[d]][1:p]
     nu.hat <- hyperparameters[[d]][p+1]
@@ -147,30 +183,37 @@ gpFunc <- function(NB, sets, s=1000, cache) {
                             (H-AAstarinvH)%*%(tHAHinv%*%t(H-AAstarinvH)))
     rm(A, Astarinv, AstarinvY, tHAstarinv, tHAHinv, betahat, Hbetahat, resid, sigmasqhat);gc()
   }
-  
+  progress1$close()
   perfect.info <- mean(do.call(pmax,g.hat)) 
   baseline <- max(unlist(lapply(g.hat,mean)))
   
   partial.evpi <- perfect.info - baseline
   
-    print("computing standard error and upward bias via Monte Carlo")
-    tilde.g <- vector("list",D)
-    tilde.g[[1]] <- matrix(0, nrow=s, ncol=N)     
-    
-    for(d in 2:D)
-    {
-      tilde.g[[d]] <- mvrnorm(s, g.hat[[d]][1:(min(N,1000))],V[[d]][1:(min(N,1000)),1:(min(N,1000))])
-    }
-    
-    sampled.perfect.info <- rowMeans(do.call(pmax,tilde.g))
-    sampled.baseline <- do.call(pmax,lapply(tilde.g,rowMeans)) 
-    rm(tilde.g);gc()
-    sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
-    SE <- sd(sampled.partial.evpi)
-    g.hat.short <- lapply(g.hat,function(x) x[1:(min(N,1000))])
-    mean.partial.evpi <- mean(do.call(pmax,g.hat.short)) - max(unlist(lapply(g.hat.short,mean)))
-    # upward.bias <- mean(sampled.partial.evpi) - mean.partial.evpi 
-    rm(V,g.hat);gc()
-    return(list(EVPI=partial.evpi, SE=SE))
+  print("computing standard error and upward bias via Monte Carlo")
+  tilde.g <- vector("list",D)
+  tilde.g[[1]] <- matrix(0, nrow=s, ncol=N)     
+  
+  progress2 <- shiny::Progress$new(session, min=1, max=D)
+  #on.exit(progress2$close())
+  progress2$set(message = 'Calculation in progress',
+                detail = 'This may take a while...')
+  progress2$set(value = 1)
+
+  for(d in 2:D) {
+    progress2$set(value = d)
+    tilde.g[[d]] <- mvrnorm(s, g.hat[[d]][1:(min(N,1000))],V[[d]][1:(min(N,1000)),1:(min(N,1000))])
+  }
+  progress2$close()
+  
+  sampled.perfect.info <- rowMeans(do.call(pmax,tilde.g))
+  sampled.baseline <- do.call(pmax,lapply(tilde.g,rowMeans)) 
+  rm(tilde.g);gc()
+  sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
+  SE <- sd(sampled.partial.evpi)
+  g.hat.short <- lapply(g.hat,function(x) x[1:(min(N,1000))])
+  mean.partial.evpi <- mean(do.call(pmax,g.hat.short)) - max(unlist(lapply(g.hat.short,mean)))
+  # upward.bias <- mean(sampled.partial.evpi) - mean.partial.evpi 
+  rm(V,g.hat);gc()
+  return(list(EVPI=partial.evpi, SE=SE))
 
 }

@@ -577,7 +577,7 @@ shinyServer(
       if(x==0) return(NULL)
       setStore <- get("setStore", envir=cache)
       buildSetStoreTable(setStore[1:x])
-    }, include.colnames = FALSE, sanitize.rownames.function =  bold.allrows)
+    }, sanitize.rownames.function =  bold.allrows)
 
     # Output the subset EVPI table
     output$selectedEvpiTable <- renderTable({
@@ -585,24 +585,22 @@ shinyServer(
       if(x==0) return(NULL)
       counterAdd <- get("counterAdd", envir = cache)
       setStore <- get("setStore", envir=cache)
-
-      #first pull down the existing values
-      print(subsetEvpiValues <- get("subsetEvpiValues", envir = cache))
-      if (is.null(subsetEvpiValues)) {
-        subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
-      } else {
-        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
-        subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
+        
+      calc <- function(x, inp, cache, session) {
+        calSubsetEvpi(x, inp, cache, session)
       }
-      #subsetEvpiValues <- unlist(lapply(resultsList, function(x) x$evpi)
-      #subsetEvpiValues <- unlist(lapply(setStore[1:counterAdd], calSubsetEvpi, input$lambdaOverall, cache))
+      
+      #first pull down the existing values
+        subsetEvpiValues <- get("subsetEvpiValues", envir = cache)
+        if (is.null(subsetEvpiValues)) {
+          subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, input$lambdaOverall, cache, session))
+        } else {
+          newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calc, input$lambdaOverall, cache, session))
+          subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
+        }
       assign("subsetEvpiValues", subsetEvpiValues, envir = cache)
       assign("setStoreMatchEvpiValues", setStore, envir = cache) # cache these for the report in case they change
-      
-      #sets <- buildSetStoreTable(setStore[1:counterAdd])
-      #df <- data.frame(EVPI = subsetEvpiValues, sets)
-      #names(df) <- c("EVPI", rep("", ncol(sets)))
-      
+    
       df <- data.frame(subsetEvpiValues)   
       rownames(df) <- paste("Set", 1:counterAdd)
       df

@@ -3,7 +3,8 @@
 ## S is the simulation size for the Monte Carlo computation of SE
 ##############################################################################
 
-gamFunc <- function(NB, sets, s=1000, cache) {
+gamFunc <- function(NB, sets, s=1000, cache, session) {
+
   
   if(!is.null(dim(NB))) 
   {
@@ -22,26 +23,33 @@ gamFunc <- function(NB, sets, s=1000, cache) {
   input.parameters <- get("params", envir=cache)
   paramSet <- cbind(input.parameters[, sets])
   constantParams <- (apply(paramSet, 2, var) == 0)
-  # to sort
-#   if (sum(constantParams) == length(sets)) return(0) # if all regressors are constant
-#   
-#   if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
-#   
-#   # check for linear dependence and remove 
-#   paramSet <- cbind(params[, sets])
-#   rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
-#   while(length(unique(rankifremoved)) > 1) {
-#     linearCombs <- which(rankifremoved == max(rankifremoved))
-#     # print(linearCombs)
-#     print(paste("Linear dependence: removing column", colnames(params)[max(linearCombs)]))
-#     params <- params[, -max(linearCombs)]
-#     rankifremoved <- sapply(1:ncol(params), function (x) qr(params[,-x])$rank)
-#   }
-#   
+
+  if (sum(constantParams) == length(sets)) return(list(EVPI=0, SE=0)) # if all regressors are constant
+  if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
+  
+  # check for linear dependence and remove 
+  paramSet <- cbind(cbind(input.parameters)[, sets]) # now with constants removed
+  rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+  while(length(unique(rankifremoved)) > 1) {
+    linearCombs <- which(rankifremoved == max(rankifremoved))
+    # print(linearCombs)
+    print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
+    paramSet <- cbind(paramSet[, -max(linearCombs)])
+    sets <- sets[-max(linearCombs)]
+    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(params[,-x])$rank)
+  }
+  
   regression.model <- formulaGenerator(colnames(input.parameters)[sets])
+  
+  
+  progress <- shiny::Progress$new(session, min=1, max=D-1)
+  on.exit(progress$close())
+  progress$set(message = 'Calculation in progress',
+               detail = 'This may take a while...')
   
   for(d in 2:D)
   {
+    progress$set(value = d-1)
     print(paste("estimating g.hat for incremental NB for option",d,"versus 1"))
     f <- update(formula(NB[,d]~.), formula(paste(".~", regression.model)))
     model <- gam(f, data=data.frame(input.parameters)) 
@@ -80,6 +88,10 @@ gamFunc <- function(NB, sets, s=1000, cache) {
 formulaGenerator <- function(namesList) {
   form <- paste(namesList, ",", sep="", collapse="")
   form <- substr(form, 1, nchar(form) - 1)
-  form <- paste("te(", form, ", k=4)", sep="")
+  if (length(namesList) == 4) {
+    form <- paste("te(", form, ",k=4)", sep="") # restrict to 4 knots if 4 params
+  } else {
+    form <- paste("te(", form, ")", sep="")    
+  }
   form
 }

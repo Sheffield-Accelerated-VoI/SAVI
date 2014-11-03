@@ -14,6 +14,13 @@ In section 3 the results of the Expected Value of Perfect Information (EVPI) ana
 
 In section 4 the results of single parameter Partial Expected Value of Perfect Information (EVPPI) are reported. The results of the analysis of multiple parameter EVPPI, selected in the application are provided. 
 
+```{r, echo=FALSE}
+cbind(subsetEvpiValues, setStoreMatchEvpiValues)
+    
+
+
+```
+
 # 2. Exploring Current Uncertainty: Probabilistic Sensitivity Analysis Results
 ## 2.1 Probabilistic Sensitivity Analysis Summary
 ```{r, echo=FALSE}

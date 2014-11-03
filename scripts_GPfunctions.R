@@ -104,7 +104,7 @@ gpFunc <- function(NB, sets, s=1000, cache) {
   NB <- as.matrix(NB[1:maxSample, ])
   D <- ncol(NB)
   
-  input.matrix <- as.matrix(input.parameters[1:maxSample, inputs.of.interest,drop=FALSE])
+  input.matrix <- as.matrix(input.parameters[1:maxSample, inputs.of.interest, drop=FALSE])
   colmin <- apply(input.matrix, 2, min)
   colmax <- apply(input.matrix, 2, max)
   colrange <- colmax - colmin

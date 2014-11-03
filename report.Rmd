@@ -41,6 +41,51 @@ chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIn
 #  tableCePlane[13] <- format(length(which((incBen) * lambda - (incCost)>0)) / npsa, digits=2,                     nsmall=3)
 #  colnames(tableCePlane) <- colnames(costs)[2]
 #  table(tableCePlane)
+#   incCost <- costs[,2] - costs[,1]
+#   incBen <- effects[,2] - effects[,1]
+#   npsa <-length(costs[,1])
+#   tableCePlane <- matrix(NA,ncol=ncol(costs)-1, nrow = 13)
+#   tableCePlane[1] <- format(lambda, digits=4, nsmall = 0)
+#   tableCePlane[2] <- colnames(costs.int)[1]
+#   tableCePlane[3] <- format(npsa)
+#   tableCePlane[4] <- format(mean(incBen), digits=2, nsmall=4)
+#   tableCePlane[5] <- format(mean(incCost), digits=2, nsmall=2)
+#   tableCePlane[6] <- format(mean(incCost) /  mean(incBen), digits=2, nsmall=2)
+#   tableCePlane[7] <- format(quantile((incBen),0.025), digits=4, nsmall=4)
+#   tableCePlane[8] <- format(quantile((incBen),0.975), digits=4, nsmall=4)
+#   tableCePlane[9] <- format(quantile((incCost),0.025), digits=4,  nsmall=2)
+#   tableCePlane[10] <- format(quantile((incCost),0.975), digits=4, nsmall=2)
+#   tableCePlane[11] <- format(length(which((incCost)<0)) / npsa, digits=2, nsmall=3)
+#   tableCePlane[12] <- format(length(which((incBen)>0)) / npsa, digits=2, nsmall=3)
+#   tableCePlane[13] <- format(length(which((incBen) * lambda - (incCost)>0)) / npsa, digits=2,
+#                              nsmall=3)
+#   colnames(tableCePlane) <- colnames(costs)[2]
+
+makeTableCePlane <- function(costs.int, effects.int, lambda) {
+  incCost <- (costs.int - costs.int[, 1])[, -1, drop=FALSE]
+  incBen <- (effects.int - effects.int[, 1])[, -1, drop=FALSE]
+  inb <- incBen * lambda - incCost
+  npsa <- NROW(costs.int)
+  tableCePlane <- matrix(NA, ncol=ncol(costs.int) - 1, nrow = 13) # incremental, no zero column
+  tableCePlane[1, ] <- format(lambda, digits=4, nsmall = 0)
+  tableCePlane[2, ] <- colnames(costs.int)[1]
+  tableCePlane[3, ] <- format(npsa)
+  tableCePlane[4, ] <- format(colMeans(incBen), digits=2, nsmall=4)
+  tableCePlane[5, ] <- format(colMeans(incCost), digits=2, nsmall=2)
+  tableCePlane[6, ] <- format(colMeans(incCost) /  colMeans(incBen), digits=2, nsmall=2)
+  tableCePlane[7, ] <- format(apply(incBen, 2, quantile, 0.025), digits=4, nsmall=4)
+  tableCePlane[8, ] <- format(apply(incBen, 2, quantile, 0.975), digits=4, nsmall=4)
+  tableCePlane[9, ] <- format(apply(incCost, 2, quantile, 0.025), digits=4,  nsmall=2)
+  tableCePlane[10, ] <- format(apply(incCost, 2, quantile, 0.975), digits=4, nsmall=2)
+  tableCePlane[11, ] <- format(apply(incCost, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[12, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[13, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
+  colnames(tableCePlane) <- colnames(costs.int)[-1]
+  tableCePlane
+}
+table(makeTableCePlane(costs, effects, input$lambdaOverall))
+
+
 ```
 
 ## 2.2 Cost-Effectiveness Plane
@@ -77,30 +122,34 @@ See section 5.1 in Briggs, Claxton, Sculpher.  Decision Modelling for Health Eco
 The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all strategies are cost-effective at varying thresholds.  The results show that at a threshold value for cost-effectiveness of `r input$currency` `r format(input$lambdaOverall, digits = 4)` per `r input$unitBens`, the strategy with the highest probability of being most cost-effective is `r maxInt`, with a probability of `r probMaxInt`.
 
 ```{r, echo=FALSE}
-  l.seq <- seq(0, 60000, 1000)
-  d <- ncol(costs) 
-  p <- c()
-  p.ce <- matrix(ncol = d, nrow = length(l.seq))
-  for (i in 1:length(l.seq)) {
-    lambda.int <- l.seq[i]
-    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
-    inb.int <- inb.int - inb.int[, 1]
-    inb.int
-    for(j in 1:d) {
-      p.ce[i, j] <- sum(apply(inb.int, 1, which.max) == j) / nrow(inb.int)
-    }
-  }  
-  ceac.int<-list(p=p.ce, l.seq=l.seq, d=d)
-  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1))
-  for (i in 2:ceac.int$d){
-    lines(ceac.int$l.seq, ceac.int$p[, i], col = i)
-  }
-  abline(v=input$lambdaOverall, lty=2)
-  for (i in 1:ceac.int$d){  
-    points(input$lambdaOverall, ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], pch=20, col="black")
-    text(input$lambdaOverall, ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], pos=1, offset=0.1, cex=0.7)
-  }
-  legend("topright", colnames(costs), col = c(1:i), lty = 1)
+#   l.seq <- seq(0, 60000, 1000)
+#   d <- ncol(costs) 
+#   p <- c()
+#   p.ce <- matrix(ncol = d, nrow = length(l.seq))
+#   for (i in 1:length(l.seq)) {
+#     lambda.int <- l.seq[i]
+#     inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
+#     inb.int <- inb.int - inb.int[, 1]
+#     inb.int
+#     for(j in 1:d) {
+#       p.ce[i, j] <- sum(apply(inb.int, 1, which.max) == j) / nrow(inb.int)
+#     }
+#   }  
+#   ceac.int<-list(p=p.ce, l.seq=l.seq, d=d)
+#   plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1))
+#   for (i in 2:ceac.int$d){
+#     lines(ceac.int$l.seq, ceac.int$p[, i], col = i)
+#   }
+#   abline(v=input$lambdaOverall, lty=2)
+#   for (i in 1:ceac.int$d){  
+#     points(input$lambdaOverall, ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], pch=20, col="black")
+#     text(input$lambdaOverall, ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], ceac.int$p[which(ceac.int$l.seq == input$lambdaOverall), i], pos=1, offset=0.1, cex=0.7)
+#   }
+#   legend("topright", colnames(costs), col = c(1:i), lty = 1)
+ceac.obj <- try(get("ceac.obj"), silent = TRUE)
+if (!class(ceac.obj)=="try-error") {
+ makeCeacPlot(ceac.obj, input$lambdaOverall, colnames(costs))
+}
 ```
 
 More details for how to interpret CEACs are available from the literature
@@ -150,15 +199,15 @@ The absolute monetary net benefit density is calculated for each of the `r nInt`
 ```{r, echo=FALSE}
   lambda<-input$lambdaOverall
   nb <- as.matrix(effects) * lambda - as.matrix(costs)
-  d <- ncol(costs.int) + ifelse(FALSE, 1, 0)
+  d <- ncol(costs) + ifelse(FALSE, 1, 0)
   xmax<-max(nb)
   xmin<-min(nb)
   ymax<-c(1:d)
   for (i in 1:d){
-    den<-density(nb[, i])
-    ymax[i]<-max(den$y)
+    den <- density(nb[, i])
+    ymax[i] <- max(den$y)
   }
-  ymax<-max(ymax)
+  ymax <- max(ymax)
   plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax), 
        xlab="Net Benefit",main="Net Benefit Densities")
   for (i in 2:d){
@@ -289,7 +338,7 @@ The EVPI estimates in the table below quantifies the expected value to decision 
   l.seq <- seq(0, 60000, 1000)
   p <- c()
   for (lambda.int in l.seq) {
-    inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
+    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
     inb.int <- inb.int - inb.int[, 1]
     #inb.int
     evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))) * input$annualPrev * input$horizon

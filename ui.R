@@ -58,7 +58,9 @@ fluidPage(
                         SAVI assumes that the first row of the parameter file contains the parameter names.<br>
                         SAVI assumes that the first row of the costs file and the first row of the effects file
                         both contain the decision option names.
-                      <br><br>Check the import in the next tab<br><br>
+                      <br><br>
+                        Costs and effects are assumed to be absolute rather than incremental.<br>
+                        Check the import in the next tab<br><br>
                         </div>")), 
                
 #                p(HTML("To run the application, import your samples of parameters, costs and effects using the 
@@ -105,7 +107,7 @@ fluidPage(
                # Button to import effects data
                h4("Effects importation"),
                fileInput('effectsFile', 'Choose CSV File',
-                         accept=c('text/csv', 'text/comma-separated-values,text/plain')),
+                         accept=c('text/csv', 'text/comma-separated-values,text/plain'))
                # Various checkboxes and input fields to specify the data file format
                #checkboxInput('header3', 'Is there a header row?', TRUE),
                #checkboxInput('rownames3', 'Does the first column contain row names?', FALSE),
@@ -116,8 +118,8 @@ fluidPage(
                #            '"'),
                #selectInput('dec3', 'Decimal mark', c(Dot='.', Comma=','), '.')
                
-               h4("Are uploaded costs and effects incremental or absolute?"),
-               radioButtons('incremental', label="", c("Incremental" = "TRUE", "Absolute" = "FALSE"), "FALSE")
+               #h4("Are uploaded costs and effects incremental or absolute?"),
+               #radioButtons('incremental', label="", c("Incremental" = "TRUE", "Absolute" = "FALSE"), "FALSE")
                ),
       
  
@@ -335,7 +337,7 @@ fluidPage(
                    actionButton("addSelection", "Add selection"),
                    br(),
                    br(),
-                   actionButton("calculateSubsetsEvpi", "Calculate EVPPI values")),
+                   actionButton("calculateSubsetsEvpi", "Calculate EVPPI values"), width=5),
                  
                  mainPanel(
                    h4("Selected parameter combinations"),
@@ -343,7 +345,7 @@ fluidPage(
                    tableOutput("selectedTable"),
                    br(),
                    h4("Partial EVPI values"),
-                   tableOutput("selectedEvpiTable")))#,
+                   tableOutput("selectedEvpiTable"), width=7))#,
 #                    br(),
 #                    actionButton("clearSubsetsEvpi",label="Clear Selections")))         
       ),

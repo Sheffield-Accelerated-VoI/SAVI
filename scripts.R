@@ -17,18 +17,14 @@ valuesImportedFLAG <- function(cache, input){
 }
 
 
-createInb <- function(costs.int, effects.int, lambda, incremental = FALSE) {
+createInb <- function(costs.int, effects.int, lambda) {
   ## this function creates the INB matrix
   inb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
-  if(incremental) {
-    inb <- cbind(0, inb)
-  } else {
     inb <- inb - inb[, 1]
-  }
   return(inb)
 }
 
-createNb <- function(costs.int, effects.int, lambda, incremental = FALSE) {
+createNb <- function(costs.int, effects.int, lambda) {
    ## this function creates the NB matrix
      nb <- as.matrix(effects.int) * lambda - as.matrix(costs.int)
      return(nb)
@@ -43,6 +39,7 @@ calcEvpi <- function(costs.int, effects.int, lambda) {
 
 calcSingleParamGAM <- function(inputParam, inb) {
   ## this function calculates EVPI for a single parameter using GAM
+  if(var(inputParam) == 0) return(0) # screen out constants
   D <- ncol(inb)
   N <- nrow(inb)
   g.hat <- vector("list", D)
@@ -73,21 +70,16 @@ applyCalcSingleParamGam <- function(parameterDf, inb) {
   res
 }
 
-makeCeac <- function(costs.int, effects.int, incremental.int) {
+makeCeac <- function(costs.int, effects.int, lambda) {
   ## generates the CEAC values
-  l.seq <- seq(0, 60000, 1000)
-  d <- ncol(costs.int) + ifelse(incremental.int, 1, 0)
+  l.seq <- seq(0, lambda * 10, lambda / 20)
+  d <- ncol(costs.int)
   p <- c()
   p.ce <- matrix(ncol = d, nrow = length(l.seq))
   for (i in 1:length(l.seq)) {
     lambda.int <- l.seq[i]
     inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
-    if(incremental.int) {
-      inb.int <- cbind(0, inb.int)
-    } else {
-      inb.int <- inb.int - inb.int[, 1]
-    }
-    inb.int
+
     for(j in 1:d) {
       p.ce[i, j] <- sum(apply(inb.int, 1, which.max) == j) / nrow(inb.int)
     }
@@ -107,7 +99,6 @@ calSubsetEvpi <- function(sets, lambda, cache) {
   output <- get(regressionFunction)(nb, sets, s=1000, cache)
   output
 }
-
 
 
 # 

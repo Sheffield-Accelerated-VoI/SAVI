@@ -15,7 +15,7 @@ In section 3 the results of the Expected Value of Perfect Information (EVPI) ana
 In section 4 the results of single parameter Partial Expected Value of Perfect Information (EVPPI) are reported. The results of the analysis of multiple parameter EVPPI, selected in the application are provided. 
 
 ```{r, echo=FALSE}
-cbind(subsetEvpiValues, setStoreMatchEvpiValues)
+subsetEvpiValues
     
 
 
@@ -29,23 +29,6 @@ print(counterAdd)
 #print(input$modelName)
 chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIncBenefit<-probBenefit<-meanICER<-probCEInt2<-probCEInt1<-probMaxInt<-maxInt<-lowerNbcMaxInt<-upperNbcMaxInt<-meanNbcMaxInt<-percentCEInt2<-percentCEInt1<-baseInt<-99
 # Generate PSA table
-#  incCost <- costs[,2] - costs[,1]
-#  incBen <- effects[,2] - effects[,1]
-#  npsa <-length(costs.int[,1])
-#  tableCePlane <- matrix(NA,ncol=ncol(costs)-1, nrow = 13)
-#  tableCePlane[1] <- format(lambda, digits=4, nsmall = 0)
-#  tableCePlane[2] <- colnames(costs.int)[1]
-#  tableCePlane[3] <- format(npsa)
-#  tableCePlane[4] <- format(mean(incBen), digits=2, nsmall=4)
-#  tableCePlane[5] <- format(mean(incCost), digits=2, nsmall=2)
-#  tableCePlane[6] <- format(mean(incCost) /  mean(incBen), digits=2, nsmall=2)
-#  tableCePlane[7] <- format(quantile((incBen),0.025), digits=4, nsmall=4)
-#  tableCePlane[8] <- format(quantile((incBen),0.975), digits=4, nsmall=4)
-#  tableCePlane[9] <- format(quantile((incCost),0.025), digits=4,  nsmall=2)
-#  tableCePlane[10] <- format(quantile((incCost),0.975), digits=4, nsmall=2)
-#  tableCePlane[11] <- format(length(which((incCost)<0)) / npsa, digits=2, nsmall=3)
-#  tableCePlane[12] <- format(length(which((incBen)>0)) / npsa, digits=2, nsmall=3)
-#  tableCePlane[13] <- format(length(which((incBen) * lambda - (incCost)>0)) / npsa, digits=2,                     nsmall=3)
 #  colnames(tableCePlane) <- colnames(costs)[2]
 #  table(tableCePlane)
 #   incCost <- costs[,2] - costs[,1]
@@ -68,14 +51,13 @@ chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIn
 #                              nsmall=3)
 #   colnames(tableCePlane) <- colnames(costs)[2]
 
-makeTableCePlane <- function(costs.int, effects.int, lambda) {
-  incCost <- (costs.int - costs.int[, 1])[, -1, drop=FALSE]
-  incBen <- (effects.int - effects.int[, 1])[, -1, drop=FALSE]
+  incCost <- (costs - costs[, 1])[, -1, drop=FALSE]
+  incBen <- (effects - effects[, 1])[, -1, drop=FALSE]
   inb <- incBen * lambda - incCost
-  npsa <- NROW(costs.int)
-  tableCePlane <- matrix(NA, ncol=ncol(costs.int) - 1, nrow = 13) # incremental, no zero column
+  npsa <- NROW(costs)
+  tableCePlane <- matrix(NA, ncol=ncol(costs) - 1, nrow = 13) # incremental, no zero column
   tableCePlane[1, ] <- format(lambda, digits=4, nsmall = 0)
-  tableCePlane[2, ] <- colnames(costs.int)[1]
+  tableCePlane[2, ] <- colnames(costs)[1]
   tableCePlane[3, ] <- format(npsa)
   tableCePlane[4, ] <- format(colMeans(incBen), digits=2, nsmall=4)
   tableCePlane[5, ] <- format(colMeans(incCost), digits=2, nsmall=2)
@@ -87,23 +69,36 @@ makeTableCePlane <- function(costs.int, effects.int, lambda) {
   tableCePlane[11, ] <- format(apply(incCost, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
   tableCePlane[12, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
   tableCePlane[13, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
-  colnames(tableCePlane) <- colnames(costs.int)[-1]
-  tableCePlane
-}
-table(makeTableCePlane(costs, effects, input$lambdaOverall))
+  colnames(tableCePlane) <- colnames(costs)[-1]
+  rownames(tableCePlane) <- c(paste("Threshold (", input$currency, ")"), 
+                            "Comparator", 
+                            "Number of PSA runs", 
+                            paste("Mean inc. ",input$unitBens), 
+                            paste("Mean inc. Cost (",input$currency,")"),
+                            paste("ICER Estimate (", input$currency, "per",input$unitBens,")"),
+                            paste("2.5th CI for inc. ",input$unitBens), 
+                            paste("97.5th CI for inc. ",input$unitBens),
+                            paste("2.5th CI for inc. Costs (",input$currency,")"),
+                            paste("97.5th CI for inc. Costs (",input$currency,")"),
+                            "Probability cost saving", 
+                            "Probability more benefit", 
+                            "Probability cost-effective")
+  table(tableCePlane)
+
+#table(makeTableCePlane(costs, effects, input$lambdaOverall))
 
 
 ```
 
 ## 2.2 Cost-Effectiveness Plane
-The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r nIterate` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r chosenInt2` versus `r input$current` is `r input$currency` `r meanIncCost`.  There is some uncertainty due to model parameters, with the 95% credible interval for the incremental cost ranging from (`r input$currency` `r lowerIncCost` , `r input$currency` `r lowerIncCost`).  The probability that `r chosenInt2` is cost saving compared to `r input$current` is `r probCostSaving`. The mean incremental benefit of `r chosenInt2` versus `r input$current` is `r meanIncBenefit` `r input$unitBens` .  This suggests that `r chosenInt2` is more/or less beneficial.  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r lowerIncCost` `r input$unitBens` , `r lowerIncCost` `r input$unitBens`).  The probability that `r chosenInt2` is more beneficial compared to `r input$current` is `r probBenefit`. 
+The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r nIterate` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r colnames(costs[2])` versus `r colnames(costs[1])` is `r input$currency` `r format(colMeans(incCost)[1], digits=2, nsmall=2)`.  There is some uncertainty due to model parameters, with the 95% credible interval for the incremental cost ranging from (`r input$currency` `r format(apply(incCost, 2, quantile, 0.025)[1], digits=4,  nsmall=2)` , `r input$currency` `r format(apply(incCost, 2, quantile, 0.975)[1], digits=4,  nsmall=2)`).  The probability that `r colnames(costs[2])` is cost saving compared to `r colnames(costs[1])` is `r format(apply(incCost, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)`. The mean incremental benefit of `r colnames(costs[2])` versus `r input$current` is `r format(colMeans(incBen)[1], digits=2, nsmall=4)` `r input$unitBens` .  This suggests that `r colnames(costs[2])` is more/or less beneficial.  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r format(apply(incBen, 2, quantile, 0.025)[1], digits=4, nsmall=4)` `r input$unitBens` , `r format(apply(incBen, 2, quantile, 0.975)[1], digits=4, nsmall=4)` `r input$unitBens`).  The probability that `r colnames(costs[2])` is more beneficial compared to `r colnames(costs[1])` is `r format(apply(incBen, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)`. 
 
-The incremental expected cost per unit of benefit is estimated at `r input$currency` `r meanICER` per `r input$unitBens`.  This is above/below the threshold of `r input$currency` `r format(input$lambdaOverall,digits=4)` per `r input$unitBens` that `r chosenInt2` would (not) be considered cost-effective at this threshold.  There is uncertainty with a `r probCEInt2` probability that `r chosenInt2` is more cost-effective (`r percentCEInt2` % of the probabilistic model run dots are below and to the right of the diagonal thresholdline).  
+The incremental expected cost per unit of benefit is estimated at `r input$currency` `r format(colMeans(incCost)[1] /  colMeans(incBen)[1], digits=2, nsmall=2)` per `r input$unitBens`.  This is above/below the threshold of `r input$currency` `r format(input$lambdaOverall,digits=4)` per `r input$unitBens` that `r colnames(costs[2])` would (not) be considered cost-effective at this threshold.  There is uncertainty with a `r format(apply(inb, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)` probability that `r colnames(costs[2])` is more cost-effective (`r format((apply(inb, 2, function(x) sum(x > 0))[1] / npsa)*100, digits=2, nsmall=0)` % of the probabilistic model run dots are below and to the right of the diagonal thresholdline).  
 
 ```{r, echo=FALSE}
+  lambda<-input$lambdaOverall  
   inc_costs <- costs[, 2] - costs[, 1]
   inc_effects <- effects[, 2] - effects[, 1]
-  lambda<-input$lambdaOverall
   
   m.costs <- max(abs(inc_costs))
   m.effects <- max(abs(inc_effects))
@@ -114,19 +109,17 @@ The incremental expected cost per unit of benefit is estimated at `r input$curre
   
   main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
   plot(inc_effects, inc_costs, pty="s", cex=0.4,
-       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="orangered",
-       xlab=input$effectDef, ylab=input$costDef, main = "Cost-effectiveness plane")
+       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue")
   abline(1, lambda, lty=2)
   abline(h=0)
   abline(v=0)
-  points(mean(inc_effects),mean(inc_costs), pch=20, col="black", cex=1.5)
-  text(mean(inc_effects),mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
+  points(mean(inc_effects), mean(inc_costs), pch=20, col="blue", cex=1)
 ```
 
 See section 5.1 in Briggs, Claxton, Sculpher.  Decision Modelling for Health Economic Evaluation (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (17 Aug 2006).  ISBN-13: 978-0198526629
 
 ## 2.3 The Cost-Effectiveness Acceptability Curve
-The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all strategies are cost-effective at varying thresholds.  The results show that at a threshold value for cost-effectiveness of `r input$currency` `r format(input$lambdaOverall, digits = 4)` per `r input$unitBens`, the strategy with the highest probability of being most cost-effective is `r maxInt`, with a probability of `r probMaxInt`.
+The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all strategies are cost-effective at varying thresholds.  The results show that at a threshold value for cost-effectiveness of `r input$currency` `r format(input$lambdaOverall, digits = 4)` per `r input$unitBens`, the strategy with the highest probability of being most cost-effective is `r colnames(costs[which.max(ceac.obj$p[21])])`, with a probability of `r max(ceac.obj$p[21])`.
 
 ```{r, echo=FALSE}
 #   l.seq <- seq(0, 60000, 1000)
@@ -177,7 +170,32 @@ This is particularly useful when comparing several strategies because the analys
 
 
 ```{r, echo=FALSE}
-#print(tableNBSummary)
+makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
+  
+  tableNetBenefit <- matrix(NA, ncol= nInt, nrow = 8) 
+  for (i in 1:nInt) {
+    tableNetBenefit[1,i] <- format(mean(effects.int[,i]), digits=2, nsmall=4)
+    tableNetBenefit[2,i] <- format(mean(costs.int[,i]), digits=2, nsmall=2)
+    tableNetBenefit[3,i] <- format(mean(effects.int[,i] * lambda - costs.int[,i]), digits=2, nsmall=2)
+    tableNetBenefit[4,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.025), digits=2, nsmall=2)
+    tableNetBenefit[5,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.975), digits=2, nsmall=2) 
+    tableNetBenefit[6,i] <- format(mean(effects.int[,i] - (costs.int[,i] / lambda)), digits=2, nsmall=4)
+    tableNetBenefit[7,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.025), digits=2, nsmall=4)
+    tableNetBenefit[8,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.975), digits=2, nsmall=4)
+  }
+  colnames(tableNetBenefit) <- colnames(costs.int)
+  rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
+                               paste("Mean", input$costDef), 
+                               paste("Expected Net Benefit at", 
+                                          input$currency, input$lambdaOverall, "per", input$unitBens), 
+                               "95% Lower CI (on Costs Scale)", 
+                               "95% Upper CI (on Costs Scale)", 
+                               "Expected Net Benefit on Effects Scale", 
+                               "95% Lower CI (on Effects Scale)", 
+                               "95% Upper CI (on Effects Scale)")
+  tableNetBenefit
+}
+print(makeTableNetBenefit(costs, effects, input$lambdaOverall , nInt))
 ```
 
 ## 2.4.2 Incremental Net Benefit of compared with the optimal comparator
@@ -190,12 +208,18 @@ The graph shows the incremental expected net benefit of the strategies compared 
   inbOpt <- nb-nb[,c]
   means <- colMeans(inbOpt)
   sd <- apply(inbOpt, 2, sd)
+  lCI <- apply(inbOpt, 2, quantile, 0.025)
+  uCI <- apply(inbOpt, 2, quantile, 0.975)
   colnames(inbOpt) <- colnames(nb)
-  mp <- barplot(means, main = "Expected Incremental Net Benefit vs. Optimal Strategy", 
-          xlab = "Stragegy", ylab = "INB vs. Optimal Strategy",, ylim = c(min(means)-max(sd),max(means)+max(sd))) 
-  segments(mp, means - sd, mp, means + sd, lwd=2)
-  segments(mp - 0.1, means - sd, mp + 0.1, means - sd, lwd=2)
-  segments(mp - 0.1, means + sd, mp + 0.1, means + sd, lwd=2)
+  mp <- barplot(means, 
+          main = paste("Expected Incremental Net Benefit vs. Optimal Strategy\nOptimal Strategy is Strategy",c), 
+          xlab = "Strategy", ylab = "INB vs. Optimal Strategy", ylim = c(min(lCI), max(uCI)),
+          col=0, border=0, names.arg = 1:length(lCI)) 
+  segments(mp - 0.2, means, mp + 0.2, means, lwd=2)
+  segments(mp, lCI, mp, uCI, lwd=2)
+  segments(mp - 0.1, lCI, mp + 0.1, lCI, lwd=2)
+  segments(mp - 0.1, uCI, mp + 0.1, uCI, lwd=2)
+  abline(h=0, lty=2)
 
 ```
 
@@ -206,22 +230,22 @@ The absolute monetary net benefit density is calculated for each of the `r nInt`
 ```{r, echo=FALSE}
   lambda<-input$lambdaOverall
   nb <- as.matrix(effects) * lambda - as.matrix(costs)
-  d <- ncol(costs) + ifelse(FALSE, 1, 0)
-  xmax<-max(nb)
-  xmin<-min(nb)
+  d <- ncol(costs) 
+  xmax<-max(nb) + 0.1 * (max(nb) - min(nb))
+  xmin<-min(nb) - 0.1 * (max(nb) - min(nb))
   ymax<-c(1:d)
   for (i in 1:d){
-    den <- density(nb[, i])
-    ymax[i] <- max(den$y)
+    den<-density(nb[, i])
+    ymax[i]<-max(den$y)
   }
-  ymax <- max(ymax)
+  ymax<-max(ymax)
   plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax), 
        xlab="Net Benefit",main="Net Benefit Densities")
   for (i in 2:d){
-    lines(density(nb[, 2]), col = i)
+    lines(density(nb[, i]), col = i, lty = i)
   }
   # Need strategy names adding
-  legend("topright",colnames(nb),col=c(1:d), lty = 1)
+  legend("topleft", colnames(nb), col=c(1:d), lty = 1:d, cex=0.7)
 ```
 
 
@@ -232,28 +256,28 @@ Densities for the incremental net benefit of each strategy compared with `r maxI
   lambda<-input$lambdaOverall
   nb <- as.matrix(effects) * lambda - as.matrix(costs)
   c <- which.max(as.matrix(colMeans(nb)))
-  inbOpt <- nb-nb[,c]
-  inbOpt <- as.matrix(inbOpt[,-c])
+  inbOpt <- nb - nb[,c]
+  inbOpt <- as.matrix(inbOpt[, -c])
   colnames(inbOpt) <- colnames(nb)[-c]
-  d <- ncol(inbOpt) + ifelse(FALSE, 1, 0)
-  xmax<-max(inbOpt)
-  xmin<-min(inbOpt)
-  ymax<-c(1:d)
+  d <- ncol(inbOpt) + ifelse(FALSE, 1, 0) # what does this ifelse do?
+  xmax <- max(inbOpt) + 0.1 * (max(inbOpt) - min(inbOpt))
+  xmin <- min(inbOpt) - 0.1 * (max(inbOpt) - min(inbOpt))
+  ymax <- 1:d
   for (i in 1:d){
-    den<-density(nb[, i])
-    ymax[i]<-max(den$y)
+    den <- density(inbOpt[, i])
+    ymax[i] <- max(den$y)
   }
-  ymax<-max(ymax)
+  ymax <- max(ymax)
   plot(density(inbOpt[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), 
-       ylim = c(0, ymax),xlab="INB vs. Optimal Strategy",
+       ylim = c(0, ymax), xlab="INB vs. Optimal Strategy",
        main="Incremental Net Benefit Density")
   if (d>1) {
     for (i in 2:d){
-      lines(density(inbOpt[, i]), col = i)
+      lines(density(inbOpt[, i]), col = i, lty = i)
     }    
   }
   # Need strategy names adding
-  legend("topright",colnames(inbOpt),col=c(1:d), lty = 1)
+  legend("topleft", colnames(inbOpt), col=1:d, lty = 1:d, cex=0.7)
   abline(v=0, lty=2)
 ```
 
@@ -282,31 +306,51 @@ Research or data collection exercises costing more than this amount would not be
 The EVPI estimates in the table below quantifies the expected value to decision makers within the jurisdiction of removing all current decision uncertainty at a threshold of `r input$currency` `r format(input$lambdaOverall,digits=4)` per `r input$unitBens`.  This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate for varying willingness to pay thresholds are illustrated in the figures below. 
 
 ```{r, echo=FALSE}
-#print(tableEvpi)
+     tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
+     colnames(tableEVPI) <- c(paste("EVPI Financial Valuation (",input$currency,")"), paste("EVPI", input$unitBens, "Valuation"))
+     rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
+                              paste("Assuming", input$annualPrev, "Persons Affected per Year"), 
+                              "Over 5 Years", 
+                              "Over 10 Years", 
+                              "Over 15 Years", 
+                              "Over 20 years", 
+                              paste("Over Decision Relevance Horizon (",input$horizon, "years)"))
+     
+     overallEvpi <- calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+              lambda=input$lambdaOverall)
+     assign("overallEvpi", overallEvpi, envir = cache)
+     assign("lambdaOverall", input$lambdaOverall, envir = cache)
+     evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 
+                     overallEvpi * input$annualPrev * 10, overallEvpi * input$annualPrev * 15,
+                     overallEvpi * input$annualPrev * 20,
+                     overallEvpi * input$annualPrev * input$horizon)     
+     tableEVPI[, 1] <- signif(evpiVector, 4)          
+     tableEVPI[, 2] <- signif(evpiVector / input$lambdaOverall, 4)   
+     tableEVPI
 ```
 
 ```{r, echo=FALSE}
   ## makes the overall EVPI plot
   lambda.int<-input$lambdaOverall 
-  l.seq <- seq(0, 60000, 1000)
+  l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
-    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
-    inb.int <- inb.int - inb.int[, 1]
-    #inb.int
-    evpi <- mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))
+    inb.int <- data.frame(as.matrix(effects) * lambda.int - as.matrix(costs))
+
+    evpi <- mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))
     p <- c(p, evpi)
-  }  
-  plot(l.seq, p, type="l", xlim = c(0, 3*lambda))
+  }
+  plot(l.seq, p, type="l", main = paste("Overall EVPI per person ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
-  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), pos=1, offset=0.1)
+  #text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), pos=1, offset=0.1)
+  
 ```
 
 ```{r, echo=FALSE}
   ## makes the overall EVPI plot
   lambda.int<-input$lambdaOverall 
-  l.seq <- seq(0, 60000, 1000)
+  l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
     inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
@@ -325,7 +369,7 @@ The EVPI estimates in the table below quantifies the expected value to decision 
 ```{r, echo=FALSE}
   ## makes the overall EVPI plot
   lambda.int<-input$lambdaOverall 
-  l.seq <- seq(0, 60000, 1000)
+  l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
     inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
@@ -342,7 +386,7 @@ The EVPI estimates in the table below quantifies the expected value to decision 
 ```
 
 ```{r, echo=FALSE}
-  l.seq <- seq(0, 60000, 1000)
+  l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
     inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
@@ -362,13 +406,41 @@ The EVPI estimates in the table below quantifies the expected value to decision 
 ## 4.1 Single parameter EVPPI
 
 ```{r, echo=FALSE}
-print(pEVPI)
-#print(tableEvppi)
+     lambda <- input$lambdaOverall # re-run if labmda changes
+     assign("lambdaOverall", input$lambdaOverall, envir = cache)
+     params <- get("params", envir=cache)
+     costs <- get("costs", envir=cache)
+     effects <- get("effects", envir=cache)
+
+     overallEvpi <- calcEvpi(costs, effects, lambda)
+     assign("overallEvpi", overallEvpi, envir = cache)
+     
+     inb <- createInb(costs, effects, lambda)
+     pEVPI <- applyCalcSingleParamGam(params, inb)
+     assign("pEVPI", pEVPI, envir=cache)
+     
+     tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 4)
+     tableEVPPI[, 1] <- round(pEVPI, 2)
+     tableEVPPI[, 2] <- round(pEVPI / overallEvpi , 2)
+     tableEVPPI[, 3] <- signif(pEVPI * input$annualPrev, 4)
+     tableEVPPI[, 4] <- signif(pEVPI * input$annualPrev * input$horizon, 4)
+     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", 
+                               paste("EVPPI for ", input$jurisdiction, " Per Year"), 
+                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
+     rownames(tableEVPPI) <- colnames(get("params", envir=cache))
+     tableEVPPI
 ```
 
 ```{r, echo=FALSE}
-#  EVPPI <- matrix(pEVPI[order(pEVPI)], ncol = length(pEVPI), nrow = 1)
-#  colnames(EVPPI)<-colnames(params[order(pEVPI)])
-#  barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  
+  EVPPI <- matrix(pEVPI[order(pEVPI)], ncol = length(pEVPI), nrow = 1)
+  colnames(EVPPI)<-colnames(params[order(pEVPI)])
+  barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  
   
 ```
+
+## 4.1 Group parameter EVPPI
+
+```{r, echo=FALSE}
+tableEvpiValues<-cbind(setStoreMatchEvpiValues, subsetEvpiValues)
+colnames(tableEvpiValues) <- c("Parameters","Partial EVPI per person","standard error")
+

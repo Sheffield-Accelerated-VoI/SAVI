@@ -142,7 +142,7 @@ makeNbDensity <- function (costs.int, effects.int, lambda) {
   plot(density(nb[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), ylim = c(0, ymax), 
        xlab="Net Benefit",main="Net Benefit Densities")
   for (i in 2:d){
-    lines(density(nb[, 2]), col = i, lty = i)
+    lines(density(nb[, i]), col = i, lty = i)
   }
   # Need strategy names adding
   legend("topleft", colnames(nb), col=c(1:d), lty = 1:d, cex=0.7)

@@ -2,7 +2,7 @@
 
 makeCeacPlot <- function(ceac.int, lambda.int, names.int, ...) {
   ## makes the CEAC plot
-  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0,1), ...)
+  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0, 1), ...)
   for (i in 2:ceac.int$d){
     lines(ceac.int$l.seq, ceac.int$p[, i], col = i, lty = i)
   }
@@ -40,7 +40,7 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
 
 makeEvpiPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, ...) {
   ## makes the overall EVPI plot
-  l.seq <- seq(0, lambda * 10, lambda / 20)
+  l.seq <- seq(0, lambda * 10, lambda / 5)
   p <- c()
   for (lambda.int in l.seq) {
     inb.int <- data.frame(as.matrix(effects.int) * lambda.int - as.matrix(costs.int))
@@ -59,9 +59,16 @@ makeEvpiPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, ...) 
 makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
                             measure) {
   ## makes the overall EVPI plot
-  l.seq <- seq(0, lambda * 10, lambda / 20)
+  l.seq <- seq(0, lambda * 10, lambda / 5)
   p <- c()
+  
+  progress <- shiny::Progress$new(session, min=0, max=lambda * 10)
+  on.exit(progress$close())
+  progress$set(message = 'Calculation in progress',
+               detail = 'This may take a while...')
+  
   for (lambda.int in l.seq) {
+    progress$set(value = lambda.int)
     inb.int <- data.frame(as.matrix(effects.int) * lambda.int - as.matrix(costs.int))
      
     evpi <- (mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))) * prevalence

@@ -72,7 +72,7 @@ applyCalcSingleParamGam <- function(parameterDf, inb) {
 
 makeCeac <- function(costs.int, effects.int, lambda) {
   ## generates the CEAC values
-  l.seq <- seq(0, lambda * 10, lambda / 20)
+  l.seq <- seq(0, lambda * 10, lambda / 5)
   d <- ncol(costs.int)
   p <- c()
   p.ce <- matrix(ncol = d, nrow = length(l.seq))

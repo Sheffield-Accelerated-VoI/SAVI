@@ -158,36 +158,7 @@ shinyServer(
  #     }
     })
     
-   #   data sanity checks
-    
-#       observe({
-#         if (!valuesImportedFLAG(cache, input)) return(NULL)
-#         
-#         dummy1 <- input$parameterFile
-#         dummy2 <- input$loadSession
-#         params <- as.matrix(get("params", envir=cache))
-#   
-#         # first remove the constants
-#         const <- which(apply(params, 2, var) == 0)
-#         if (const > 0) {
-#           print(paste("Constant value: removing column(s)", paste(colnames(params)[const], collapse=", "), sep = " ")) 
-#           params <- params[, -const]        
-#         }
-#         
-#         # check for linear dependence
-#         rankifremoved <- sapply(1:ncol(params), function (x) qr(params[,-x])$rank)
-#         while(length(unique(rankifremoved)) > 1) {
-#         linearCombs <- which(rankifremoved == max(rankifremoved))
-#         # print(linearCombs)
-#         print(paste("Linear dependence: removing column", colnames(params)[max(linearCombs)]))
-#         params <- params[, -max(linearCombs)]
-#         rankifremoved <- sapply(1:ncol(params), function (x) qr(params[,-x])$rank)
-# 
-#         }
-#         
-#         assign("params", params, envir = cache)
-#         
-#       })
+
 
 # function that saves "about the model" variables to the cache if they are changed in the input.
     observe({

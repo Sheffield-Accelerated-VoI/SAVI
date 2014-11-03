@@ -44,8 +44,9 @@ calcSingleParamGAM <- function(inputParam, inb) {
   N <- nrow(inb)
   g.hat <- vector("list", D)
   g.hat[[1]] <- rep(0, N)   
-  
+    
   for(d in 2:D) {
+    
     #print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
     f <- formula(inb[, d] ~ te(inputParam))
     model <- gam(f) 
@@ -59,24 +60,44 @@ calcSingleParamGAM <- function(inputParam, inb) {
   partial.evpi
 }
 
-applyCalcSingleParamGam <- function(parameterDf, inb) {
+applyCalcSingleParamGam <- function(parameterDf, inb, session) {
   ## this function applies singleParamGAM over the parameters
+  
+  calc <- function(x, inb) {
+    progress$inc(amount = 1)
+    calcSingleParamGAM(x, inb)
+  }
+  
   parameterDf <- as.matrix(parameterDf)
-  numVar <- sapply(1:ncol(parameterDf),function(x){is.numeric(parameterDf[, x])})
+  numVar <- sapply(1:NCOL(parameterDf), function(x) is.numeric(parameterDf[, x]))
+  
+  progress <- shiny::Progress$new(session, min=1, max=numVar)
+  on.exit(progress$close())
+  progress$set(message = 'Calculation in progress',
+               detail = 'This may take a while...')
+  
   if (sum(numVar)==0) {
     return(NULL)
     stop("PSA parameters are non-numeric!")
-  } else res <- apply(parameterDf[, numVar], 2, calcSingleParamGAM, inb)
+  } else res <- apply(parameterDf[, numVar], 2, calc, inb)
   res
 }
 
-makeCeac <- function(costs.int, effects.int, lambda) {
+makeCeac <- function(costs.int, effects.int, lambda, session) {
   ## generates the CEAC values
   l.seq <- seq(0, lambda * 10, lambda / 5)
   d <- ncol(costs.int)
   p <- c()
+  
+  progress <- shiny::Progress$new(session, min=0, max=length(l.seq))
+  on.exit(progress$close())
+  progress$set(message = 'Calculation in progress',
+               detail = 'This may take a while...')
+  
   p.ce <- matrix(ncol = d, nrow = length(l.seq))
   for (i in 1:length(l.seq)) {
+    progress$set(value = i)
+    
     lambda.int <- l.seq[i]
     inb.int <- as.matrix(effects.int) * lambda.int - as.matrix(costs.int)
 

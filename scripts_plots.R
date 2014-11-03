@@ -3,6 +3,7 @@
 makeCeacPlot <- function(ceac.int, lambda.int, names.int, ...) {
   ## makes the CEAC plot
   plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0, 1), ...)
+  
   for (i in 2:ceac.int$d){
     lines(ceac.int$l.seq, ceac.int$p[, i], col = i, lty = i)
   }
@@ -38,11 +39,19 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
   #text(mean(inc_effects), mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
 }
 
-makeEvpiPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, ...) {
+makeEvpiPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, session, ...) {
   ## makes the overall EVPI plot
   l.seq <- seq(0, lambda * 10, lambda / 5)
   p <- c()
+  
+  progress <- shiny::Progress$new(session, min=0, max=lambda * 10)
+  on.exit(progress$close())
+  progress$set(message = 'Calculation in progress',
+               detail = 'This may take a while...')
+  
   for (lambda.int in l.seq) {
+    progress$set(value = lambda.int)
+    
     inb.int <- data.frame(as.matrix(effects.int) * lambda.int - as.matrix(costs.int))
 
     evpi <- mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))
@@ -57,7 +66,7 @@ makeEvpiPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, ...) 
 }
 
 makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
-                            measure) {
+                            measure, session) {
   ## makes the overall EVPI plot
   l.seq <- seq(0, lambda * 10, lambda / 5)
   p <- c()
@@ -83,11 +92,19 @@ makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, pr
 }
 
 makeEvpiHorizonPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
-                                horizon, measure) {
+                                horizon, measure, session) {
   ## makes the overall EVPI plot
-  l.seq <- seq(0, lambda * 10, lambda / 20)
+  l.seq <- seq(0, lambda * 10, lambda / 5)
   p <- c()
+  
+  progress <- shiny::Progress$new(session, min=0, max=lambda * 10)
+  on.exit(progress$close())
+  progress$set(message = 'Calculation in progress',
+               detail = 'This may take a while...')
+  
   for (lambda.int in l.seq) {
+    progress$set(value = lambda.int)
+    
     inb.int <- data.frame(as.matrix(effects.int) * lambda.int - as.matrix(costs.int))
 
     evpi <- (mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))) * prevalence * horizon
@@ -102,15 +119,15 @@ makeEvpiHorizonPlot <- function(costs.int, effects.int, costscale = TRUE, lambda
 }
 
 make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon, measure1, 
-                             measure2) {
+                             measure2, session) {
   ## makes a four way plot of CE plane, CEAC and EVPI
   opar <- par(mfrow = c(2,2))
-  makeEvpiPopPlot(costs.int, effects.int, costscale = TRUE, lambda, prevalence, measure1)
-  makeEvpiPopPlot(costs.int, effects.int, costscale = FALSE, lambda, prevalence, measure2)
+  makeEvpiPopPlot(costs.int, effects.int, costscale = TRUE, lambda, prevalence, measure1, session)
+  makeEvpiPopPlot(costs.int, effects.int, costscale = FALSE, lambda, prevalence, measure2, session)
   makeEvpiHorizonPlot(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
-                      horizon, measure1)
+                      horizon, measure1, session)
   makeEvpiHorizonPlot(costs.int, effects.int, costscale = FALSE, lambda, prevalence, 
-                      horizon, measure2)
+                      horizon, measure2, session)
   on.exit(par(opar))
 }
 

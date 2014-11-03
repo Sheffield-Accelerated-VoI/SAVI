@@ -213,17 +213,17 @@ shinyServer(
     # Stores pEVPI object in cache
     # also stores the inb object
     
-    calcPartialEvpi <- reactive({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      inb <- createInb(get("costs", envir=cache), get("effects", envir=cache), 
-                       input$lambdaOverall)
-      assign("lambdaOverall", input$lambdaOverall, envir = cache)
-      assign("inb", inb, envir=cache)
-      pEVPI <- cbind(applyCalcSingleParamGam(get("params", envir=cache), inb))
-      assign("pEVPI", pEVPI, envir = cache)
-      pEVPI
-    })
-    
+#     calcPartialEvpi <- reactive({
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       inb <- createInb(get("costs", envir=cache), get("effects", envir=cache), 
+#                        input$lambdaOverall)
+#       assign("lambdaOverall", input$lambdaOverall, envir = cache)
+#       assign("inb", inb, envir=cache)
+#       pEVPI <- cbind(applyCalcSingleParamGam(get("params", envir=cache), inb, session))
+#       assign("pEVPI", pEVPI, envir = cache)
+#       pEVPI
+#     })
+#     
     output$summary <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       calcPartialEvpi()
@@ -232,7 +232,7 @@ shinyServer(
     # function that calculates ceac
     ceac <- reactive({ 
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeCeac(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)
+      makeCeac(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, session)
     })
         
   
@@ -416,8 +416,10 @@ shinyServer(
      assign("overallEvpi", overallEvpi, envir = cache)
      
      inb <- createInb(costs, effects, lambda)
-     pEVPI <- applyCalcSingleParamGam(params, inb)
+     pEVPI <- applyCalcSingleParamGam(params, inb, session)
      assign("pEVPI", pEVPI, envir=cache)
+     
+     #pEVPI <- get("pEVPI", envir=cache)
      
      tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 4)
      tableEVPPI[, 1] <- round(pEVPI, 2)
@@ -461,7 +463,7 @@ shinyServer(
                    main=input$main3, 
                    xlab="Threshold willingness to pay", 
                    ylab="Overall EVPI per person affected (on costs scale)",
-                   col="red",  costscale = TRUE)
+                   col="red",  costscale = TRUE, session)
     })
     
     output$plots4 <- renderPlot({
@@ -470,7 +472,7 @@ shinyServer(
                    main=input$main4, 
                    xlab="Threshold willingness to pay", 
                    ylab="Overall EVPI per person affected (on effects scale)",
-                   col="red",  costscale = FALSE)
+                   col="red",  costscale = FALSE, session)
     })
     
     output$plots4way <- renderPlot({
@@ -499,7 +501,7 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make4wayEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall, 
                        prevalence=input$annualPrev, horizon=input$horizon, measure1 = input$currency, 
-                       measure2 = input$unitBens)
+                       measure2 = input$unitBens, session)
     })
     
     output$plot7 <- renderPlot({

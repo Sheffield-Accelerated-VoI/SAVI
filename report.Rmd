@@ -86,6 +86,7 @@ chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIn
                             "Probability cost-effective")
   tableCePlane
   }
+
   print(kable(makeTableCePlane(costs, effects, lambda)))
 
 

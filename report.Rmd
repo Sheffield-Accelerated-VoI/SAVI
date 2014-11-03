@@ -51,7 +51,7 @@ chosenInt2 <- chosenInt1 <- meanIncCost <- lowerIncCost <-probCostSaving<-meanIn
   inb <- incBen * lambda - incCost
   npsa <- NROW(costs)
 
-makeTableCePlane <- function(costs, effects, lambda) {
+ makeTableCePlane <- function(costs, effects, lambda) {
   incCost <- (costs - costs[, 1])[, -1, drop=FALSE]
   incBen <- (effects - effects[, 1])[, -1, drop=FALSE]
   inb <- incBen * lambda - incCost
@@ -86,9 +86,7 @@ makeTableCePlane <- function(costs, effects, lambda) {
                             "Probability cost-effective")
   tableCePlane
   }
-  print(xtable(makeTableCePlane(costs, effects, lambdaOverall)))
-
-#table(
+  print(kable(makeTableCePlane(costs, effects, lambda)))
 
 
 ```
@@ -172,7 +170,7 @@ Net benefit (NB) is a calculation to put the costs and the `r input$unitBens`s o
 This is particularly useful when comparing several strategies because the analyst and decision maker can see in one single measure the expected net value of each strategy, rather than looking at many comparisons of incremental cost-effectiveness ratios between different options.  Under the rules of decision theory, the strategy with the highest expected net benefit is the one which a decision maker would choose as the optimal startegy.
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, results='asis'}
 makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
   
   tableNetBenefit <- matrix(NA, ncol= nInt, nrow = 8) 
@@ -198,7 +196,7 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
                                "95% Upper CI (on Effects Scale)")
   tableNetBenefit
 }
-print(makeTableNetBenefit(costs, effects, input$lambdaOverall , nInt))
+print(kable(makeTableNetBenefit(costs, effects, input$lambdaOverall , nInt)))
 ```
 
 ## 2.4.2 Incremental Net Benefit of compared with the optimal comparator
@@ -308,7 +306,7 @@ Research or data collection exercises costing more than this amount would not be
 
 The EVPI estimates in the table below quantifies the expected value to decision makers within the jurisdiction of removing all current decision uncertainty at a threshold of `r input$currency` `r format(input$lambdaOverall,digits=4)` per `r input$unitBens`.  This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate for varying willingness to pay thresholds are illustrated in the figures below. 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, results='asis'}
      tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
      colnames(tableEVPI) <- c(paste("EVPI Financial Valuation (",input$currency,")"), paste("EVPI", input$unitBens, "Valuation"))
      rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
@@ -329,7 +327,7 @@ The EVPI estimates in the table below quantifies the expected value to decision 
                      overallEvpi * input$annualPrev * input$horizon)     
      tableEVPI[, 1] <- signif(evpiVector, 4)          
      tableEVPI[, 2] <- signif(evpiVector / input$lambdaOverall, 4)   
-     tableEVPI
+     print(kable(tableEVPI))
 ```
 
 ```{r, echo=FALSE}
@@ -365,7 +363,7 @@ The EVPI estimates in the table below quantifies the expected value to decision 
   plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
-  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), pos=1, offset=0.1)
+  #text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), pos=1, offset=0.1)
   
 ```
 
@@ -385,7 +383,7 @@ The EVPI estimates in the table below quantifies the expected value to decision 
   plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", input$unitBens), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$unitBens))
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
-  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), pos=1, offset=0.1)
+  #text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), pos=1, offset=0.1)
 ```
 
 ```{r, echo=FALSE}
@@ -401,14 +399,13 @@ The EVPI estimates in the table below quantifies the expected value to decision 
   plot(l.seq, p, type="l", main = paste("Overall EVPI over decision relevance ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
-  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), 
-       pos=1, offset=0.1)
+  #text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0),pos=1, offset=0.1)
 ```
 
 # 4. Which parameters are causing most of the decision uncertainty and what is the potential value of reducing uncertainty by collecting more data: Partial Expected Value of Perfect Information
 ## 4.1 Single parameter EVPPI
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, results='asis'}
      lambda <- input$lambdaOverall # re-run if labmda changes
      assign("lambdaOverall", input$lambdaOverall, envir = cache)
      params <- get("params", envir=cache)
@@ -431,7 +428,7 @@ The EVPI estimates in the table below quantifies the expected value to decision 
                                paste("EVPPI for ", input$jurisdiction, " Per Year"), 
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(get("params", envir=cache))
-     tableEVPPI
+     print(kable(tableEVPPI))
 ```
 
 ```{r, echo=FALSE}
@@ -443,10 +440,11 @@ The EVPI estimates in the table below quantifies the expected value to decision 
 
 ## 4.1 Group parameter EVPPI
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, results='asis'}
 if(!is.null(setStoreMatchEvpiValues)) {
 tableEvpiValues <- cbind(setStoreMatchEvpiValues, subsetEvpiValues)
 colnames(tableEvpiValues) <- c("Parameters","Partial EVPI per person","standard error")
+print(kable(tableEvpiValues))
 }
 ```
 

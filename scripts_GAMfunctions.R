@@ -36,7 +36,7 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
     print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
     paramSet <- cbind(paramSet[, -max(linearCombs)])
     sets <- sets[-max(linearCombs)]
-    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(params[,-x])$rank)
+    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   }
   
   regression.model <- formulaGenerator(colnames(input.parameters)[sets])

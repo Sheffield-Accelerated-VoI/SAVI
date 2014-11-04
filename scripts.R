@@ -62,24 +62,32 @@ calcSingleParamGAM <- function(inputParam, inb) {
 
 applyCalcSingleParamGam <- function(parameterDf, inb, session) {
   ## this function applies singleParamGAM over the parameters
-  
-  calc <- function(x, inb) {
-    progress$inc(amount = 1)
-    calcSingleParamGAM(x, inb)
-  }
-  
-  parameterDf <- as.matrix(parameterDf)
+#   
+#   calc <- function(x, inb) {
+# 
+#     calcSingleParamGAM(x, inb)
+#   }
+#   
   numVar <- sapply(1:NCOL(parameterDf), function(x) is.numeric(parameterDf[, x]))
-  
-  progress <- shiny::Progress$new(session, min=1, max=numVar)
+  parameterDf <- as.matrix(parameterDf)
+    
+  progress <- shiny::Progress$new(session, min=1, max=sum(numVar))
+  print(sum(numVar))
   on.exit(progress$close())
   progress$set(message = 'Calculation in progress',
                detail = 'This may take a while...')
   
+  res <- numeric(NCOL(parameterDf[, numVar]))
+  
   if (sum(numVar)==0) {
     return(NULL)
     stop("PSA parameters are non-numeric!")
-  } else res <- apply(parameterDf[, numVar], 2, calc, inb)
+  } else {
+    for (i in 1:NCOL(parameterDf[, numVar])) {
+      progress$set(i)
+      res[i] <- calcSingleParamGAM(cbind(parameterDf[, numVar])[, i], inb)
+    }
+  }
   res
 }
 

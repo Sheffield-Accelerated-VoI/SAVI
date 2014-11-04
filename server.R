@@ -1,6 +1,7 @@
 # source all the functions we need
 
 options(shiny.maxRequestSize=100*1024^2) # increase max upload to 100Mb
+options(shiny.reactlog=TRUE)
 
 source("scripts.R")
 source("scripts_GPfunctions.R") # separate file to hold the GPfunctions
@@ -89,17 +90,17 @@ shinyServer(
       load(inFile$datapath, envir=cache)
       # update "about the model" variables
 
-      updateNumericInput(session, "modelName", value = get("modelName", envir=cache))
-      updateNumericInput(session, "current",  value = get("current", envir=cache))
-      updateNumericInput(session, "t3",  value = get("t3", envir=cache))
+      updateTextInput(session, "modelName", value = get("modelName", envir=cache))
+      updateTextInput(session, "current",  value = get("current", envir=cache))
+      updateTextInput(session, "t3",  value = get("t3", envir=cache))
       updateNumericInput(session, "lambdaOverall",  value = get("lambdaOverall", envir=cache))
-      updateNumericInput(session, "effectDef",  value = get("effectDef", envir=cache))
-      updateNumericInput(session, "costDef",  value = get("costDef", envir=cache))
+      updateTextInput(session, "effectDef",  value = get("effectDef", envir=cache))
+      updateTextInput(session, "costDef",  value = get("costDef", envir=cache))
       updateNumericInput(session, "annualPrev",  value = get("annualPrev", envir=cache))
       updateNumericInput(session, "horizon",  value = get("horizon", envir=cache))
-      updateNumericInput(session, "currency",  value = get("currency", envir=cache))
-      updateNumericInput(session, "unitBens",  value = get("unitBens", envir=cache))
-      updateNumericInput(session, "jurisdiction",  value = get("jurisdiction", envir=cache))
+      updateTextInput(session, "currency",  value = get("currency", envir=cache))
+      updateTextInput(session, "unitBens",  value = get("unitBens", envir=cache))
+      updateTextInput(session, "jurisdiction",  value = get("jurisdiction", envir=cache))
       
     })
     

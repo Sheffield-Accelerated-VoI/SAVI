@@ -2,7 +2,10 @@
 
 makeCeacPlot <- function(ceac.int, lambda.int, names.int, ...) {
   ## makes the CEAC plot
-  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0, 1), ...)
+  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0, 1), , 
+                   main="Cost-effectiveness Acceptability Curve", 
+                   xlab="Threshold willingness to pay", 
+                   ylab="Probability strategy is cost-effective", ...)
   
   for (i in 2:ceac.int$d){
     lines(ceac.int$l.seq, ceac.int$p[, i], col = i, lty = i)
@@ -189,7 +192,7 @@ makeInbOptDens <- function (costs.int, effects.int, lambda) {
   ymax <- max(ymax)
   plot(density(inbOpt[, 1]), type = "l", col = 1, xlim = c(xmin, xmax), 
        ylim = c(0, ymax), xlab="INB vs. Optimal Strategy",
-       main="Incremental Net Benefit Density")
+       main = paste("Incremental Net Benefit Density\nOptimal Strategy is",colnames(costs.int[c])))
   if (d>1) {
     for (i in 2:d){
       lines(density(inbOpt[, i]), col = i, lty = i)

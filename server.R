@@ -47,6 +47,7 @@ shinyServer(
     
     assign("savedSession", 0, envir=cache)
     assign("nIterate", 0, envir = cache)
+    assign("nInt", 0, envir = cache)
     assign("pEVPI", NULL, envir = cache)
     assign("params", NULL, envir = cache)
     assign("costs", NULL, envir = cache)  
@@ -55,6 +56,7 @@ shinyServer(
     assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
     assign("subsetEvpiValues", NULL, envir=cache)
     assign("setStoreMatchEvpiValues", NULL, envir=cache)
+    assign("ceac.obj", NULL, envir=cache)
 
     # assign null values to the about the model variables in the cache
     assign("modelName", NULL, envir = cache)
@@ -449,10 +451,7 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       ceac.obj <- assign("ceac.obj", ceac(), envir=cache)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
-      makeCeacPlot(ceac.obj, lambda=input$lambdaOverall, 
-                   main="Cost-effectiveness Acceptability Curve", 
-                   xlab="Threshold willingness to pay", 
-                   ylab="Probability strategy is cost-effective",
+      makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
                    names=colnames(get("costs", envir=cache)))
     })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
     

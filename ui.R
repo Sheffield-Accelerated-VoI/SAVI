@@ -2,6 +2,7 @@
 fluidPage(
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   mainPanel(
+    h4("Release 1.001"),
     tabsetPanel(  # Application title
  #
   
@@ -15,9 +16,9 @@ fluidPage(
                fileInput('loadSession', label = h4('Load previously saved session'))
                ),
                mainPanel(
-                 p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
-                      black;width:700px'>WARNING: This application is free and comes with NO WARRANTY. USE AT YOUR OWN RISK. </div>
-                      </b>")),                h3("SAVI release 1.001"),
+              p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
+                      black'>This application is free and comes with NO WARRANTY. USE AT YOUR OWN RISK. </div>
+                      </b>")),                
 
                p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
                p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
@@ -43,7 +44,8 @@ fluidPage(
                br(),
                p(HTML("Step 3: Input your PSA data in the Import files tab")),
                img(src = "step3_import.png", height = 300, width = 300),
-               br(),br(),
+               br(),
+               br(),
                p(HTML("Step 4: Check the data have imported correctly in Check Upload tab")),
                img(src = "step4_check.png", height = 300, width = 300),
                br(),
@@ -55,7 +57,7 @@ fluidPage(
                p(HTML("Step 6: After you have viewed the VoI tabs download your results in PDF, HTML or word file")),
                img(src = "step6_download.png", height = 300, width = 300),
                p(em("(NOTE: You must view the tabs before download in order to populate the report)")),
-               br(),br(),
+               br(),
                p(HTML("To register please email "), a("savi@sheffield.ac.uk"), HTML("with an email subject Register"))
                )
                
@@ -100,17 +102,7 @@ fluidPage(
                       <br><br>
                         Costs and effects are assumed to be absolute rather than incremental.<br>
                         Check the import in the next tab<br><br>
-                        </div>")), 
-               
-#                p(HTML("To run the application, import your samples of parameters, costs and effects using the 
-#                       import buttons below.
-#                       <br>Please supply the samples in the form of three csv files.
-#                       <br>Check the import in the next tab")),
-#                
-#                p(HTML("SAVI assumes that the first row of the parameter file contains the parameter names.<br>
-#                         SAVI assumes that the first row of the costs file and the first row of the effects file
-#                         both contain the decision option names.")),
-#                
+                        </div>")),      
                
                br(),br(),
                h4("Parameter importation"),
@@ -268,9 +260,9 @@ fluidPage(
                of information calculations. These calculations can consider all decision uncertainty (the overall expected value of perfect 
                information – overall EVPI) or for particular uncertain parameters within the PSA (expected value of perfect parameter 
                information – EVPPI)."),
-               br(),
+               br()#,
         
-               h3("Summary of Incremental Net Benefit Statistics")
+               #h3("Summary of Incremental Net Benefit Statistics")
                #tableOutput("tableNetBenefitInc") Not yet made
 
                ),
@@ -401,7 +393,26 @@ fluidPage(
                textInput("RdataFileName", strong("Filename"), value="SAVISession.Rdata"),
                br(), br(),
                downloadButton('saveSession', 'Save SAVI session')
+     ),
+
+      tabPanel("About us", 
+               h3("About us"),
+               p(HTML("This web tool is an <a href = 'http://shiny.rstudio.com/' target='_blank'>R Shiny Server application</a>. 
+                 It was written by <a href='http://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' target='_blank'>Mark Strong</a>, Penny Breeze, Chloe Thomas and Alan Brennan. 
+                 The regression-based method for approximating partial EVPI was developed by 
+                 Mark Strong in collaboration with Jeremy Oakley and Alan Brennan.")),
+               p(HTML("Please cite the method as")),
+               p(HTML("<div style='border:1px solid
+                      black;width:800px;padding-left: 1em'>Strong M, Oakley JE, Brennan A. 
+                  Estimating multi-parameter partial Expected Value of 
+                  Perfect Information from a probabilistic sensitivity analysis sample: 
+                  a non-parametric regression approach. 
+                  <em>Medical Decision Making.</em> 2014;<b>34(3)</b>:311-26. Available open access <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>here.</a></div>")),
+               h3("Contact"), 
+               p(HTML("Please email us at <a href='mailto:savi@sheffield.ac.uk?Subject=SAVI%20query' target='_top'>
+                savi@sheffield.ac.uk</a>"))
      )
+   
      , type = "pills" # this controls the look of the tabs
   ), 
  tags$style(type="text/css", ".tab-content { overflow: visible; }")

@@ -53,9 +53,7 @@ fluidPage(
                fileInput('loadSession', label = h4('Load previously saved session'))
                ),
                mainPanel(
-              p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
-                      black'>This application is free and comes with NO WARRANTY. USE AT YOUR OWN RISK. </div>
-                      </b>")),                
+     
 
                p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
                p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
@@ -67,6 +65,9 @@ fluidPage(
                       tags$li("Expected Value of Perfect Parameter Information (EVPPI) for single and groups of parameters")
                ),
                br(),
+               p(HTML("Disclaimer: This application is made available to all users free of charge.  
+                      The application is based on peer-reviewed statistical approximation methods.  
+                      It comes with no warranty and should be utilised at the user’s own risk.")),                      
                p(HTML("For more information on the method see Mark Strong's website  
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
                       target='_blank'>here</a>")), br(),
@@ -75,33 +76,25 @@ fluidPage(
                img(src = "step1_excel.png", height = 300, width = 300),
                br(),
                br(),
-               p(HTML("Step 2: Input details about your model in About the Model tab")),
-               img(src = "step2_aboutmodel.png", height = 300, width = 300),
+               p(HTML("Step 2: Input details about your model, import data, and check data")),
+               img(src = "step2_modelsetup.png", height = 300, width = 900),
                br(),
                br(),
-               p(HTML("Step 3: Input your PSA data in the Import files tab")),
-               img(src = "step3_import.png", height = 300, width = 300),
-               br(),
-               br(),
-               p(HTML("Step 4: Check the data have imported correctly in Check Upload tab")),
-               img(src = "step4_check.png", height = 300, width = 300),
-               br(),
-               br(),
-               p(HTML("Step 5: View your uncertainty analysis")),
+               p(HTML("Step 3: View your uncertainty analysis")),
                img(src = "step5_viewVOI.png", height = 300, width = 300),
                br(),
                br(),
-               p(HTML("Step 6: After you have viewed the VoI tabs download your results in PDF, HTML or word file")),
+               p(HTML("Step 4: After you have viewed the VoI tabs download your results in PDF, HTML or word file")),
                img(src = "step6_download.png", height = 300, width = 300),
-               p(em("(NOTE: You must view the tabs before download in order to populate the report)")),
                br(),
-               p(HTML("To register please email "), a("savi@sheffield.ac.uk"), HTML("with an email subject Register"))
+               p(HTML("To register please email"), a("savi@sheffield.ac.uk",href="mailto:savi@sheffield.ac.uk"), 
+                      HTML("with an email subject Register"))
                )
                
                
       )),
  
-      tabPanel("About the model", 
+      tabPanel("About your model", 
 
                h4("Specify details about your model here"),
                br(),

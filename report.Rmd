@@ -341,7 +341,7 @@ if(!is.null(costs) | !is.null(effects)) {
     inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
     inb.int <- inb.int - inb.int[, 1]
     #inb.int
-    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int)))*prevalence
+    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int)))*annualPrev
     p <- c(p, evpi)
   }  
   plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))

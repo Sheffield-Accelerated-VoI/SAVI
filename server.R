@@ -187,7 +187,6 @@ shinyServer(
       tableValues <- get("params", envir=cache)
       assign("nParamSamples", nrow(tableValues), envir=cache)
       if (is.null(tableValues)) return(NULL)
-      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
       head(tableValues, n=5)
     })
     
@@ -197,7 +196,6 @@ shinyServer(
       tableValues <- get("costs", envir=cache)
 
       if (is.null(tableValues)) return(NULL)
-      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
       head(tableValues, n=5)  
     })
     
@@ -206,7 +204,6 @@ shinyServer(
       y <- input$loadSession
       tableValues <- get("effects", envir=cache)
       if (is.null(tableValues)) return(NULL)
-      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
       head(tableValues, n=5)
     })
     

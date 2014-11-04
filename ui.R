@@ -398,8 +398,10 @@ fluidPage(
       tabPanel("About us", 
                h3("About us"),
                p(HTML("This web tool is an <a href = 'http://shiny.rstudio.com/' target='_blank'>R Shiny Server application</a>. 
-                 It was written by <a href='http://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' target='_blank'>Mark Strong</a>, Penny Breeze, Chloe Thomas and Alan Brennan. 
-                 The regression-based method for approximating partial EVPI was developed by 
+                 It was written by <a href='http://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' target='_blank'>Mark Strong</a>, Penny Breeze, Chloe Thomas and Alan Brennan.")), 
+               p(HTML("The source code is available on GitHub at 
+                <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI' target='_blank'>https://github.com/Sheffield-Accelerated-VoI/SAVI.</a>")),
+                p(HTML("The regression-based method for approximating partial EVPI was developed by 
                  Mark Strong in collaboration with Jeremy Oakley and Alan Brennan.")),
                p(HTML("Please cite the method as")),
                p(HTML("<div style='border:1px solid

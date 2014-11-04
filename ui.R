@@ -2,40 +2,40 @@
 fluidPage(
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   
-  tags$head(
-    tags$style(HTML("
-      @import url('//fonts.googleapis.com/css?family=Lobster|Cabin:400,700');
-      
-      h1 {
-        font-family: 'Lobster', cursive;
-        font-weight: 500;
-        line-height: 1.1;
-        color: #48ca3b;
-      } 
-
-      h2 {
-        font-family: 'Lobster', cursive;
-        font-weight: 500;
-        line-height: 1.1;
-        color: #D8F781;
-      }
-
-      h3 {
-        font-family: 'Lobster', cursive;
-        font-weight: 500;
-        line-height: 1.1;
-        color: #FF8000;
-      }
-
-      h4 {
-        font-family: 'Lobster', cursive;
-        font-weight: 500;
-        line-height: 1.1;
-        color: #2E9AFE;
-      }
-
-    "))
-  ),
+#   tags$head(
+#     tags$style(HTML("
+#       @import url('//fonts.googleapis.com/css?family=Lobster|Cabin:400,700');
+#       
+#       h1 {
+#         font-family: 'Lobster', cursive;
+#         font-weight: 500;
+#         line-height: 1.1;
+#         color: #48ca3b;
+#       } 
+# 
+#       h2 {
+#         font-family: 'Lobster', cursive;
+#         font-weight: 500;
+#         line-height: 1.1;
+#         color: #D8F781;
+#       }
+# 
+#       h3 {
+#         font-family: 'Lobster', cursive;
+#         font-weight: 500;
+#         line-height: 1.1;
+#         color: #FF8000;
+#       }
+# 
+#       h4 {
+#         font-family: 'Lobster', cursive;
+#         font-weight: 500;
+#         line-height: 1.1;
+#         color: #2E9AFE;
+#       }
+# 
+#     "))
+#   ),
   
   
   mainPanel(

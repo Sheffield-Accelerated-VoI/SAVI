@@ -43,7 +43,7 @@ post.density <- function(hyperparams, NB, input.m) {
   T <- chol(Astar)
   y <- backsolve(t(T), NB, upper.tri = FALSE)
   x <- backsolve(t(T), H, upper.tri = FALSE)
-  tHAstarinvH <- t(x) %*% (x)
+  tHAstarinvH <- t(x) %*% (x) + 1e-7* diag(q)
   betahat <- solve(tHAstarinvH) %*% t(x) %*% y
   residSS <- y %*% y -t(y) %*% x %*% betahat - t(betahat) %*% t(x) %*% y +
     t(betahat) %*% tHAstarinvH %*% betahat
@@ -108,7 +108,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
     print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
     paramSet <- cbind(paramSet[, -max(linearCombs)])
     sets <- sets[-max(linearCombs)]
-    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(params[,-x])$rank)
+    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   }  
   
   inputs.of.interest <- sets
@@ -172,7 +172,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
     rm(Astar); gc()
     AstarinvY <- Astarinv%*%NB[,d]
     tHAstarinv <- t(H)%*%Astarinv
-    tHAHinv <- solve(tHAstarinv%*%H)
+    tHAHinv <- solve(tHAstarinv%*%H + 1e-7* diag(q))
     betahat <- tHAHinv%*%(tHAstarinv%*%NB[,d])
     Hbetahat <- H%*%betahat
     resid <- NB[,d] - Hbetahat

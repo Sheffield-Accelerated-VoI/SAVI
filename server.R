@@ -1,5 +1,7 @@
 # source all the functions we need
 
+options(shiny.maxRequestSize=100*1024^2) # increase max upload to 100Mb
+
 source("scripts.R")
 source("scripts_GPfunctions.R") # separate file to hold the GPfunctions
 source("scripts_GAMfunctions.R")

@@ -27,12 +27,12 @@ fluidPage(
 
                h4("Specify details about your model here"),
                br(),br(),
-               textInput("modelName",label = h5("Name of your model"),value ="My Model"),
-               textInput("current",label = h5("Name of strategy considered to be current/standard care"),value ="Current Care"),
-               textInput("t3",label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
+               textInput("modelName", label = h5("Name of your model"), value ="My Model"),
+               textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
+               textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
                numericInput("lambdaOverall", label = h5("Threshold value of one unit of health effect (lambda)"),  value = 20000, min = 0, step = 1000),
-               textInput("effectDef",label = h5("Definition of effectiveness measure"),value ="Discounted Lifetime QALYs"),
-               textInput("costDef",label = h5("Definition of cost measure"),value ="Discounted Lifetime Costs (£)"),
+               textInput("effectDef", label = h5("Definition of effectiveness measure"), value ="Discounted Lifetime QALYs"),
+               textInput("costDef", label = h5("Definition of cost measure"), value ="Discounted Lifetime Costs (£)"),
                numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 1000, min = 0, step = 10),
                numericInput("horizon", label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 10, min = 1),
                #numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),

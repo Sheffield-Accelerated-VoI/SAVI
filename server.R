@@ -224,10 +224,10 @@ shinyServer(
 #       pEVPI
 #     })
 #     
-    output$summary <- renderTable({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      calcPartialEvpi()
-    })
+#     output$summary <- renderTable({
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       calcPartialEvpi()
+#     })
       
     # function that calculates ceac
     ceac <- reactive({ 
@@ -598,8 +598,9 @@ shinyServer(
     output$downloadSummary <- downloadHandler(
       filename = "evpi\ values.csv",
       content = function(file) {
-        write.csv(calcPartialEvpi(), file)
-      })
+        write.csv(get("pEVPI", envir=cache), file)
+      },
+      contentType = "text/plain")
     
     # Download pdf / html / docx report - NEED TO FIX THE HTML AND DOCX
     output$downloadReport <- downloadHandler(
@@ -626,7 +627,8 @@ shinyServer(
                       envir = cache
         )
         file.copy(out, file)
-      }
+      },
+      contentType = "text/plain"
     )
     
     

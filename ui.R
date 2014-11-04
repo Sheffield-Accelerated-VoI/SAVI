@@ -71,7 +71,7 @@ fluidPage(
                p(HTML("For more information on the method see Mark Strong's website  
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
                       target='_blank'>here</a>")), br(),
-               p(HTML("The SAVI process has 6 steps (using the TABS from left to right)")),
+               p(HTML("The SAVI process has 4 steps (using the TABS from left to right)")),
                p(HTML("Step 1: Save PSA inputs and outputs as .csv files")),
                img(src = "step1_excel.png", height = 300, width = 300),
                br(),

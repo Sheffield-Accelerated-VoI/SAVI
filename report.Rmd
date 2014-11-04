@@ -394,8 +394,9 @@ if(!is.null(costs) | !is.null(effects)) {
 ## 4.1 Single parameter EVPPI
 
 ```{r, echo=FALSE, results='asis'}
-if(!is.null(pEVPI)) {
- 
+if(!is.null(costs)) {
+     inb <- createInb(costs, effects, lambda)
+     pEVPI <- applyCalcSingleParamGam(params, inb, session) 
      tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 4)
      tableEVPPI[, 1] <- round(pEVPI, 2)
      tableEVPPI[, 2] <- round(pEVPI / overallEvpi , 2)
@@ -410,7 +411,7 @@ if(!is.null(pEVPI)) {
 ```
 
 ```{r, echo=FALSE}
-if(!is.null(pEVPI)) {
+if(!is.null(costs)) {
   EVPPI <- matrix(pEVPI[order(pEVPI)], ncol = length(pEVPI), nrow = 1)
   colnames(EVPPI)<-colnames(params[order(pEVPI)])
   barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  

@@ -1,6 +1,43 @@
 
 fluidPage(
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
+  
+  tags$head(
+    tags$style(HTML("
+      @import url('//fonts.googleapis.com/css?family=Lobster|Cabin:400,700');
+      
+      h1 {
+        font-family: 'Lobster', cursive;
+        font-weight: 500;
+        line-height: 1.1;
+        color: #48ca3b;
+      } 
+
+      h2 {
+        font-family: 'Lobster', cursive;
+        font-weight: 500;
+        line-height: 1.1;
+        color: #D8F781;
+      }
+
+      h3 {
+        font-family: 'Lobster', cursive;
+        font-weight: 500;
+        line-height: 1.1;
+        color: #FF8000;
+      }
+
+      h4 {
+        font-family: 'Lobster', cursive;
+        font-weight: 500;
+        line-height: 1.1;
+        color: #2E9AFE;
+      }
+
+    "))
+  ),
+  
+  
   mainPanel(
     h4("Release 1.001"),
     tabsetPanel(  # Application title
@@ -420,5 +457,5 @@ fluidPage(
  tags$style(type="text/css", ".tab-content { overflow: visible; }")
   ,width = 12 # 12 is the max width of the mainPanel page
  )
-#,theme="bootstrapDefault.css"
+#,theme="bootstrap.css"
 )

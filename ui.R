@@ -161,9 +161,7 @@ fluidPage(
                
                h3("Check data import"),
                h4("The parameters, costs and effects you have uploaded are displayed below:"),
-               p("(only the first 5 first rows if the dataset contains more
-                 than 50 rows, and the first 10 columns if the dataset contains
-                 more than 10 columns)"),br(),
+               p("(only the first 5 first rows of each dataset are shown)"),br(),
                
                h4("Parameters"),
                tableOutput("checktable1"),

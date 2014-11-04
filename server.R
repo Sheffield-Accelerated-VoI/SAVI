@@ -1,5 +1,7 @@
 # source all the functions we need
 
+options(shiny.maxRequestSize=100*1024^2) # increase max upload to 100Mb
+
 source("scripts.R")
 source("scripts_GPfunctions.R") # separate file to hold the GPfunctions
 source("scripts_GAMfunctions.R")
@@ -187,7 +189,6 @@ shinyServer(
       tableValues <- get("params", envir=cache)
       assign("nParamSamples", nrow(tableValues), envir=cache)
       if (is.null(tableValues)) return(NULL)
-      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
       head(tableValues, n=5)
     })
     
@@ -197,7 +198,6 @@ shinyServer(
       tableValues <- get("costs", envir=cache)
 
       if (is.null(tableValues)) return(NULL)
-      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
       head(tableValues, n=5)  
     })
     
@@ -206,10 +206,10 @@ shinyServer(
       y <- input$loadSession
       tableValues <- get("effects", envir=cache)
       if (is.null(tableValues)) return(NULL)
-      if (ncol(tableValues) > 10) tableValues = tableValues[, 1:10]
       head(tableValues, n=5)
     })
     
+
     
     # Function that calculates the single partial EVPI outputs to be sent to the main panel in ui.R
     # Stores pEVPI object in cache
@@ -226,10 +226,10 @@ shinyServer(
 #       pEVPI
 #     })
 #     
-    output$summary <- renderTable({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      calcPartialEvpi()
-    })
+#     output$summary <- renderTable({
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       calcPartialEvpi()
+#     })
       
     # function that calculates ceac
     ceac <- reactive({ 
@@ -597,8 +597,9 @@ shinyServer(
     output$downloadSummary <- downloadHandler(
       filename = "evpi\ values.csv",
       content = function(file) {
-        write.csv(calcPartialEvpi(), file)
-      })
+        write.csv(get("pEVPI", envir=cache), file)
+      },
+      contentType = "text/plain")
     
     # Download pdf / html / docx report - NEED TO FIX THE HTML AND DOCX
     output$downloadReport <- downloadHandler(
@@ -625,7 +626,8 @@ shinyServer(
                       envir = cache
         )
         file.copy(out, file)
-      }
+      },
+      contentType = "text/plain"
     )
     
     

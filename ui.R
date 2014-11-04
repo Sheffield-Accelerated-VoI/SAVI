@@ -15,42 +15,48 @@ fluidPage(
                fileInput('loadSession', label = h4('Load previously saved session'))
                ),
                mainPanel(
-               h2("SAVI release 1.001"),
+                 p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
+                      black;width:700px'>WARNING: This application is free and comes with NO WARRANTY. USE AT YOUR OWN RISK. </div>
+                      </b>")),                h3("SAVI release 1.001"),
+
                p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
                p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
                p(HTML("And")),
                p(HTML("In a matter of seconds from the SAVI online application you can recieve:")),
                tags$ol(
                       tags$li("Standardised assessment of uncertainty (C-E planes and CEACs)"), 
-                      tags$li("•  Overall EVPI per patient, per jurisdiction per year and over your decision relevance horizon"), 
-                      tags$li("•  Expected Value of Perfect Parameter Information (EVPPI) for single and groups of parameters")
+                      tags$li("Overall EVPI per patient, per jurisdiction per year and over your decision relevance horizon"), 
+                      tags$li("Expected Value of Perfect Parameter Information (EVPPI) for single and groups of parameters")
                ),
                br(),
-               p(HTML("The SAVI process has 6 steps (using the TABS from left to right)")),
-               p(HTML("Step 1: Save PSA inputs and outputs as .csv files")),
-               img(src = "step1_excel.png", height = 200, width = 200),
-               br(),
-               p(HTML("Step 2: Input details about your model in About the Model tab")),
-               img(src = "step2_aboutmodel.png", height = 200, width = 200),
-               br(),
-               p(HTML("Step 3: Input your PSA data in the Import files tab")),
-               img(src = "step3_import.png", height = 200, width = 200),
-               p(HTML("Step 4: Check the data have imported correctly in Check Upload tab")),
-               img(src = "step4_check.png", height = 200, width = 200),
-               p(HTML("Step 5: View your uncertainty analysis")),
-               img(src = "step5_viewVOI.png", height = 200, width = 200),
-               p(HTML("Step 6: After you have viewed the VoI tabs download your results in PDF, HTML or word file")),
-               img(src = "step6_download.png", height = 200, width = 200),
-               p(em("(NOTE: You must view the tabs before download in order to populate the report)")),
-               br(),
-               p(HTML("To register please email "), a("savi@sheffield.ac.uk"), HTML("with an email subject Register")),
-               p(HTML("<b><div style='background-color:#FADDF2;border:1px solid
-                      black;width:800px'>WARNING: This application is free and comes with NO WARRANTY. USE AT YOUR OWN RISK. </div>
-                      </b>")), br(),
-               
                p(HTML("For more information on the method see Mark Strong's website  
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
-                      target='_blank'>here</a>")), br()
+                      target='_blank'>here</a>")), br(),
+               p(HTML("The SAVI process has 6 steps (using the TABS from left to right)")),
+               p(HTML("Step 1: Save PSA inputs and outputs as .csv files")),
+               img(src = "step1_excel.png", height = 300, width = 300),
+               br(),
+               br(),
+               p(HTML("Step 2: Input details about your model in About the Model tab")),
+               img(src = "step2_aboutmodel.png", height = 300, width = 300),
+               br(),
+               br(),
+               p(HTML("Step 3: Input your PSA data in the Import files tab")),
+               img(src = "step3_import.png", height = 300, width = 300),
+               br(),br(),
+               p(HTML("Step 4: Check the data have imported correctly in Check Upload tab")),
+               img(src = "step4_check.png", height = 300, width = 300),
+               br(),
+               br(),
+               p(HTML("Step 5: View your uncertainty analysis")),
+               img(src = "step5_viewVOI.png", height = 300, width = 300),
+               br(),
+               br(),
+               p(HTML("Step 6: After you have viewed the VoI tabs download your results in PDF, HTML or word file")),
+               img(src = "step6_download.png", height = 300, width = 300),
+               p(em("(NOTE: You must view the tabs before download in order to populate the report)")),
+               br(),br(),
+               p(HTML("To register please email "), a("savi@sheffield.ac.uk"), HTML("with an email subject Register"))
                )
                
                
@@ -59,7 +65,7 @@ fluidPage(
       tabPanel("About the model", 
 
                h4("Specify details about your model here"),
-               br(),br(),
+               br(),
                textInput("modelName", label = h5("Name of your model"), value ="My Model"),
                textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
                textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box

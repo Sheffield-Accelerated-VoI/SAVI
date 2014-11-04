@@ -109,9 +109,10 @@ The incremental expected cost per unit of benefit is estimated at `r input$curre
   m3.costs <- max(m.costs, m2.costs)
   m3.effects <- max(m.effects, m2.effects)
   
-  main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
   plot(inc_effects, inc_costs, pty="s", cex=0.4,
-       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue")
+       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue", 
+       xlab = "inc. costs", ylab = paste("inc.", input$unitBens), 
+       main = paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda))
   abline(1, lambda, lty=2)
   abline(h=0)
   abline(v=0)

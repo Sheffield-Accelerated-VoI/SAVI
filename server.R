@@ -548,6 +548,10 @@ shinyServer(
 
     # output the selection table when add button pressed
 
+####
+# THIS NEEDS FIXING
+####
+
     output$selectedTable <- renderTable({
       x <- input$addSelection
       if(x==0) return(NULL)

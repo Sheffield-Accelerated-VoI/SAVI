@@ -427,12 +427,19 @@ fluidPage(
 
       tabPanel("About us", 
                h3("About us"),
-               p(HTML("This web tool is an <a href = 'http://shiny.rstudio.com/' target='_blank'>R Shiny Server application</a>. 
-                 It was written by <a href='http://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' target='_blank'>Mark Strong</a>, Penny Breeze, Chloe Thomas and Alan Brennan.")), 
+               p(HTML("This web tool is an <a href = 'http://shiny.rstudio.com/' target='_blank'>R Shiny Server application</a>.")),
+               p(HTML("It was written at the University of Sheffield's <a href = 'http://www.sheffield.ac.uk/scharr' target='_blank'>School of Health and Related Research</a> by 
+                      <a href='https://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' target='_blank'>Mark Strong</a>, 
+                      <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/watson_p' target='_blank'>Penny Breeze</a>, 
+                      <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/thomas_c' target='_blank'>Chloe Thomas</a> and 
+                      <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/brennan_a' target='_blank'>Alan Brennan</a>.")), 
                p(HTML("The source code is available on GitHub at 
                 <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI' target='_blank'>https://github.com/Sheffield-Accelerated-VoI/SAVI.</a>")),
-                p(HTML("The regression-based method for approximating partial EVPI was developed by 
-                 Mark Strong in collaboration with Jeremy Oakley and Alan Brennan.")),
+               p(HTML("The regression-based method for approximating partial EVPI was developed by 
+                 <a href='https://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' target='_blank'>Mark Strong</a>
+                      in collaboration with 
+                      <a href='http://www.jeremy-oakley.staff.shef.ac.uk/' target='_blank'>Jeremy Oakley</a>
+                      and <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/brennan_a' target='_blank'>Alan Brennan</a>.")),
                p(HTML("Please cite the method as")),
                p(HTML("<div style='border:1px solid
                       black;width:800px;padding-left: 1em'>Strong M, Oakley JE, Brennan A. 

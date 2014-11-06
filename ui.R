@@ -39,7 +39,7 @@ fluidPage(
   
   
   mainPanel(
-    h4("Pre-Release version 0.91"),
+    h4("Pre-Release version 0.93 (2014-11-6)"),
     tabsetPanel(  # Application title
  #
   
@@ -389,7 +389,7 @@ fluidPage(
                  sidebarPanel(
                    h3("Select Parameters for EVPPI"),
                    checkboxGroupInput("pevpiParameters", NULL, 
-                                      c("null"), 
+                                      c(""), 
                                       selected = NULL),
                    br(),
                    actionButton("addSelection", "Add selection"),
@@ -403,9 +403,9 @@ fluidPage(
                    tableOutput("selectedTable"),
                    br(),
                    h4("Partial EVPI values"),
-                   tableOutput("selectedEvpiTable"), width=7))#,
-#                    br(),
-#                    actionButton("clearSubsetsEvpi",label="Clear Selections")))         
+                   tableOutput("selectedEvpiTable"),
+                   br(),
+                   actionButton("clearSubsetsEvpi", "Clear Selections"), width=7))     
       ),
     
       # Numerical summary of the dataset,

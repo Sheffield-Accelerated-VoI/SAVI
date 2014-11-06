@@ -56,6 +56,7 @@ shinyServer(
     assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
     assign("subsetEvpiValues", NULL, envir=cache)
     assign("setStoreMatchEvpiValues", NULL, envir=cache)
+    assign("currentSelection", NULL, envir=cache)
     assign("ceac.obj", NULL, envir=cache)
 
     # assign null values to the about the model variables in the cache
@@ -363,7 +364,7 @@ shinyServer(
                             "Probability intervention is cost saving", 
                             "Probability intervention provides more benefit", 
                             "Probability that intervention is cost-effective")
-            tableCEplane
+      tableCEplane
     })  
 
     output$tableNetBenefit <- renderTable({
@@ -523,8 +524,14 @@ shinyServer(
     })
       
 
-    # get the selection and assign it to cache
+
+    # These functions take the user input groups, call the partial EVPI (for groups) functions
+    # and then output the results.
+
+    # This function gets the selection and assigns it to cache
+
     observe({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       currentSelectionNames <- input$pevpiParameters
       params <- get("params", envir = cache)
       if(is.null(params)) return(NULL)
@@ -535,6 +542,7 @@ shinyServer(
     
     # save the current selection and then increase counter
     observe({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       # counterAdd <- get("counterAdd", envir=cache)
       counterAdd <- input$addSelection
       if(counterAdd==0) return(NULL)
@@ -548,27 +556,33 @@ shinyServer(
       assign("counterAdd", counterAdd, envir=cache)   
     })
 
-    # output the selection table when add button pressed
+
 
 ####
 # THIS NEEDS FIXING
 ####
 
+    # This function responds to the add button being pressed
+    # It outputs the selection table when add button pressed
     output$selectedTable <- renderTable({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       x <- input$addSelection
       if(x==0) return(NULL)
       setStore <- get("setStore", envir=cache)
       buildSetStoreTable(setStore[1:x])
-    }, sanitize.rownames.function =  bold.allrows)
+    }, sanitize.rownames.function = bold.allrows)
 
-    # Output the subset EVPI table
+    # This function respnds to the calculate button being pressed
+    # It calculates the partial EVPI of newly defined groups
+    # It then Outputs the subset EVPI table
     output$selectedEvpiTable <- renderTable({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       x <- input$calculateSubsetsEvpi
       if(x==0) return(NULL)
       counterAdd <- get("counterAdd", envir = cache)
       setStore <- get("setStore", envir=cache)
         
-      calc <- function(x, inp, cache, session) {
+      calc <- function(x, inp, cache, session) { # pass session so the progress bar will work
         calSubsetEvpi(x, inp, cache, session)
       }
       
@@ -588,14 +602,20 @@ shinyServer(
       df
     }, sanitize.rownames.function =  bold.allrows)  
     
-#     observe({ # clear the selections
-#       x <- input$clearSubsetsEvpi
-#       if(x==0) return(NULL)
-#       counterAdd <- 0
-#       setStore <- vector("list", 100)
-#       assign("setStore", setStore, envir = cache)
-#       assign("counterAdd", counterAdd, envir = cache)
-#     })
+
+#   Need a function that clears everything, either on pressing the clear all button, or on loading new data.
+     observe({ # clear the selections
+       x <- input$clearSubsetsEvpi
+          if (!valuesImportedFLAG(cache, input)) return(NULL)
+       if(x==0) return(NULL)
+       dummy <- valuesImportedFLAG(cache, input) # run this function if anything new is uploaded
+       setStore <- vector("list", 100)
+       assign("setStore", setStore, envir = cache)
+       assign("counterAdd", 0, envir = cache)
+       assign("subsetEvpiValues", NULL, envir = cache)
+       assign("subsetEvpiValues", NULL, envir = cache)
+       assign("setStoreMatchEvpiValues", NULL, envir = cache) # cache these for the report in case they change
+     })
 
     
     # Functions that make the reports

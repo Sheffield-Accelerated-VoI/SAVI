@@ -16,7 +16,7 @@ makeTableCePlane <- function(costs.int, effects.int, lambda) {
   tableCePlane[8, ] <- format(apply(incBen, 2, quantile, 0.975), digits=4, nsmall=4)
   tableCePlane[9, ] <- format(apply(incCost, 2, quantile, 0.025), digits=4,  nsmall=2)
   tableCePlane[10, ] <- format(apply(incCost, 2, quantile, 0.975), digits=4, nsmall=2)
-  tableCePlane[11, ] <- format(apply(incCost, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
+  tableCePlane[11, ] <- format(apply(incCost, 2, function(x) sum(x < 0)) / npsa, digits=2, nsmall=3)
   tableCePlane[12, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
   tableCePlane[13, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
   colnames(tableCePlane) <- colnames(costs.int)[-1]

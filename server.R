@@ -242,44 +242,46 @@ shinyServer(
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("This graph shows the standardised cost-effectiveness plane per person based on ", NROW(get("params", envir=cache)), 
+      paste("This graph shows the standardised cost-effectiveness plane per person based on ", nrow(get("params", envir=cache)), 
             " model runs, in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
-            The mean incremental cost of ", input$t3, " versus ", input$current," is ", input$currency, incValue(get("costs", envir=cache)), 
-            ". This suggests that ",input$t3," is ", moreLess(get("costs", envir=cache)), " costly. There is some uncertainty due to model 
-            parameters, with the 97.5% credible interval for the incremental cost ranging from ", confIntCE(get("costs", envir=cache), 0.025), 
-            " to ", confIntCE(get("costs", envir=cache), 0.975),". The probability that ", input$t3, " is cost saving compared to ",input$current,
-            " is ", pCostsaving(get("costs", envir=cache)), ".", sep="")
+            The mean incremental cost of ", colnames(get("costs", envir=cache))[2], " versus ", colnames(get("costs", envir=cache))[1]," is ",
+            input$currency, incValue(incCost(get("costs", envir=cache))), ". This suggests that ",colnames(get("costs", envir=cache))[2]," is ", 
+            moreLess(incCost(get("costs", envir=cache))), " costly. There is some uncertainty due to model parameters, with the 97.5% credible 
+            interval for the incremental cost ranging from ", confIntCE(incCost(get("costs", envir=cache)), 0.025)," to ", 
+            confIntCE(incCost(get("costs", envir=cache)), 0.975),". The probability that ", colnames(get("costs", envir=cache))[2], " is cost 
+            saving compared to ",colnames(get("costs", envir=cache))[1]," is ", pCostsaving(incCost(get("costs", envir=cache))), ".", sep="")
     })                       
     
     output$textCEplane2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("The mean incremental benefit of ", input$t3, " versus ", input$current, " is ", incValue(get("effects", envir=cache)), " ", 
-            input$unitBens, "s.  This suggests that ",input$t3," is ", moreLess(get("effects", envir=cache)), " beneficial.  
-            Again, there is some uncertainty due to model parameters, with the 97.5% credible interval for the incremental benefit ranging 
-            from ", confIntCE(get("effects", envir=cache), 0.025), " to ", confIntCE(get("effects", envir=cache), 0.975),". The probability that ",input$t3,
-            " is more beneficial than ",input$current," is ", pMoreben(get("effects", envir=cache)), ".", sep="")
+      paste("The mean incremental benefit of ", colnames(get("costs", envir=cache))[2], " versus ", colnames(get("costs", envir=cache))[1], " is ", 
+            incValue(incBen(get("effects", envir=cache))), " ",input$unitBens, "s.  This suggests that ",colnames(get("costs", envir=cache))[2]," is ", 
+            moreLess(incBen(get("effects", envir=cache))), " beneficial. Again, there is some uncertainty due to model parameters, with the 97.5% 
+            credible interval for the incremental benefit ranging from ", confIntCE(incBen(get("effects", envir=cache)), 0.025), " to ", 
+            confIntCE(incBen(get("effects", envir=cache)), 0.975),". The probability that ",colnames(get("costs", envir=cache))[2],
+            " is more beneficial than ",colnames(get("costs", envir=cache))[1]," is ", pMoreben(incBen(get("effects", envir=cache))), ".", sep="")
     })                        
     
     output$textCEplane3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)      
       paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(get("costs", envir=cache), 
             get("effects", envir=cache)), ". This is ", aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall),  
-            " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", input$t3, " ",
-            wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " be considered cost-effective 
+            " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", colnames(get("costs", envir=cache))[2],
+            " ", wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " be considered cost-effective 
             at this threshold. There is uncertainty with a ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), 
-            " probability that ", input$t3, " is more cost-effective (", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), 
-            " of the probabilistic model run dots are below and to the right of the diagonal threshold line).", sep="")
+            " probability that ", colnames(get("costs", envir=cache))[2], " is more cost-effective (", pCE(get("costs", envir=cache), get("effects", envir=cache), 
+            input$lambdaOverall), " of the probabilistic model run dots are below and to the right of the diagonal threshold line).", sep="")
     })                         
     
     output$textCEplane4 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL) 
-      paste(input$t3,"vs.",input$current)
+      paste(colnames(get("costs", envir=cache))[2],"vs.",colnames(get("costs", envir=cache))[1])
     })
     
     output$textCEplane5 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste(pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " probability that ",input$t3," is more cost-effective 
-      than ",input$current," at a threshold of ",input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
+      paste(pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " probability that ",colnames(get("costs", envir=cache))[2]," is more cost-effective 
+      than ",colnames(get("costs", envir=cache))[1]," at a threshold of ",input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
     })                       
     
     output$textCEAC1 <- renderText({
@@ -320,27 +322,27 @@ shinyServer(
            $overallEVPIusingeffectneasure$ per person’s worth of decision uncertainty on the ", input$unitBens, " scale.", sep="")
    })     
 
-#    output$textEVPI2 <- renderText({
-#      if (!valuesImportedFLAG(cache, input)) return(NULL)
-#      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency, "
-#            $overall EVPIper jusrisdictionperyear$ for ", input$jurisdiction, ".", sep="")
-#    }) 
+    output$textEVPI2 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency, "
+            $overall EVPIper jusrisdictionperyear$ for ", input$jurisdiction, ".", sep="")
+    }) 
 
-#    output$textEVPI3 <- renderText({
-#      if (!valuesImportedFLAG(cache, input)) return(NULL)
-#      paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
-#            will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified 
-#            decision relevance horizon of ", input$horizon, " years, the overall expected value of removing decision uncertainty for ", 
-#            input$jurisdiction, " would in total be ", input$currency, " $overallevpidecisionrelevance$.", sep="")
-#    }) 
+    output$textEVPI3 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
+            will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified 
+            decision relevance horizon of ", input$horizon, " years, the overall expected value of removing decision uncertainty for ", 
+            input$jurisdiction, " would in total be ", input$currency, " $overallevpidecisionrelevance$.", sep="")
+    }) 
 
-#    output$textEVPI4 <- renderText({
-#      if (!valuesImportedFLAG(cache, input)) return(NULL)
-#      paste("Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because 
-#            the return on investment from the research – as measured by the health gain and cost savings of enabling decision makers ability to switch and 
-#            select other strategies when evidence obtained reduces decision uncertainty – is expected to be no higher than the figure of ", input$currency, 
-#            " $overallevpidecisionrelevance$.", sep="")
-#    }) 
+    output$textEVPI4 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because 
+            the return on investment from the research – as measured by the health gain and cost savings of enabling decision makers ability to switch and 
+            select other strategies when evidence obtained reduces decision uncertainty – is expected to be no higher than the figure of ", input$currency, 
+            " $overallevpidecisionrelevance$.", sep="")  
+      }) 
 
     # Functions that make tables  
     output$tableCEplane <- renderTable({

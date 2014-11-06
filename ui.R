@@ -57,8 +57,7 @@ fluidPage(
 
                p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
                p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
-               p(HTML("And")),
-               p(HTML("In a matter of seconds from the SAVI online application you can recieve:")),
+               p(HTML("In a matter of seconds from the SAVI online application you can receive:")),
                tags$ol(
                       tags$li("Standardised assessment of uncertainty (C-E planes and CEACs)"), 
                       tags$li("Overall EVPI per patient, per jurisdiction per year and over your decision relevance horizon"), 
@@ -99,8 +98,8 @@ fluidPage(
                h4("Specify details about your model here"),
                br(),
                textInput("modelName", label = h5("Name of your model"), value ="My Model"),
-               textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
-               textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
+               #textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
+               #textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
                numericInput("lambdaOverall", label = h5("Threshold value of one unit of health effect (lambda)"),  value = 20000, min = 0, step = 1000),
                textInput("effectDef", label = h5("Definition of effectiveness measure"), value ="Discounted Lifetime QALYs"),
                textInput("costDef", label = h5("Definition of cost measure"), value ="Discounted Lifetime Costs (£)"),

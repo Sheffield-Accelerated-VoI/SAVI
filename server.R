@@ -52,7 +52,7 @@ shinyServer(
     assign("params", NULL, envir = cache)
     assign("costs", NULL, envir = cache)  
     assign("effects", NULL, envir = cache) 
-    assign("counterAdd", 1, envir = cache)     
+    assign("counterAdd", 0, envir = cache)     
     assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
     assign("subsetEvpiValues", NULL, envir=cache)
     assign("setStoreMatchEvpiValues", NULL, envir=cache)
@@ -102,6 +102,14 @@ shinyServer(
       updateTextInput(session, "currency",  value = get("currency", envir=cache))
       updateTextInput(session, "unitBens",  value = get("unitBens", envir=cache))
       updateTextInput(session, "jurisdiction",  value = get("jurisdiction", envir=cache))
+      
+      # set the group EVPI objects to NULL / 0
+      assign("counterAdd", 0, envir = cache)     
+      assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
+      assign("subsetEvpiValues", NULL, envir=cache)
+      assign("setStoreMatchEvpiValues", NULL, envir=cache)
+      assign("currentSelection", NULL, envir=cache)
+      
       
     })
     
@@ -410,6 +418,7 @@ shinyServer(
      tableEVPI
    }, digits=cbind(rep(0, 7), rep(0, 7), rep(2, 7))) 
    
+
    output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      lambda <- input$lambdaOverall # re-run if labmda changes
@@ -511,7 +520,10 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvppiBar(get("pEVPI", envir=cache), get("params", envir=cache))
     })
-      
+  
+
+    # This function gets the parameter names
+    # The output is the checkbox list
     observe({
       x <- input$parameterFile
       y <- input$loadSession
@@ -524,17 +536,16 @@ shinyServer(
     })
       
 
-
     # These functions take the user input groups, call the partial EVPI (for groups) functions
     # and then output the results.
 
     # This function gets the selection and assigns it to cache
 
     observe({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
       currentSelectionNames <- input$pevpiParameters
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       params <- get("params", envir = cache)
-      if(is.null(params)) return(NULL)
+      if (is.null(params)) return(NULL)
       paramNames <- paste(1:ncol(params), ") ", colnames(params), sep="")
       currentSelection <- which(paramNames%in%currentSelectionNames)
       assign("currentSelection", currentSelection, envir = cache)
@@ -542,10 +553,11 @@ shinyServer(
     
     # save the current selection and then increase counter
     observe({
+      dummy <- input$addSelection
+      if (dummy == 0) return(NULL)
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      # counterAdd <- get("counterAdd", envir=cache)
-      counterAdd <- input$addSelection
-      if(counterAdd==0) return(NULL)
+      counterAdd <- get("counterAdd", envir=cache)
+      counterAdd <- counterAdd + 1
       setStore <- get("setStore", envir=cache)
       currentSelection <- get("currentSelection", envir=cache)
       #nCurrentSelection <- length(currentSelection)
@@ -565,20 +577,21 @@ shinyServer(
     # This function responds to the add button being pressed
     # It outputs the selection table when add button pressed
     output$selectedTable <- renderTable({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
       x <- input$addSelection
-      if(x==0) return(NULL)
+      if (x==0) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       setStore <- get("setStore", envir=cache)
       buildSetStoreTable(setStore[1:x])
     }, sanitize.rownames.function = bold.allrows)
+
 
     # This function respnds to the calculate button being pressed
     # It calculates the partial EVPI of newly defined groups
     # It then Outputs the subset EVPI table
     output$selectedEvpiTable <- renderTable({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
       x <- input$calculateSubsetsEvpi
-      if(x==0) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      if (x==0) return(NULL)
       counterAdd <- get("counterAdd", envir = cache)
       setStore <- get("setStore", envir=cache)
         
@@ -606,7 +619,7 @@ shinyServer(
 #   Need a function that clears everything, either on pressing the clear all button, or on loading new data.
      observe({ # clear the selections
        x <- input$clearSubsetsEvpi
-          if (!valuesImportedFLAG(cache, input)) return(NULL)
+       if (!valuesImportedFLAG(cache, input)) return(NULL)
        if(x==0) return(NULL)
        dummy <- valuesImportedFLAG(cache, input) # run this function if anything new is uploaded
        setStore <- vector("list", 100)

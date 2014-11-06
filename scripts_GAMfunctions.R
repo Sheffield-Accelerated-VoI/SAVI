@@ -44,7 +44,7 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   
   progress <- shiny::Progress$new(session, min=1, max=D-1)
   on.exit(progress$close())
-  progress$set(message = 'Calculation in progress',
+  progress$set(message = 'Calculating conditional expected net benefits',
                detail = 'This may take a while...')
   
   for(d in 2:D)
@@ -64,7 +64,7 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   partial.evpi <- perfect.info - baseline ## estimate EVPI
   rm(g.hat); gc()
   
-  print("computing standard error and upward bias via Monte Carlo")
+  print("computing standard error via Monte Carlo")
   for(d in 2:D)
   {
     sampled.coef <- mvrnorm(s, beta.hat[[d]], V[[d]])

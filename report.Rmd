@@ -125,7 +125,13 @@ if(!is.null(costs) | !is.null(effects)) {
 
 See section 5.1 in Briggs, Claxton, Sculpher.  Decision Modelling for Health Economic Evaluation (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (17 Aug 2006).  ISBN-13: 978-0198526629
 
-## 2.3 The Cost-Effectiveness Acceptability Curve
+## 2.3 The Cost-Effectiveness Acceptability Curve CHECK THIS
+
+Quitting from lines 126-130 (report.Rmd) 
+
+Error in `[.data.frame`(costs, which.max(ceac.obj$p[which(ceac.obj$l.seq ==  : 
+  undefined columns selected
+  
 The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all strategies are cost-effective at varying thresholds.  The results show that at a threshold value for cost-effectiveness of `r input$currency` `r format(lambda, digits = 4)` per `r input$unitBens`, the strategy with the highest probability of being most cost-effective is `r if(!is.null(costs)) {colnames(costs[which.max(ceac.obj$p[which(ceac.obj$l.seq==lambda),])])}`, with a probability of `r if(!is.null(costs)) {max(ceac.obj$p[which(ceac.obj$l.seq==lambda),])}`.
 
 ```{r, echo=FALSE}

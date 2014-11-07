@@ -344,16 +344,17 @@ fluidPage(
                textOutput("textEVPI4"),
                br(),
                
+               textOutput("textEVPI5"),
+               br(),
+               
                h3("The Expected Value of Removing all Current Decision Uncertainty: Overall Expected Value of Information"),
                tableOutput("tableEVPI"),               
                br(),
                
-               h3("Overall EVPI versus lambda"),
-               textInput("main3", strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
+               h3("Overall EVPI (on costs scale) versus lambda"),               
                plotOutput("plots3", width="500px", height="500px"),
 
-               h3("Overall EVPI versus lambda"),
-               textInput("main4", strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
+               h3("Overall EVPI (on effects scale) versus lambda"),
                plotOutput("plots4", width="500px", height="500px"),
                br(),
                

@@ -326,14 +326,16 @@ shinyServer(
 
    output$textEVPI1 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("The overall EVPI per person affected by the decision is estimated at ", input$currency, ". $overall EVPIperperson$.  This is equivalent to 
-           $overallEVPIusingeffectneasure$ per person’s worth of decision uncertainty on the ", input$unitBens, " scale.", sep="")
+     paste("The overall EVPI per person affected by the decision is estimated at ", input$currency, format(calcEvpi(get("costs", envir=cache), 
+          get("effects", envir=cache), input$lambdaOverall), digits = 4, nsmall=2), ".  This is equivalent to ", 
+          format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)/input$lambdaOverall, digits = 4, nsmall=1), 
+          " per person’s worth of decision uncertainty on the ", input$unitBens, " scale.", sep="")
    })     
 
     output$textEVPI2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency, "
-            $overall EVPIper jusrisdictionperyear$ for ", input$jurisdiction, ".", sep="")
+      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency,
+            format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)*input$annualPrev, digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
     }) 
 
     output$textEVPI3 <- renderText({
@@ -341,7 +343,8 @@ shinyServer(
       paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
             will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified 
             decision relevance horizon of ", input$horizon, " years, the overall expected value of removing decision uncertainty for ", 
-            input$jurisdiction, " would in total be ", input$currency, " $overallevpidecisionrelevance$.", sep="")
+            input$jurisdiction, " would in total be ", input$currency, format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+            input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")
     }) 
 
     output$textEVPI4 <- renderText({
@@ -349,8 +352,17 @@ shinyServer(
       paste("Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because 
             the return on investment from the research – as measured by the health gain and cost savings of enabling decision makers ability to switch and 
             select other strategies when evidence obtained reduces decision uncertainty – is expected to be no higher than the figure of ", input$currency, 
-            " $overallevpidecisionrelevance$.", sep="")  
+            format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")  
       }) 
+
+    output$textEVPI5 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("The EVPI estimates in the table below quantify the expected value to decision makers within ", input$jurisdiction, " of removing all current 
+            decision uncertainty at a threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, ".  This will enable comparison against 
+            previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate 
+            for varying willingness to pay thresholds are illustrated in the figures below.", sep="")
+    })
+
 
     # Functions that make tables  
     output$tableCEplane <- renderTable({

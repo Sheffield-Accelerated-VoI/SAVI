@@ -1,25 +1,30 @@
-# source all the functions we need
+#######################################
+# START SHINY SERVER
+#######################################
+print("server.R called") # this is called when we start the shiny server on SAVI via $ sudo start shiny-server
 
+# max upload for files
 options(shiny.maxRequestSize=100*1024^2) # increase max upload to 100Mb
-options(shiny.reactlog=TRUE)
 
-source("scripts.R")
-source("scripts_GPfunctions.R") # separate file to hold the GPfunctions
-source("scripts_GAMfunctions.R")
-source("scripts_plots.R")
-source("scripts_tables.R")
-source("scripts_text.R")
+# debugging option
+options(shiny.reactlog=FALSE)
+# options(shiny.reactlog=TRUE) # only set to true for debugging. MUST BE FALSE FOR LIVE USE
 
 # load the libraries we need
-
 library(MASS)
 library(mgcv)
 library(knitr)
 library(rmarkdown)
 library(xtable)
-# library(pander)
 
-print("server.R called")
+# source all the functions we need
+source("scripts.R")
+source("scripts_GPfunctions.R")
+source("scripts_GAMfunctions.R")
+source("scripts_plots.R")
+source("scripts_tables.R")
+source("scripts_text.R")
+
 
 shinyServer(
   
@@ -80,17 +85,16 @@ shinyServer(
     # ########### 
     
 
-  #load("SAVISession.Rdata", envir=cache)
+    #  load("SAVISession.Rdata", envir=cache) # auto load for testing purposes
 
     #  Function that loads saved session
+    # is evaluated if a new session is loaded
     observe({
       inFile = input$loadSession
-      if (is.null(inFile))
-        return(NULL)
-      assign("savedSession", 1, envir=cache)
+      if (is.null(inFile)) return(NULL)
       load(inFile$datapath, envir=cache)
+      
       # update "about the model" variables
-
       updateTextInput(session, "modelName", value = get("modelName", envir=cache))
       updateTextInput(session, "current",  value = get("current", envir=cache))
       updateTextInput(session, "t3",  value = get("t3", envir=cache))
@@ -110,16 +114,17 @@ shinyServer(
       assign("setStoreMatchEvpiValues", NULL, envir=cache)
       assign("currentSelection", NULL, envir=cache)
       
+      assign("savedSession", 1, envir=cache)    # not used
       
     })
     
-    #  Function that imports parameters - NEED TO DO _ SANITY CHECK
+    #  Function that imports parameters
     #loadParameters <- 
       observe({
       inFile = input$parameterFile
       if (is.null(inFile))
         return(NULL)
-#       
+#
 #       if (input$rownames1) {
 #         dat <- read.csv(inFile$datapath, header=input$header1, #sep=input$sep,
 #                         row.names=1)#, dec=input$dec)
@@ -131,7 +136,7 @@ shinyServer(
         dat <- read.csv(inFile$datapath)#, header=input$header1)#, sep=input$sep, dec=input$dec)
         assign("params", dat, envir = cache)
         assign("nParams", ncol(dat), envir=cache)
-        assign("nIterate", nrow(dat), envir=cache)
+        assign("nIterate", nrow(dat), envir=cache) # size of PSA
 #    }
     })
 
@@ -150,7 +155,7 @@ shinyServer(
 #       } else {
         dat <- read.csv(inFile$datapath)#, header=input$header2)#, sep=input$sep, dec=input$dec)
         assign("costs", dat, envir = cache)
-        assign("nInt", ncol(dat), envir=cache)
+        assign("nInt", ncol(dat), envir=cache) # number of interventions
 
 #      }
     })
@@ -197,7 +202,7 @@ shinyServer(
       x <- input$parameterFile 
       y <- input$loadSession
       tableValues <- get("params", envir=cache)
-      assign("nParamSamples", nrow(tableValues), envir=cache)
+      # assign("nParamSamples", nrow(tableValues), envir=cache)
       if (is.null(tableValues)) return(NULL)
       head(tableValues, n=5)
     })
@@ -568,7 +573,7 @@ shinyServer(
       if (dummy == 0) return(NULL)
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       counterAdd <- get("counterAdd", envir=cache)
-      counterAdd <- counterAdd + 1
+      print(counterAdd <- counterAdd + 1)
       setStore <- get("setStore", envir=cache)
       currentSelection <- get("currentSelection", envir=cache)
       #nCurrentSelection <- length(currentSelection)

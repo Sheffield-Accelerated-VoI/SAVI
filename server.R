@@ -466,6 +466,7 @@ shinyServer(
    
     
     # Functions that make plots
+    # CE plane
     output$plots1 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
@@ -473,17 +474,17 @@ shinyServer(
                       lambda=input$lambdaOverall, xlab=input$effectDef, 
                       ylab=input$costDef)
     })  
-    
+ 
+    # CEAC
     output$plots2 <- renderPlot({
-    
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
+       if (!valuesImportedFLAG(cache, input)) return(NULL)
       ceac.obj <- assign("ceac.obj", ceac(), envir=cache)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
       makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
                    names=colnames(get("costs", envir=cache)))
-    })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
-    
+    })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL  
 
+    # EVPI versus lambda (costs)
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
@@ -493,7 +494,8 @@ shinyServer(
                    ylab="Overall EVPI per person affected (on costs scale)",
                    col="red",  costscale = TRUE, session)
     })
-    
+   
+    # EVPI versus lambda (effects)
     output$plots4 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall,
@@ -503,35 +505,29 @@ shinyServer(
                    col="red",  costscale = FALSE, session)
     })
     
-    output$plots4way <- renderPlot({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      make4wayPlot(get("costs", envir=cache), get("effects", envir=cache), 
-                   get("ceac.obj", envir=cache), lambda=input$lambdaOverall, main=input$main1, 
-                   xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
-                                       main2=input$main4, xlab2=input$xlab4, 
-                                       ylab2=input$ylab4,
-                                       col2=input$color4)
-    })
-    
+    # EVPI INB bar plot
     output$plots5a <- renderPlot({ # NEED TO DISCUSS THIS - MS
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambdaOverall)
     })
 
+    # Absolute net benefit densities
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make2wayDensity(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambdaOverall)
     })
-  
+    
+    # EVPI plots
     output$plots6 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make4wayEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall, 
                        prevalence=input$annualPrev, horizon=input$horizon, measure1 = input$currency, 
                        measure2 = input$unitBens, session)
     })
-    
+ 
+    # EVPPi horizontal bar chart
     output$plot7 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvppiBar(get("pEVPI", envir=cache), get("params", envir=cache))
@@ -568,21 +564,21 @@ shinyServer(
     })
     
     # save the current selection and then increase counter
-    observe({
-      dummy <- input$addSelection
-      if (dummy == 0) return(NULL)
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      counterAdd <- get("counterAdd", envir=cache)
-      print(counterAdd <- counterAdd + 1)
-      setStore <- get("setStore", envir=cache)
-      currentSelection <- get("currentSelection", envir=cache)
-      #nCurrentSelection <- length(currentSelection)
-      #nParams <- get("nParams", envir = cache)
-      #completedCurrentSelection <- c(currentSelection, rep("", nParams - nCurrentSelection))
-      setStore[[counterAdd]] <- currentSelection
-      assign("setStore", setStore, envir = cache)
-      assign("counterAdd", counterAdd, envir=cache)   
-    })
+#     observe({
+#       dummy <- input$addSelection
+#       if (dummy == 0) return(NULL)
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       counterAdd <- get("counterAdd", envir=cache)
+#       print(counterAdd <- counterAdd + 1)
+#       setStore <- get("setStore", envir=cache)
+#       currentSelection <- get("currentSelection", envir=cache)
+#       #nCurrentSelection <- length(currentSelection)
+#       #nParams <- get("nParams", envir = cache)
+#       #completedCurrentSelection <- c(currentSelection, rep("", nParams - nCurrentSelection))
+#       setStore[[counterAdd]] <- currentSelection
+#       assign("setStore", setStore, envir = cache)
+#       assign("counterAdd", counterAdd, envir=cache)   
+#     })
 
 
 
@@ -591,57 +587,74 @@ shinyServer(
 ####
 
     # This function responds to the add button being pressed
-    # It outputs the selection table when add button pressed
+    # This function saves the current selection and then increase counter
+    # It does the calculation and then outputs the selection table 
+    #
     output$selectedTable <- renderTable({
-      x <- input$addSelection
-      if (x==0) return(NULL)
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      
+      # dummy <- input$addSelection
+      dummy <- input$calculateSubsetsEvpi
+      if (dummy == 0) return(NULL)
+      if (!isolate(valuesImportedFLAG(cache, input))) return(NULL)
+      if (dummy == 0) return(NULL)
+      
+      counterAdd <- get("counterAdd", envir=cache)
+      print(counterAdd <- counterAdd + 1)
+      assign("counterAdd", counterAdd, envir=cache) 
+      
       setStore <- get("setStore", envir=cache)
-      buildSetStoreTable(setStore[1:x])
-    }, sanitize.rownames.function = bold.allrows)
-
-
-    # This function respnds to the calculate button being pressed
-    # It calculates the partial EVPI of newly defined groups
-    # It then Outputs the subset EVPI table
-    output$selectedEvpiTable <- renderTable({
-      x <- input$calculateSubsetsEvpi
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      if (x==0) return(NULL)
-      counterAdd <- get("counterAdd", envir = cache)
-      setStore <- get("setStore", envir=cache)
-        
+      currentSelection <- get("currentSelection", envir=cache)
+      setStore[[counterAdd]] <- currentSelection
+      assign("setStore", setStore, envir = cache)
+      
       calc <- function(x, inp, cache, session) { # pass session so the progress bar will work
         calSubsetEvpi(x, inp, cache, session)
       }
       
       #first pull down the existing values
-        subsetEvpiValues <- get("subsetEvpiValues", envir = cache)
-        if (is.null(subsetEvpiValues)) {
-          subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, input$lambdaOverall, cache, session))
-        } else {
-          newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calc, input$lambdaOverall, cache, session))
-          subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
-        }
+      subsetEvpiValues <- get("subsetEvpiValues", envir = cache)
+      if (is.null(subsetEvpiValues)) {
+        subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, input$lambdaOverall, cache, session))
+      } else {
+        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calc, input$lambdaOverall, cache, session))
+        subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
+      }
+      
       assign("subsetEvpiValues", subsetEvpiValues, envir = cache)
       assign("setStoreMatchEvpiValues", setStore, envir = cache) # cache these for the report in case they change
-    
-      df <- data.frame(subsetEvpiValues)   
-      rownames(df) <- paste("Set", 1:counterAdd)
-      df
-    }, sanitize.rownames.function =  bold.allrows)  
-    
+
+      buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
+    }, sanitize.rownames.function = bold.allrows)
+
+
+    # This function responds to the calculate button being pressed
+    # It calculates the partial EVPI of newly defined groups
+    # It then Outputs the subset EVPI table
+#     # output$selectedEvpiTable <- renderTable({
+#     observe({
+#       x <- input$calculateSubsetsEvpi
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       if (x==0) return(NULL)
+#       counterAdd <- get("counterAdd", envir = cache)
+#       setStore <- get("setStore", envir=cache)
+#         
+#       
+#     
+# #       df <- data.frame(subsetEvpiValues)   
+# #       rownames(df) <- paste("Set", 1:counterAdd)
+# #       df
+#     })#, sanitize.rownames.function =  bold.allrows)  
+#     
 
 #   Need a function that clears everything, either on pressing the clear all button, or on loading new data.
      observe({ # clear the selections
        x <- input$clearSubsetsEvpi
        if (!valuesImportedFLAG(cache, input)) return(NULL)
-       if(x==0) return(NULL)
-       dummy <- valuesImportedFLAG(cache, input) # run this function if anything new is uploaded
+       if (x==0) return(NULL)
+       print("clearing")
        setStore <- vector("list", 100)
        assign("setStore", setStore, envir = cache)
        assign("counterAdd", 0, envir = cache)
-       assign("subsetEvpiValues", NULL, envir = cache)
        assign("subsetEvpiValues", NULL, envir = cache)
        assign("setStoreMatchEvpiValues", NULL, envir = cache) # cache these for the report in case they change
      })
@@ -658,34 +671,34 @@ shinyServer(
       contentType = "text/plain")
     
     # Download pdf / html / docx report - NEED TO FIX THE HTML AND DOCX
-    output$downloadReport <- downloadHandler(
-      filename = function() {#"my-report.pdf"
-        paste('my-report', sep = '.', switch(
-          input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
-        ))
-      },
-      
-      content = function(file) {
-        #src <- normalizePath('report.Rmd')
-        
-        # temporarily switch to the temp dir, in case you do not have write
-        # permission to the current working directory
-        #owd <- setwd(tempdir())
-        #on.exit(setwd(owd))
-        #file.copy(src, 'report.Rmd')
-        
-        library(rmarkdown)
-        out <- render('report.Rmd', #pdf_document()
-                      switch(
-                        input$format,
-                        PDF = pdf_document(), HTML = html_document(), Word = word_document_local()),
-                      envir = cache
-        )
-        file.copy(out, file)
-      },
-      contentType = "text/plain"
-    )
-    
+#     output$downloadReport <- downloadHandler(
+#       filename = function() {#"my-report.pdf"
+#         paste('my-report', sep = '.', switch(
+#           input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
+#         ))
+#       },
+#       
+#       content = function(file) {
+#         #src <- normalizePath('report.Rmd')
+#         
+#         # temporarily switch to the temp dir, in case you do not have write
+#         # permission to the current working directory
+#         #owd <- setwd(tempdir())
+#         #on.exit(setwd(owd))
+#         #file.copy(src, 'report.Rmd')
+#         
+#         library(rmarkdown)
+#         out <- render('report.Rmd', #pdf_document()
+#                       switch(
+#                         input$format,
+#                         PDF = pdf_document(), HTML = html_document(), Word = word_document_local()),
+#                       envir = cache
+#         )
+#         file.copy(out, file)
+#       },
+#       contentType = "text/plain"
+#     )
+#     
     
     #output: rmarkdown::default
     #tables: true

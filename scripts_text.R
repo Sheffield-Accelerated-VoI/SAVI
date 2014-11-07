@@ -64,35 +64,38 @@ wouldNot <- function(costs, bens, lambda) {
 }
 
 # 11) Probability cost-effective
-pCE <- function(costs, bens, lambda) {
-  pCE <- format((length(which((bens[,2] - bens[,1]) * lambda - (costs[,2] - costs[,1]) > 0)) / length(costs[,1])), digits = 2, nsmall = 3)
-  pCE
+  pCE <- function (costs, bens, lambda, nInt) {
+  for (i in 1:nInt)
+  pCEAC <- format(max(as.matrix(length(which((bens[,i] - bens[,1]) * lambda - (costs[,i] - costs[,1]) > 0)) / length(costs[,1]))), digits = 2, nsmall = 3)    
+  pCEAC
 }
 
-# 12) Net Benefit costs
+# 12) Which most cost effective?
+bestCE <- function(costs, bens, lambda, nInt) {
+  for (i in 1:nInt)
+  bestCE <- which.max(as.matrix(length(which((bens[,i] - bens[,1]) * lambda - (costs[,i] - costs[,1]) > 0)) / length(costs[,1]))) + 1 # 1 added on to account for lack of baseline row in calculation
+  bestCE <- colnames(costs[bestCE])
+  bestCE
+}
+
+# 13) Net Benefit costs
 netBencosts <- function(costs, bens, lambda, nInt) {
   for (i in 1:nInt)
-  netBencosts <- format(mean(bens[,i] * lambda - costs[,i]), digits = 2, nsmall = 2)
+  netBencosts <- format(max(as.matrix(mean(bens[,i] * lambda - costs[,i]))), digits = 2, nsmall = 2)
   netBencosts
 }
 
-# 13) Net Benefit effects
+# 14) Net Benefit effects
 netBeneffects <- function(costs, bens, lambda, nInt) {
   for (i in 1:nInt)
-    netBeneffects <- format(mean(bens[,i] - (costs[,i] / lambda)), digits = 2, nsmall = 2)
+  netBeneffects <- format(max(as.matrix(mean(bens[,i] - (costs[,i] / lambda)))), digits = 2, nsmall = 2)
   netBeneffects
 }
 
-# 14) Confidence intervals for net benefits costs (value = e.g. 0.025 for 2.5th CI, 0.975 for 97.5th CI)
-confIntNBC <- function(costs, bens, lambda, nInt, value) {
+# 15) Which best strategy?
+bestnetBen <- function(costs, bens, lambda, nInt) {
   for (i in 1:nInt)
-  confIntNBC <- format(quantile((bens[,i] * lambda - costs[,i]), value), digits = 4,  nsmall = 2)
-  confIntNBC
-}
-
-# 15) Confidence intervals for net benefits effects (value = e.g. 0.025 for 2.5th CI, 0.975 for 97.5th CI)
-confIntNBE <- function(costs, bens, lambda, nInt, value) {
-  for (i in 1:nInt)
-  confIntNBE <- format(quantile((bens[,i] - (costs[,i] / lambda)), value), digits = 4,  nsmall = 2)
-  confIntNBE
+  bestnetBen <- which.max(as.matrix(mean(bens[,i] * lambda - costs[,i]))) + 1 # 1 added on to account for lack of baseline row in calculation
+  bestnetBen <- colnames(costs[bestnetBen])
+  bestnetBen
 }

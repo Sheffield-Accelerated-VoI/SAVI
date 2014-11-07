@@ -268,9 +268,9 @@ shinyServer(
             get("effects", envir=cache)), ". This is ", aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall),  
             " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", colnames(get("costs", envir=cache))[2],
             " ", wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " be considered cost-effective 
-            at this threshold. There is uncertainty with a ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), 
+            at this threshold. There is uncertainty with a ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), 
             " probability that ", colnames(get("costs", envir=cache))[2], " is more cost-effective (", pCE(get("costs", envir=cache), get("effects", envir=cache), 
-            input$lambdaOverall), " of the probabilistic model run dots are below and to the right of the diagonal threshold line).", sep="")
+            input$lambdaOverall, get("nInt", envir=cache)), " of the probabilistic model run dots are below and to the right of the diagonal threshold line).", sep="")
     })                         
     
     output$textCEplane4 <- renderText({
@@ -280,7 +280,7 @@ shinyServer(
     
     output$textCEplane5 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste(pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " probability that ",colnames(get("costs", envir=cache))[2]," is more cost-effective 
+      paste(pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), " probability that ",colnames(get("costs", envir=cache))[2]," is more cost-effective 
       than ",colnames(get("costs", envir=cache))[1]," at a threshold of ",input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
     })                       
     
@@ -288,8 +288,9 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
             value for cost-effectiveness of ",input$currency, input$lambdaOverall," per ",input$unitBens," the strategy with the highest 
-            probability of being most cost-effective is X, with a probability of ", pCE(get("costs", envir=cache), get("effects", envir=cache), 
-            input$lambdaOverall), ". More details on how to interpret CEACs are available from the literature.", sep="")
+            probability of being most cost-effective is ", bestCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), 
+            ", with a probability of ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
+            ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
                        
    output$textNB1 <- renderText({
@@ -305,15 +306,13 @@ shinyServer(
 
    output$textNB3 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 95% credible 
-           interval for each one.  The strategy with highest expected net benefit is estimated to be $SmaxexpNB$, with an expected net benefit of 
+     paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 97.5% credible 
+           interval for each one.  The strategy with highest expected net benefit is estimated to be ", bestnetBen(get("costs", envir=cache), 
+           get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), ", with an expected net benefit of 
            ", input$currency, netBencosts(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
            " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(get("costs", envir=cache), get("effects", envir=cache), 
-           input$lambdaOverall, get("nInt", envir=cache)), input$unitBens, "s. The 95% credible interval suggests that the net benefit of $SmaxexpNB$ 
-           could range from ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025),
-           " to ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " (",
-           confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025), " ", input$unitBens, "s to ",
-           confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " ", input$unitBens, "s on effect scale).", sep="")
+           input$lambdaOverall, get("nInt", envir=cache)), " ", input$unitBens, "s). Net benefit and 97.5% credible intervals for all strategies 
+           are presented in the above table. ", sep="")
    }) 
 
    output$textEVPI1 <- renderText({

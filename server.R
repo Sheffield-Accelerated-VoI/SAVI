@@ -399,10 +399,12 @@ shinyServer(
                               "Over 20 years", 
                               paste("Over Specified Decision Relevance Horizon (", input$horizon, "years)"))
      
-     #calcEvpiFunc <- ifelse(input$indSim, get("calcEvpiSingle"), get("calcEvpi"))
-     #print(input$indSim)
+#      overallEvpi <- ifelse(input$indSim, calcEvpiSingle(get("costs", envir=cache), get("effects", envir=cache), 
+#                                                   lambda=input$lambdaOverall, cache, session),
+#                            calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+#              lambda=input$lambdaOverall, cache, session))
      overallEvpi <- calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
-             lambda=input$lambdaOverall, cache, session)
+                                           lambda=input$lambdaOverall, cache, session)
      assign("overallEvpi", overallEvpi, envir = cache)
      assign("lambdaOverall", input$lambdaOverall, envir = cache)
      evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 

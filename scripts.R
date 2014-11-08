@@ -41,8 +41,7 @@ calcEvpiSingle <- function(costs.int, effects.int, lambda, cache, session) {
   ## this function creates the NB matrix
   nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
   params <- get("params", envir=cache)
-  nbConditional <- gpFunc(nb, 1:NCOL(params), s=1000, cache, session)
-  evpi <- mean(do.call(pmax, nbConditional)) - max(colMeans(nbConditional))
+  evpi <- gpFunc(nb, 1:NCOL(params), s=10, cache, session)$EVPI
   return(evpi)
 }
 

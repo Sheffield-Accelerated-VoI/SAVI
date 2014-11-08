@@ -72,7 +72,6 @@ applyCalcSingleParamGam <- function(parameterDf, inb, session) {
   parameterDf <- as.matrix(parameterDf)
     
   progress <- shiny::Progress$new(session, min=1, max=sum(numVar))
-  print(sum(numVar))
   on.exit(progress$close())
   progress$set(message = 'Calculation in progress',
                detail = 'This may take a while...')
@@ -81,7 +80,7 @@ applyCalcSingleParamGam <- function(parameterDf, inb, session) {
   
   if (sum(numVar)==0) {
     return(NULL)
-    stop("PSA parameters are non-numeric!")
+    stop("PSA parameters are non-numeric!") # will this even be called? crash?
   } else {
     for (i in 1:NCOL(parameterDf[, numVar])) {
       progress$set(i)

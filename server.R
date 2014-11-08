@@ -1,25 +1,30 @@
-# source all the functions we need
+#######################################
+# START SHINY SERVER
+#######################################
+print("server.R called") # this is called when we start the shiny server on SAVI via $ sudo start shiny-server
 
+# max upload for files
 options(shiny.maxRequestSize=100*1024^2) # increase max upload to 100Mb
-options(shiny.reactlog=TRUE)
 
-source("scripts.R")
-source("scripts_GPfunctions.R") # separate file to hold the GPfunctions
-source("scripts_GAMfunctions.R")
-source("scripts_plots.R")
-source("scripts_tables.R")
-source("scripts_text.R")
+# debugging option
+options(shiny.reactlog=FALSE)
+# options(shiny.reactlog=TRUE) # only set to true for debugging. MUST BE FALSE FOR LIVE USE
 
 # load the libraries we need
-
 library(MASS)
 library(mgcv)
 library(knitr)
 library(rmarkdown)
 library(xtable)
-# library(pander)
 
-print("server.R called")
+# source all the functions we need
+source("scripts.R")
+source("scripts_GPfunctions.R")
+source("scripts_GAMfunctions.R")
+source("scripts_plots.R")
+source("scripts_tables.R")
+source("scripts_text.R")
+
 
 shinyServer(
   
@@ -80,17 +85,16 @@ shinyServer(
     # ########### 
     
 
-  #load("SAVISession.Rdata", envir=cache)
+    #  load("SAVISession.Rdata", envir=cache) # auto load for testing purposes
 
     #  Function that loads saved session
+    # is evaluated if a new session is loaded
     observe({
       inFile = input$loadSession
-      if (is.null(inFile))
-        return(NULL)
-      assign("savedSession", 1, envir=cache)
+      if (is.null(inFile)) return(NULL)
       load(inFile$datapath, envir=cache)
+      
       # update "about the model" variables
-
       updateTextInput(session, "modelName", value = get("modelName", envir=cache))
       updateTextInput(session, "current",  value = get("current", envir=cache))
       updateTextInput(session, "t3",  value = get("t3", envir=cache))
@@ -110,16 +114,17 @@ shinyServer(
       assign("setStoreMatchEvpiValues", NULL, envir=cache)
       assign("currentSelection", NULL, envir=cache)
       
+      assign("savedSession", 1, envir=cache)    # not used
       
     })
     
-    #  Function that imports parameters - NEED TO DO _ SANITY CHECK
+    #  Function that imports parameters
     #loadParameters <- 
       observe({
       inFile = input$parameterFile
       if (is.null(inFile))
         return(NULL)
-#       
+#
 #       if (input$rownames1) {
 #         dat <- read.csv(inFile$datapath, header=input$header1, #sep=input$sep,
 #                         row.names=1)#, dec=input$dec)
@@ -131,7 +136,7 @@ shinyServer(
         dat <- read.csv(inFile$datapath)#, header=input$header1)#, sep=input$sep, dec=input$dec)
         assign("params", dat, envir = cache)
         assign("nParams", ncol(dat), envir=cache)
-        assign("nIterate", nrow(dat), envir=cache)
+        assign("nIterate", nrow(dat), envir=cache) # size of PSA
 #    }
     })
 
@@ -150,7 +155,7 @@ shinyServer(
 #       } else {
         dat <- read.csv(inFile$datapath)#, header=input$header2)#, sep=input$sep, dec=input$dec)
         assign("costs", dat, envir = cache)
-        assign("nInt", ncol(dat), envir=cache)
+        assign("nInt", ncol(dat), envir=cache) # number of interventions
 
 #      }
     })
@@ -197,7 +202,7 @@ shinyServer(
       x <- input$parameterFile 
       y <- input$loadSession
       tableValues <- get("params", envir=cache)
-      assign("nParamSamples", nrow(tableValues), envir=cache)
+      # assign("nParamSamples", nrow(tableValues), envir=cache)
       if (is.null(tableValues)) return(NULL)
       head(tableValues, n=5)
     })
@@ -277,9 +282,9 @@ shinyServer(
             get("effects", envir=cache)), ". This is ", aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall),  
             " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", colnames(get("costs", envir=cache))[2],
             " ", wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " be considered cost-effective 
-            at this threshold. There is uncertainty with a ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), 
+            at this threshold. There is uncertainty with a ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), 
             " probability that ", colnames(get("costs", envir=cache))[2], " is more cost-effective (", pCE(get("costs", envir=cache), get("effects", envir=cache), 
-            input$lambdaOverall), " of the probabilistic model run dots are below and to the right of the diagonal threshold line).", sep="")
+            input$lambdaOverall, get("nInt", envir=cache)), " of the probabilistic model run dots are below and to the right of the diagonal threshold line).", sep="")
     })                         
     
     output$textCEplane4 <- renderText({
@@ -289,7 +294,7 @@ shinyServer(
     
     output$textCEplane5 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste(pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall), " probability that ",colnames(get("costs", envir=cache))[2]," is more cost-effective 
+      paste(pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), " probability that ",colnames(get("costs", envir=cache))[2]," is more cost-effective 
       than ",colnames(get("costs", envir=cache))[1]," at a threshold of ",input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
     })                       
     
@@ -297,8 +302,9 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
             value for cost-effectiveness of ",input$currency, input$lambdaOverall," per ",input$unitBens," the strategy with the highest 
-            probability of being most cost-effective is X, with a probability of ", pCE(get("costs", envir=cache), get("effects", envir=cache), 
-            input$lambdaOverall), ". More details on how to interpret CEACs are available from the literature.", sep="")
+            probability of being most cost-effective is ", bestCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), 
+            ", with a probability of ", pCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
+            ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
                        
    output$textNB1 <- renderText({
@@ -314,27 +320,27 @@ shinyServer(
 
    output$textNB3 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 95% credible 
-           interval for each one.  The strategy with highest expected net benefit is estimated to be $SmaxexpNB$, with an expected net benefit of 
+     paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 97.5% credible 
+           interval for each one.  The strategy with highest expected net benefit is estimated to be ", bestnetBen(get("costs", envir=cache), 
+           get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), ", with an expected net benefit of 
            ", input$currency, netBencosts(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
            " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(get("costs", envir=cache), get("effects", envir=cache), 
-           input$lambdaOverall, get("nInt", envir=cache)), input$unitBens, "s. The 95% credible interval suggests that the net benefit of $SmaxexpNB$ 
-           could range from ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025),
-           " to ", input$currency, confIntNBC(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " (",
-           confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.025), " ", input$unitBens, "s to ",
-           confIntNBE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache), 0.975), " ", input$unitBens, "s on effect scale).", sep="")
+           input$lambdaOverall, get("nInt", envir=cache)), " ", input$unitBens, "s). Net benefit and 97.5% credible intervals for all strategies 
+           are presented in the above table. ", sep="")
    }) 
 
    output$textEVPI1 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("The overall EVPI per person affected by the decision is estimated at ", input$currency, ". $overall EVPIperperson$.  This is equivalent to 
-           $overallEVPIusingeffectneasure$ per person’s worth of decision uncertainty on the ", input$unitBens, " scale.", sep="")
+     paste("The overall EVPI per person affected by the decision is estimated at ", input$currency, format(calcEvpi(get("costs", envir=cache), 
+          get("effects", envir=cache), input$lambdaOverall), digits = 4, nsmall=2), ".  This is equivalent to ", 
+          format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)/input$lambdaOverall, digits = 4, nsmall=1), 
+          " per person’s worth of decision uncertainty on the ", input$unitBens, " scale.", sep="")
    })     
 
     output$textEVPI2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency, "
-            $overall EVPIper jusrisdictionperyear$ for ", input$jurisdiction, ".", sep="")
+      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency,
+            format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)*input$annualPrev, digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
     }) 
 
     output$textEVPI3 <- renderText({
@@ -342,7 +348,8 @@ shinyServer(
       paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
             will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified 
             decision relevance horizon of ", input$horizon, " years, the overall expected value of removing decision uncertainty for ", 
-            input$jurisdiction, " would in total be ", input$currency, " $overallevpidecisionrelevance$.", sep="")
+            input$jurisdiction, " would in total be ", input$currency, format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+            input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")
     }) 
 
     output$textEVPI4 <- renderText({
@@ -350,8 +357,17 @@ shinyServer(
       paste("Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because 
             the return on investment from the research – as measured by the health gain and cost savings of enabling decision makers ability to switch and 
             select other strategies when evidence obtained reduces decision uncertainty – is expected to be no higher than the figure of ", input$currency, 
-            " $overallevpidecisionrelevance$.", sep="")  
+            format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")  
       }) 
+
+    output$textEVPI5 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("The EVPI estimates in the table below quantify the expected value to decision makers within ", input$jurisdiction, " of removing all current 
+            decision uncertainty at a threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, ".  This will enable comparison against 
+            previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate 
+            for varying willingness to pay thresholds are illustrated in the figures below.", sep="")
+    })
+
 
     # Functions that make tables  
     output$tableCEplane <- renderTable({
@@ -450,6 +466,7 @@ shinyServer(
    
     
     # Functions that make plots
+    # CE plane
     output$plots1 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
@@ -457,17 +474,17 @@ shinyServer(
                       lambda=input$lambdaOverall, xlab=input$effectDef, 
                       ylab=input$costDef)
     })  
-    
+ 
+    # CEAC
     output$plots2 <- renderPlot({
-    
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
+       if (!valuesImportedFLAG(cache, input)) return(NULL)
       ceac.obj <- assign("ceac.obj", ceac(), envir=cache)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
       makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
                    names=colnames(get("costs", envir=cache)))
-    })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL 
-    
+    })  ###NEED TO ADD % COST-EFFECTIVENESS AT LINE AS A LABEL  
 
+    # EVPI versus lambda (costs)
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
@@ -477,7 +494,8 @@ shinyServer(
                    ylab="Overall EVPI per person affected (on costs scale)",
                    col="red",  costscale = TRUE, session)
     })
-    
+   
+    # EVPI versus lambda (effects)
     output$plots4 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall,
@@ -487,35 +505,29 @@ shinyServer(
                    col="red",  costscale = FALSE, session)
     })
     
-    output$plots4way <- renderPlot({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      make4wayPlot(get("costs", envir=cache), get("effects", envir=cache), 
-                   get("ceac.obj", envir=cache), lambda=input$lambdaOverall, main=input$main1, 
-                   xlab=input$xlab2, ylab=input$ylab2, col=input$color2, 
-                                       main2=input$main4, xlab2=input$xlab4, 
-                                       ylab2=input$ylab4,
-                                       col2=input$color4)
-    })
-    
+    # EVPI INB bar plot
     output$plots5a <- renderPlot({ # NEED TO DISCUSS THIS - MS
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambdaOverall)
     })
 
+    # Absolute net benefit densities
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make2wayDensity(get("costs", envir=cache), get("effects", envir=cache), 
                       lambda=input$lambdaOverall)
     })
-  
+    
+    # EVPI plots
     output$plots6 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make4wayEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall, 
                        prevalence=input$annualPrev, horizon=input$horizon, measure1 = input$currency, 
                        measure2 = input$unitBens, session)
     })
-    
+ 
+    # EVPPi horizontal bar chart
     output$plot7 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvppiBar(get("pEVPI", envir=cache), get("params", envir=cache))
@@ -552,21 +564,21 @@ shinyServer(
     })
     
     # save the current selection and then increase counter
-    observe({
-      dummy <- input$addSelection
-      if (dummy == 0) return(NULL)
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      counterAdd <- get("counterAdd", envir=cache)
-      counterAdd <- counterAdd + 1
-      setStore <- get("setStore", envir=cache)
-      currentSelection <- get("currentSelection", envir=cache)
-      #nCurrentSelection <- length(currentSelection)
-      #nParams <- get("nParams", envir = cache)
-      #completedCurrentSelection <- c(currentSelection, rep("", nParams - nCurrentSelection))
-      setStore[[counterAdd]] <- currentSelection
-      assign("setStore", setStore, envir = cache)
-      assign("counterAdd", counterAdd, envir=cache)   
-    })
+#     observe({
+#       dummy <- input$addSelection
+#       if (dummy == 0) return(NULL)
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       counterAdd <- get("counterAdd", envir=cache)
+#       print(counterAdd <- counterAdd + 1)
+#       setStore <- get("setStore", envir=cache)
+#       currentSelection <- get("currentSelection", envir=cache)
+#       #nCurrentSelection <- length(currentSelection)
+#       #nParams <- get("nParams", envir = cache)
+#       #completedCurrentSelection <- c(currentSelection, rep("", nParams - nCurrentSelection))
+#       setStore[[counterAdd]] <- currentSelection
+#       assign("setStore", setStore, envir = cache)
+#       assign("counterAdd", counterAdd, envir=cache)   
+#     })
 
 
 
@@ -575,57 +587,74 @@ shinyServer(
 ####
 
     # This function responds to the add button being pressed
-    # It outputs the selection table when add button pressed
+    # This function saves the current selection and then increase counter
+    # It does the calculation and then outputs the selection table 
+    #
     output$selectedTable <- renderTable({
-      x <- input$addSelection
-      if (x==0) return(NULL)
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      
+      # dummy <- input$addSelection
+      dummy <- input$calculateSubsetsEvpi
+      if (dummy == 0) return(NULL)
+      if (!isolate(valuesImportedFLAG(cache, input))) return(NULL)
+      if (dummy == 0) return(NULL)
+      
+      counterAdd <- get("counterAdd", envir=cache)
+      print(counterAdd <- counterAdd + 1)
+      assign("counterAdd", counterAdd, envir=cache) 
+      
       setStore <- get("setStore", envir=cache)
-      buildSetStoreTable(setStore[1:x])
-    }, sanitize.rownames.function = bold.allrows)
-
-
-    # This function respnds to the calculate button being pressed
-    # It calculates the partial EVPI of newly defined groups
-    # It then Outputs the subset EVPI table
-    output$selectedEvpiTable <- renderTable({
-      x <- input$calculateSubsetsEvpi
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      if (x==0) return(NULL)
-      counterAdd <- get("counterAdd", envir = cache)
-      setStore <- get("setStore", envir=cache)
-        
+      currentSelection <- get("currentSelection", envir=cache)
+      setStore[[counterAdd]] <- currentSelection
+      assign("setStore", setStore, envir = cache)
+      
       calc <- function(x, inp, cache, session) { # pass session so the progress bar will work
         calSubsetEvpi(x, inp, cache, session)
       }
       
       #first pull down the existing values
-        subsetEvpiValues <- get("subsetEvpiValues", envir = cache)
-        if (is.null(subsetEvpiValues)) {
-          subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, input$lambdaOverall, cache, session))
-        } else {
-          newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calc, input$lambdaOverall, cache, session))
-          subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
-        }
+      subsetEvpiValues <- get("subsetEvpiValues", envir = cache)
+      if (is.null(subsetEvpiValues)) {
+        subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, input$lambdaOverall, cache, session))
+      } else {
+        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calc, input$lambdaOverall, cache, session))
+        subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
+      }
+      
       assign("subsetEvpiValues", subsetEvpiValues, envir = cache)
       assign("setStoreMatchEvpiValues", setStore, envir = cache) # cache these for the report in case they change
-    
-      df <- data.frame(subsetEvpiValues)   
-      rownames(df) <- paste("Set", 1:counterAdd)
-      df
-    }, sanitize.rownames.function =  bold.allrows)  
-    
+
+      buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
+    }, sanitize.rownames.function = bold.allrows)
+
+
+    # This function responds to the calculate button being pressed
+    # It calculates the partial EVPI of newly defined groups
+    # It then Outputs the subset EVPI table
+#     # output$selectedEvpiTable <- renderTable({
+#     observe({
+#       x <- input$calculateSubsetsEvpi
+#       if (!valuesImportedFLAG(cache, input)) return(NULL)
+#       if (x==0) return(NULL)
+#       counterAdd <- get("counterAdd", envir = cache)
+#       setStore <- get("setStore", envir=cache)
+#         
+#       
+#     
+# #       df <- data.frame(subsetEvpiValues)   
+# #       rownames(df) <- paste("Set", 1:counterAdd)
+# #       df
+#     })#, sanitize.rownames.function =  bold.allrows)  
+#     
 
 #   Need a function that clears everything, either on pressing the clear all button, or on loading new data.
      observe({ # clear the selections
        x <- input$clearSubsetsEvpi
        if (!valuesImportedFLAG(cache, input)) return(NULL)
-       if(x==0) return(NULL)
-       dummy <- valuesImportedFLAG(cache, input) # run this function if anything new is uploaded
+       if (x==0) return(NULL)
+       print("clearing")
        setStore <- vector("list", 100)
        assign("setStore", setStore, envir = cache)
        assign("counterAdd", 0, envir = cache)
-       assign("subsetEvpiValues", NULL, envir = cache)
        assign("subsetEvpiValues", NULL, envir = cache)
        assign("setStoreMatchEvpiValues", NULL, envir = cache) # cache these for the report in case they change
      })
@@ -642,34 +671,34 @@ shinyServer(
       contentType = "text/plain")
     
     # Download pdf / html / docx report - NEED TO FIX THE HTML AND DOCX
-    output$downloadReport <- downloadHandler(
-      filename = function() {#"my-report.pdf"
-        paste('my-report', sep = '.', switch(
-          input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
-        ))
-      },
-      
-      content = function(file) {
-        #src <- normalizePath('report.Rmd')
-        
-        # temporarily switch to the temp dir, in case you do not have write
-        # permission to the current working directory
-        #owd <- setwd(tempdir())
-        #on.exit(setwd(owd))
-        #file.copy(src, 'report.Rmd')
-        
-        library(rmarkdown)
-        out <- render('report.Rmd', #pdf_document()
-                      switch(
-                        input$format,
-                        PDF = pdf_document(), HTML = html_document(), Word = word_document_local()),
-                      envir = cache
-        )
-        file.copy(out, file)
-      },
-      contentType = "text/plain"
-    )
-    
+#     output$downloadReport <- downloadHandler(
+#       filename = function() {#"my-report.pdf"
+#         paste('my-report', sep = '.', switch(
+#           input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
+#         ))
+#       },
+#       
+#       content = function(file) {
+#         #src <- normalizePath('report.Rmd')
+#         
+#         # temporarily switch to the temp dir, in case you do not have write
+#         # permission to the current working directory
+#         #owd <- setwd(tempdir())
+#         #on.exit(setwd(owd))
+#         #file.copy(src, 'report.Rmd')
+#         
+#         library(rmarkdown)
+#         out <- render('report.Rmd', #pdf_document()
+#                       switch(
+#                         input$format,
+#                         PDF = pdf_document(), HTML = html_document(), Word = word_document_local()),
+#                       envir = cache
+#         )
+#         file.copy(out, file)
+#       },
+#       contentType = "text/plain"
+#     )
+#     
     
     #output: rmarkdown::default
     #tables: true

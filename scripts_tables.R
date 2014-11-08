@@ -41,17 +41,17 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
 }
 
 # function for building up table of parameter sets for partial EVPI
-buildSetStoreTable <- function(store) {
-  maxRows <- max(unlist(lapply(store, length)))
+buildSetStoreTable <- function(store, groupPartialEvpi) {
+  # maxRows <- max(unlist(lapply(store, length)))
   # tableRows <- lapply(store, function(x) c(x, rep("", maxRows - length(x))))
-  tableRows <- lapply(store, function(x) {
+  groups <- sapply(store, function(x) {
     output <- paste(x, ", ", sep="", collapse="")
     output <- substr(output, 1, nchar(output) - 2)
     output})
-  df <- t(data.frame(tableRows))
-  rownames(df) <- paste("Set", 1:length(store))
-  colnames(df) <- "Parameters"
-  # names(df) <- NULL
+  print(groups)
+  print(df <- data.frame(groups, groupPartialEvpi))
+  rownames(df) <- c(paste("Set", 1:(length(store))))
+  colnames(df) <- c("Parameters", "Partial EVPI", "SE")
   df
 }
 

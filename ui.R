@@ -299,17 +299,7 @@ fluidPage(
       # Graphic
       # coming from the function output$boxplots in server.R
       tabPanel("EVPI",
-               
-               #h4("Figures"), ##HASHED OUT AS NOT SURE WHERE TO PUT IT
-               #textInput("main",strong("Graphic title:"), "CE plane"),
-               #textInput("xlab",strong("X axis label:"), "Effects"),
-               #textInput("ylab",strong("Y axis label:"), "Costs"),
-               #textInput("color","Color:","red"),
-               #h4("Specify lambda"),
-               #sliderInput('lambda2', label="", 500, 60000, 20000, 1000, width="600px"),
-               #sliderInput('lambda2', label="", -6, 6, 4, 0.1),
-               #plotOutput("plots4way", width="600px", height="600px"),    
-               
+                
                p("The Table below quantifies the expected value to decision makers of removing all current decision uncertainty.  
                  This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this
                   topic compared with previous decisions."),
@@ -344,23 +334,22 @@ fluidPage(
                textOutput("textEVPI4"),
                br(),
                
+               textOutput("textEVPI5"),
+               br(),
+               
                h3("The Expected Value of Removing all Current Decision Uncertainty: Overall Expected Value of Information"),
                tableOutput("tableEVPI"),               
                br(),
                
-               h3("Overall EVPI versus lambda"),
-               textInput("main3", strong("Graphic title:"), "EVPI (on costs scale) vs lambda"),               
+               h3("Overall EVPI (on costs scale) versus lambda"),               
                plotOutput("plots3", width="500px", height="500px"),
 
-               h3("Overall EVPI versus lambda"),
-               textInput("main4", strong("Graphic title:"), "EVPI (on effects scale) vs lambda"),
+               h3("Overall EVPI (on effects scale) versus lambda"),
                plotOutput("plots4", width="500px", height="500px"),
                br(),
                
                h3("Overall EVPI per population and time horizon"),
-               plotOutput("plots6", width="700px", height="600px")             
-        
-
+               plotOutput("plots6", width="700px", height="600px")        
                
       ),
 
@@ -392,9 +381,9 @@ fluidPage(
                                       c(""), 
                                       selected = NULL),
                    br(),
-                   actionButton("addSelection", "Add selection"),
-                   br(),
-                   br(),
+#                    actionButton("addSelection", "Add selection"),
+#                    br(),
+#                    br(),
                    actionButton("calculateSubsetsEvpi", "Calculate EVPPI values"), width=5),
                  
                  mainPanel(
@@ -411,11 +400,11 @@ fluidPage(
       # Numerical summary of the dataset,
       # coming from the function output$summary in server.R
       tabPanel("Downloads", 
-               downloadButton('downloadSummary', 'Download EVPI values'),
-               br(), br(),#,tableOutput("summary")
-               radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
-                            inline = TRUE),
-               downloadButton('downloadReport', 'Download report')
+               downloadButton('downloadSummary', 'Download EVPI values')#,
+#               br(), br(),#,tableOutput("summary")
+#                radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
+#                             inline = TRUE),
+#                downloadButton('downloadReport', 'Download report')
       ),
       
       tabPanel("Save session", 

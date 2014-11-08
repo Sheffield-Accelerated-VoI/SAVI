@@ -39,7 +39,7 @@ fluidPage(
   
   
   mainPanel(
-    h4("Pre-Release version 0.93 (2014-11-6)"),
+    h4("Release version 1.001 (2014-11-8)"),
     tabsetPanel(  # Application title
  #
   
@@ -56,7 +56,7 @@ fluidPage(
      
 
                p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
-               p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
+              # p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
                p(HTML("In a matter of seconds from the SAVI online application you can receive:")),
                tags$ol(
                       tags$li("Standardised assessment of uncertainty (C-E planes and CEACs)"), 

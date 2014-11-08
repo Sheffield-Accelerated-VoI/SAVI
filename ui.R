@@ -39,7 +39,7 @@ fluidPage(
   
   
   mainPanel(
-    h4("Release version 1.001 (2014-11-8)"),
+    h4("Release version 1.002 (2014-11-8)"),
     tabsetPanel(  # Application title
  #
   

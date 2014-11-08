@@ -369,10 +369,11 @@ fluidPage(
       ),
       
       tabPanel("EVPPI groups",
-               p(HTML("Here you can define subsets of parameters to add to your EVPPI. Choose a subset of parameters
-                      using the tick boxes and press the Add button to add the combination to the analysis.
-                      You can add as many combinations as you wish. Press the Calculate EVPPI button
-                      when you have finished your selections.")),
+               p(HTML("Here you can define subsets of parameters for which to calculate partial EVPI. Choose a subset of parameters
+                      using the tick boxes and press the Calculate EVPPI button.")),
+               p(HTML("For subsets with up to five parameters, the GAM regression method is used. 
+                      For subsets with five or more parameters the GP regresison method is used. 
+                      See <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a> for details.")),               
                br(),
                sidebarLayout(
                  sidebarPanel(
@@ -387,14 +388,16 @@ fluidPage(
                    actionButton("calculateSubsetsEvpi", "Calculate EVPPI values"), width=5),
                  
                  mainPanel(
-                   h4("Selected parameter combinations"),
+                   br(),
+                   h3("Results"),
                    br(),
                    tableOutput("selectedTable"),
-                   br(),
-                   h4("Partial EVPI values"),
-                   tableOutput("selectedEvpiTable"),
-                   br(),
-                   actionButton("clearSubsetsEvpi", "Clear Selections"), width=7))     
+                  # br(),
+                   #h4("Partial EVPI values"),
+                   #tableOutput("selectedEvpiTable"),
+                #   br(),
+                #   actionButton("clearSubsetsEvpi", "Clear Selections"),
+                width=7))     
       ),
     
       # Numerical summary of the dataset,
@@ -421,13 +424,13 @@ fluidPage(
                       <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/watson_p' target='_blank'>Penny Breeze</a>, 
                       <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/thomas_c' target='_blank'>Chloe Thomas</a> and 
                       <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/brennan_a' target='_blank'>Alan Brennan</a>.")), 
-               p(HTML("The source code is available on GitHub at 
-                <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI' target='_blank'>https://github.com/Sheffield-Accelerated-VoI/SAVI.</a>")),
-               p(HTML("The regression-based method for approximating partial EVPI was developed by 
+                p(HTML("The regression-based method for approximating partial EVPI was developed by 
                  <a href='https://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' target='_blank'>Mark Strong</a>
                       in collaboration with 
                       <a href='http://www.jeremy-oakley.staff.shef.ac.uk/' target='_blank'>Jeremy Oakley</a>
                       and <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/brennan_a' target='_blank'>Alan Brennan</a>.")),
+               p(HTML("The source code is available on GitHub at 
+                <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI' target='_blank'>https://github.com/Sheffield-Accelerated-VoI/SAVI.</a>")),
                p(HTML("Please cite the method as")),
                p(HTML("<div style='border:1px solid
                       black;width:800px;padding-left: 1em'>Strong M, Oakley JE, Brennan A. 

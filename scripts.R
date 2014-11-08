@@ -30,10 +30,19 @@ createNb <- function(costs.int, effects.int, lambda) {
      return(nb)
 }
 
-calcEvpi <- function(costs.int, effects.int, lambda) {
+calcEvpi <- function(costs.int, effects.int, lambda, cache, session) {
   ## this function creates the NB matrix
   nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
   evpi <- mean(do.call(pmax, nb)) - max(colMeans(nb))
+  return(evpi)
+}
+
+calcEvpiSingle <- function(costs.int, effects.int, lambda, cache, session) {
+  ## this function creates the NB matrix
+  nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
+  params <- get("params", envir=cache)
+  nbConditional <- gpFunc(nb, 1:NCOL(params), s=1000, cache, session)
+  evpi <- mean(do.call(pmax, nbConditional)) - max(colMeans(nbConditional))
   return(evpi)
 }
 

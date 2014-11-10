@@ -1,5 +1,7 @@
 
 fluidPage(
+ # tags$head(includeScript("google-analytics.js")),
+  
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   
 #   tags$head(
@@ -39,7 +41,7 @@ fluidPage(
   
   
   mainPanel(
-    h4("Release version 1.002 (2014-11-8)"),
+    h4("Release version 1.003 (2014-11-10)"),
     tabsetPanel(  # Application title
  #
   

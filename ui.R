@@ -1,6 +1,6 @@
 
 fluidPage(
-  tags$head(includeScript("google-analytics.js")),
+#  tags$head(includeScript("google-analytics.js")),
   
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   

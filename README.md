@@ -1,6 +1,6 @@
 SAVI
 ====
-# Sheffield Accelerated Value of Information
+## SAVI - Sheffield Accelerated Value of Information
 
 Using only PSA results from your model
 

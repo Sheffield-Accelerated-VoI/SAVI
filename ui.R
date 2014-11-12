@@ -41,7 +41,7 @@ fluidPage(
   
   
   mainPanel(
-    h4("Release version 1.003 (2014-11-10)"),
+    h4("Release version 1.004 (2014-11-12)"),
     tabsetPanel(  # Application title
  #
   
@@ -440,9 +440,18 @@ fluidPage(
                   Perfect Information from a probabilistic sensitivity analysis sample: 
                   a non-parametric regression approach. 
                   <em>Medical Decision Making.</em> 2014;<b>34(3)</b>:311-26. Available open access <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>here.</a></div>")),
-               h3("Contact"), 
+               br(),h3("Contact us"), 
                p(HTML("Please email us at <a href='mailto:savi@sheffield.ac.uk?Subject=SAVI%20query' target='_top'>
-                savi@sheffield.ac.uk</a>"))
+                savi@sheffield.ac.uk</a>")),
+               p("Please tell us about any bugs!"),
+               br(),
+               h3("Acknowledgements"), 
+               p(HTML("The method for partial EVPI computation that is implemented in this web application arose from independent research 
+                      supported by the National Institute for Health Research (Mark Strong, 
+                      postdoctoral fellowship PDF-2012-05-258). 
+                      The views expressed in this publication are those 
+                      of the authors and not necessarily those of the National Health Service, 
+                      the National Institute for Health Research, or the Department of Health. "))
      )
    
      , type = "pills" # this controls the look of the tabs

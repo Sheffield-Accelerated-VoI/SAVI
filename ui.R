@@ -54,6 +54,13 @@ fluidPage(
                h3("Returning Users"),
                fileInput('loadSession', label = h4('Load previously saved session'))
                ),
+               
+#                
+#                fluidRow(
+#                  h3("Sign up for news about updates"),
+#                  p(HTML("Send a blank email to"), a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=SAVI%20query'))
+#                ),
+#                
                mainPanel(
      
 
@@ -87,10 +94,11 @@ fluidPage(
                br(),
                p(HTML("Step 4: After you have viewed the VoI tabs download your results in PDF, HTML or word file")),
                img(src = "step6_download.png", height = 300, width = 300),
-               br(),
-               p(HTML("To register please email"), a("savi@sheffield.ac.uk",href="mailto:savi@sheffield.ac.uk"), 
-                      HTML("with an email subject Register"))
-               )
+               br(),br(),
+              
+               h3("Sign up for SAVI news and updates"),
+               p(HTML("Send a blank email to"), a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=Register')),               p("We won't share your email address with anyone."),
+               br(),br(),br())
                
                
       )),

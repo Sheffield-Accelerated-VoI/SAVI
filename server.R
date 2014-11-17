@@ -234,12 +234,12 @@ shinyServer(
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("This graph shows the standardised cost-effectiveness plane per person based on ", nrow(get("params", envir=cache)), 
-            " model runs, in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  
+      paste("The figure below shows the (standardised) cost-effectiveness plane based on the ", nrow(get("params", envir=cache)), 
+            " model runs in the probabilistic sensitivity analysis. The willingness-to-pay threshold is shown as a 45 degree line. 
             The mean incremental cost of ", colnames(get("costs", envir=cache))[2], " versus ", colnames(get("costs", envir=cache))[1]," is ",
             input$currency, incValue(incCost(get("costs", envir=cache))), ". This suggests that ",colnames(get("costs", envir=cache))[2]," is ", 
-            moreLess(incCost(get("costs", envir=cache))), " costly. There is some uncertainty due to model parameters, with the 97.5% credible 
-            interval for the incremental cost ranging from ", confIntCE(incCost(get("costs", envir=cache)), 0.025)," to ", 
+            moreLess(incCost(get("costs", envir=cache))), " costly. The incremental cost is uncertain because the model parameters are uncertain. 
+            The 97.5% credible interval for the incremental cost ranges from ", confIntCE(incCost(get("costs", envir=cache)), 0.025)," to ", 
             confIntCE(incCost(get("costs", envir=cache)), 0.975),". The probability that ", colnames(get("costs", envir=cache))[2], " is cost 
             saving compared to ",colnames(get("costs", envir=cache))[1]," is ", pCostsaving(incCost(get("costs", envir=cache))), ".", sep="")
     })                       
@@ -248,8 +248,9 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("The mean incremental benefit of ", colnames(get("costs", envir=cache))[2], " versus ", colnames(get("costs", envir=cache))[1], " is ", 
             incValue(incBen(get("effects", envir=cache))), " ",input$unitBens, "s.  This suggests that ",colnames(get("costs", envir=cache))[2]," is ", 
-            moreLess(incBen(get("effects", envir=cache))), " beneficial. Again, there is some uncertainty due to model parameters, with the 97.5% 
-            credible interval for the incremental benefit ranging from ", confIntCE(incBen(get("effects", envir=cache)), 0.025), " to ", 
+            moreLess(incBen(get("effects", envir=cache))), " beneficial. Again, there is uncertainty in the incremental benefit 
+            due to uncertainty in the model parameters. The 97.5% 
+            credible interval for the incremental benefit ranges from ", confIntCE(incBen(get("effects", envir=cache)), 0.025), " to ", 
             confIntCE(incBen(get("effects", envir=cache)), 0.975),". The probability that ",colnames(get("costs", envir=cache))[2],
             " is more beneficial than ",colnames(get("costs", envir=cache))[1]," is ", pMoreben(incBen(get("effects", envir=cache))), ".", sep="")
     })                        
@@ -309,32 +310,32 @@ shinyServer(
 
    output$textEVPI1 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("The overall EVPI per person affected by the decision is estimated at ", input$currency, format(calcEvpi(get("costs", envir=cache), 
+     paste("The overall EVPI per person affected by the decision is estimated to be ", input$currency, format(calcEvpi(get("costs", envir=cache), 
           get("effects", envir=cache), input$lambdaOverall), digits = 4, nsmall=2), ".  This is equivalent to ", 
-          format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)/input$lambdaOverall, digits = 4, nsmall=1), 
-          " per person’s worth of decision uncertainty on the ", input$unitBens, " scale.", sep="")
+          format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)/input$lambdaOverall, digits = 4, nsmall=1), " ", input$unitBens,
+          "s per person on the health effects scale.", sep="")
    })     
 
     output$textEVPI2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Assuming an annual number of people affected by the decision of " , input$annualPrev, ", the overall EVPI per year is ", input$currency,
+      paste("If the number of people affected by the decision per year is " , input$annualPrev, ", then the overall EVPI per year is ", input$currency,
             format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)*input$annualPrev, digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
     }) 
 
     output$textEVPI3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
-            will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified 
-            decision relevance horizon of ", input$horizon, " years, the overall expected value of removing decision uncertainty for ", 
-            input$jurisdiction, " would in total be ", input$currency, format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+            will remain relevant. If the decision relevance horizon is ", input$horizon, " years, then the overall expected value of removing 
+            decision uncertainty for ", 
+            input$jurisdiction, " would be ", input$currency, format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
             input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")
     }) 
 
     output$textEVPI4 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because 
-            the return on investment from the research – as measured by the health gain and cost savings of enabling decision makers ability to switch and 
-            select other strategies when evidence obtained reduces decision uncertainty – is expected to be no higher than the figure of ", input$currency, 
+      paste("Research or data collection exercises costing more than this amount would not be considered an efficient use of resources. This is because 
+            the return on investment from the research – as measured by the health gain and cost savings resulting from enabling the decision maker to better 
+            identify the best decision  option – is expected to be no higher than ", input$currency, 
             format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")  
       }) 
 
@@ -343,7 +344,7 @@ shinyServer(
       paste("The EVPI estimates in the table below quantify the expected value to decision makers within ", input$jurisdiction, " of removing all current 
             decision uncertainty at a threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, ".  This will enable comparison against 
             previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate 
-            for varying willingness to pay thresholds are illustrated in the figures below.", sep="")
+            for a range of willingness-to-pay thresholds are illustrated in the figures below the table.", sep="")
     })
 
 
@@ -390,7 +391,7 @@ shinyServer(
    output$tableEVPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
-     colnames(tableEVPI) <- c(paste("Overall EVPI Financial Valuation (", input$currency, ")"), paste("Overall EVPI", input$unitBens, "Valuation"))
+     colnames(tableEVPI) <- c(paste("Overall EVPI monetary scale (", input$currency, ")", sep=""), paste("Overall EVPI", input$unitBens, "scale"))
      rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
                               paste("Per Year in", input$jurisdiction, "Assuming", input$annualPrev, "Persons Affected per Year"), 
                               "Over 5 Years", 
@@ -472,7 +473,7 @@ shinyServer(
                    main=input$main3, 
                    xlab="Threshold willingness to pay", 
                    ylab="Overall EVPI per person affected (on costs scale)",
-                   col="red",  costscale = TRUE, session)
+                   col="blue",  costscale = TRUE, session)
     })
    
     # EVPI versus lambda (effects)
@@ -482,7 +483,7 @@ shinyServer(
                    main=input$main4, 
                    xlab="Threshold willingness to pay", 
                    ylab="Overall EVPI per person affected (on effects scale)",
-                   col="red",  costscale = FALSE, session)
+                   col="blue",  costscale = FALSE, session)
     })
     
     # EVPI INB bar plot

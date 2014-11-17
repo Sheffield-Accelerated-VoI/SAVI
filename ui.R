@@ -4,66 +4,30 @@ fluidPage(
   
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   
-#   tags$head(
-#     tags$style(HTML("
-#       @import url('//fonts.googleapis.com/css?family=Lobster|Cabin:400,700');
-#       
-#       h1 {
-#         font-family: 'Lobster', cursive;
-#         font-weight: 500;
-#         line-height: 1.1;
-#         color: #48ca3b;
-#       } 
-# 
-#       h2 {
-#         font-family: 'Lobster', cursive;
-#         font-weight: 500;
-#         line-height: 1.1;
-#         color: #D8F781;
-#       }
-# 
-#       h3 {
-#         font-family: 'Lobster', cursive;
-#         font-weight: 500;
-#         line-height: 1.1;
-#         color: #FF8000;
-#       }
-# 
-#       h4 {
-#         font-family: 'Lobster', cursive;
-#         font-weight: 500;
-#         line-height: 1.1;
-#         color: #2E9AFE;
-#       }
-# 
-#     "))
-#   ),
-  
-  
   mainPanel(
-    h4("Release version 1.004 (2014-11-12)"),
-    tabsetPanel(  # Application title
- #
-  
-  # Main panel (on the right hand side)
- # mainPanel(
-   # tabsetPanel(
+    h4("Release version 1.005 (2014-11-17)"),
+    tabsetPanel( 
+
       tabPanel("Home",
           sidebarLayout(position = "right",
                sidebarPanel(
                h3("Returning Users"),
-               fileInput('loadSession', label = h4('Load previously saved session'))
+               fileInput('loadSession', label = h4('Load previously saved session')),
+               br(),br(),
+               h3("Sign up for SAVI news and updates"),
+               p(HTML("Send a blank email to"), 
+                 a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=Register')),               
+               p("We won't share your email address with anyone."),
+               br(),br(),
+               h3("New in version 1.005"),
+               p("You can now download a report containing all the results from the SAVI analysis. Click on the Downloads tab."), 
+               br()
                ),
                
-#                
-#                fluidRow(
-#                  h3("Sign up for news about updates"),
-#                  p(HTML("Send a blank email to"), a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=SAVI%20query'))
-#                ),
-#                
-               mainPanel(
-     
-
+  
+               
+               mainPanel(  
+                h3("What SAVI does"),
                p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
               # p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
                p(HTML("In a matter of seconds from the SAVI online application you can receive:")),
@@ -76,9 +40,10 @@ fluidPage(
                p(HTML("Disclaimer: This application is made available to all users free of charge.  
                       The application is based on peer-reviewed statistical approximation methods.  
                       It comes with no warranty and should be utilised at the user’s own risk.")),                      
-               p(HTML("For more information on the method see Mark Strong's website  
+               p(HTML("For more information on the method see   
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
-                      target='_blank'>here</a>")), br(),
+                      target='_blank'>Mark Strong's website</a> or 
+                      <a href = 'http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a>.")), br(),
                p(HTML("The SAVI process has 4 steps (using the TABS from left to right)")),
                p(HTML("Step 1: Save PSA inputs and outputs as .csv files")),
                img(src = "step1_excel.png", height = 300, width = 300),
@@ -96,8 +61,8 @@ fluidPage(
                img(src = "step6_download.png", height = 300, width = 300),
                br(),br(),
               
-               h3("Sign up for SAVI news and updates"),
-               p(HTML("Send a blank email to"), a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=Register')),               p("We won't share your email address with anyone."),
+               h3("If you get stuck, or if something doesn't work, please let us know"),
+               p(HTML("Our email address is"), a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk')),               
                br(),br(),br())
                
                
@@ -210,7 +175,7 @@ fluidPage(
       
       
       tabPanel("PSA Results",
-               h1("Cost-Effectiveness Plane"),
+               h3("Cost-Effectiveness Plane"),
                p(HTML("<div id='textCEplane1' class='shiny-text-output'></div>")),
                br(),
                
@@ -230,6 +195,8 @@ fluidPage(
                           #submitButton("Change"), # this button stops everything else auto-updating!
                           #br(),
                           #br(),
+                          #p("Choose comparator"),
+                          
                           p(strong("Strategies Compared"), textOutput("textCEplane4")),
                           br(),
                           
@@ -247,7 +214,7 @@ fluidPage(
                br(),
                br(),
         
-               h1("Cost-Effectiveness Acceptability Curve (CEAC)"),
+               h3("Cost-Effectiveness Acceptability Curve (CEAC)"),
                textOutput("textCEAC1"),
                h6("Reference"),
                p("A guide to cost-effectiveness acceptability curves. Fenwick & Byford. The British Journal of 
@@ -257,7 +224,7 @@ fluidPage(
                plotOutput("plots2", width="500px", height="500px"),    
                br(),
         
-               h1("Net Benefit"),
+               h3("Net Benefit"),
                textOutput("textNB1"),
                br(),
         
@@ -309,28 +276,11 @@ fluidPage(
       # Graphic
       # coming from the function output$boxplots in server.R
       tabPanel("EVPI",
-                
-               p("The Table below quantifies the expected value to decision makers of removing all current decision uncertainty.  
-                 This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this
-                  topic compared with previous decisions."),
-               br(),
-               
-               h6("Understanding the EVPI – providing a non technical intuition for the meaning"),
-               br(),
-               
-               p("The calculation begins with the existing confidence intervals (or credible intervals) for the model parameters as used 
-                 in the probabilistic sensitivity analysis.  We then imagine a world in which we become absolutely (perfectly) certain 
-                 about all of the model parameters i.e. the confidence interval for every single parameter is ‘shrunk right down to zero.’  
-                 The decision maker would then be absolutely certain which strategy to select and would choose the one with highest net 
-                 benefit.  One can visualise this idea by imagining that instead of seeing the cloud of dots on the cost-effectiveness plane 
-                 (representing current uncertainty in costs and benefits) and having to choose, the decision maker now knows exactly which 
-                 ‘dot’ is the true value (because all of the uncertainty is removed) and so can be certain to choose the strategy which 
-                 gives the best net benefit. In a two strategy comparison of new versus current care, if the ‘true dot’ turns out to be 
-                 below and to the right of the threshold lambda line, then the decision maker would select the new strategy.  If the ‘true dot’ 
-                 is above and to the left, then current care would be selected.  Under the current uncertainty, the decision maker will 
-                 choose the strategy based on the expected costs and benefits (essentially on whether the ‘centre of gravity’ of the cloud 
-                 is above or below the threshold line)."),
-               br(),
+               h3("Overall Expected Value of Perfect Information"),
+               #p("The Table below quantifies the expected value to decision makers of removing all 
+                # current decision uncertainty."),  
+              #   This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this
+               #   topic compared with previous decisions."),          
                
                textOutput("textEVPI1"),
                br(),
@@ -347,19 +297,38 @@ fluidPage(
                textOutput("textEVPI5"),
                br(),
                
-               h3("The Expected Value of Removing all Current Decision Uncertainty: Overall Expected Value of Information"),
+
+               h4("Overall EVPI"),
+                h6("The Expected Value of Removing all Current Decision Uncertainty"),
                tableOutput("tableEVPI"),               
                br(),
                
-               h3("Overall EVPI (on costs scale) versus lambda"),               
+               h4("Overall EVPI (on costs scale) versus lambda"),               
                plotOutput("plots3", width="500px", height="500px"),
 
-               h3("Overall EVPI (on effects scale) versus lambda"),
+               h4("Overall EVPI (on effects scale) versus lambda"),
                plotOutput("plots4", width="500px", height="500px"),
                br(),
                
-               h3("Overall EVPI per population and time horizon"),
-               plotOutput("plots6", width="700px", height="600px")        
+               h4("Overall EVPI per population and time horizon"),
+               plotOutput("plots6", width="700px", height="600px"),
+               
+               h4("Understanding the EVPI: a non-technical intuition for the meaning"),
+               br(),
+               
+               p("The calculation begins with the existing confidence intervals (or credible intervals) for the model parameters as used 
+                 in the probabilistic sensitivity analysis.  We then imagine a world in which we become absolutely (perfectly) certain 
+                 about all of the model parameters i.e. the confidence interval for every single parameter is shrunk right down to zero.  
+                 The decision maker would then be absolutely certain which strategy to select and would choose the one with highest net 
+                 benefit.  One can visualise this idea by imagining that instead of seeing the cloud of dots on the cost-effectiveness plane 
+                 (representing current uncertainty in costs and benefits) and having to choose, the decision maker now knows exactly which 
+                 ‘dot’ is the true value (because all of the uncertainty is removed) and so can be certain to choose the strategy which 
+                 gives the best net benefit. In a two strategy comparison of new versus current care, if the ‘true dot’ turns out to be 
+                 below and to the right of the threshold lambda line, then the decision maker would select the new strategy.  If the ‘true dot’ 
+                 is above and to the left, then current care would be selected.  Under the current uncertainty, the decision maker will 
+                 choose the strategy based on the expected costs and benefits (essentially on whether the ‘centre of gravity’ of the cloud 
+                 is above or below the threshold line)."),
+               br()
                
       ),
 
@@ -367,7 +336,7 @@ fluidPage(
                #h3("Specify lambda"),
                #sliderInput('lambdaSingleEvppiTab', label="", 0, 60000, 20000, 1000),
                h3("Partial EVPI for each parameter separately"),
-               h4("This is the expected value of removing current uncertainty about each parameter."),
+               h4("This is the expected value of removing current uncertainty about each parameter"),
                tableOutput("tableEVPPI"),
                
                #h3("Partial EVPI for single parameters"),
@@ -412,12 +381,20 @@ fluidPage(
     
       # Numerical summary of the dataset,
       # coming from the function output$summary in server.R
+  
       tabPanel("Downloads", 
-               downloadButton('downloadSummary', 'Download EVPI values'),
-              br(), br(),
-               radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
+
+              h3("Download summary report"),
+              p("This document contains all the tables and figures generated from the SAVI analysis of your PSA."),
+              radioButtons('format', 'Please select the document format you require', c('PDF', 'HTML', 'Word'),
                             inline = TRUE),
-               downloadButton('downloadReport', 'Download report')
+               downloadButton('downloadReport', 'Download summary report'),
+              br(), br(), 
+              p("NB generating the document can take some time."),
+              br(),           br(),  
+              h3("Download results as a csv file"),
+              p("At present this file contains only the partial EVPI values for single parameters."),
+              downloadButton('downloadSummary', 'Download EVPI values')
       ),
       
       tabPanel("Save session", 
@@ -447,7 +424,8 @@ fluidPage(
                   Estimating multi-parameter partial Expected Value of 
                   Perfect Information from a probabilistic sensitivity analysis sample: 
                   a non-parametric regression approach. 
-                  <em>Medical Decision Making.</em> 2014;<b>34(3)</b>:311-26. Available open access <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>here.</a></div>")),
+                  <em>Medical Decision Making.</em> 2014;<b>34(3)</b>:311-26. Available open access 
+                      <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>here.</a></div>")),
                br(),h3("Contact us"), 
                p(HTML("Please email us at <a href='mailto:savi@sheffield.ac.uk?Subject=SAVI%20query' target='_top'>
                 savi@sheffield.ac.uk</a>")),

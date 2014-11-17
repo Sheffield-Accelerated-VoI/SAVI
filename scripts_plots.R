@@ -61,9 +61,10 @@ makeEvpiPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, sessi
     if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }  
-  plot(l.seq, p, type="l", xlim = c(0, 3*lambda), ...)
+  plot(l.seq, p, type="l", xlim = c(0, 10 * lambda), ...)
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
+  abline(h=p[which(l.seq == lambda)], lty=2)
   #text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), 
   #     pos=1, offset=0.1)
 }
@@ -87,11 +88,13 @@ makeEvpiPopPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, pr
     if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }  
-  plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", measure), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", measure))
+  plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", measure), 
+       xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", measure), col="blue")
   abline(v=lambda, lty=2)
+  abline(h=p[which(l.seq == lambda)], lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
-  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), 
-       pos=1, offset=0.1)
+  #text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), 
+  #     pos=1, offset=0.1)
 }
 
 makeEvpiHorizonPlot <- function(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 
@@ -114,17 +117,19 @@ makeEvpiHorizonPlot <- function(costs.int, effects.int, costscale = TRUE, lambda
     if(!costscale) evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }  
-  plot(l.seq, p, type="l", main = paste("Overall EVPI over decision relevance ", measure), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", measure))
+  plot(l.seq, p, type="l", main = paste("Overall EVPI over decision relevance ", measure), 
+       xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", measure), col="blue")
   abline(v=lambda, lty=2)
+  abline(h=p[which(l.seq == lambda)], lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
-  text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), 
-       pos=1, offset=0.1)
+#   text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],0), 
+#        pos=1, offset=0.1)
 }
 
 make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon, measure1, 
                              measure2, session) {
   ## makes a four way plot of CE plane, CEAC and EVPI
-  opar <- par(mfrow = c(2,2))
+  opar <- par(mfrow = c(2, 2))
   makeEvpiPopPlot(costs.int, effects.int, costscale = TRUE, lambda, prevalence, measure1, session)
   makeEvpiPopPlot(costs.int, effects.int, costscale = FALSE, lambda, prevalence, measure2, session)
   makeEvpiHorizonPlot(costs.int, effects.int, costscale = TRUE, lambda, prevalence, 

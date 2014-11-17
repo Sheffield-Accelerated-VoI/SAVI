@@ -19,11 +19,12 @@ makeCeacPlot <- function(ceac.int, lambda.int, names.int, ...) {
   legend("topright", names.int, col = 1:i, lty = 1:i)
 }
 
-makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
+makeCEPlanePlot <- function(costs.int, effects.int, lambda, intervention, comparator, cache, ...) {
   ## makes the CE plane
-  
-  inc_costs <- costs.int[, 2] - costs.int[, 1]
-  inc_effects <- effects.int[, 2] - effects.int[, 1]
+  print(int <- which(colnames(costs.int)%in%intervention))
+  print(com <- which(colnames(costs.int)%in%comparator))
+  inc_costs <- costs.int[, int] - costs.int[, com]
+  inc_effects <- effects.int[, int] - effects.int[, com]
   
   m.costs <- max(abs(inc_costs))
   m.effects <- max(abs(inc_effects))
@@ -33,7 +34,7 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, ...) {
   m3.effects <- max(m.effects, m2.effects)
   
   main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
-  plot(inc_effects, inc_costs, pty="s", cex=0.4,
+  plot(inc_effects, inc_costs, pty="s", cex=0.4, xlab = "Incremental effects", ylab= "Incremental costs",
        ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue", ...)
   abline(1, lambda, lty=2)
   abline(h=0)

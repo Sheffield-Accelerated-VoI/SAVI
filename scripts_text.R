@@ -13,62 +13,93 @@ incBen <- function (effects){
 }
 
 # 3) Mean Incremental Cost/Benefit
-incValue <- function(data) {
+incValue <- function(samples, int, comp) {
+  if(int==comp) return(NULL)
+  data <- samples[, int] - samples[, comp]
   incValue <- format(mean(data), digits = 2, nsmall = 2)
   incValue
 }
 
 # 4) More/Less Detector (for costs and benefits)
-moreLess <- function (data) {
+# moreLess <- function (data) {
+#   moreLess <- if (mean(data) > 0) {"more"}
+#               else {"less"}
+#   moreLess
+# }
+
+moreLess <- function(samples, int, comp) {
+  if(int==comp) return(NULL)
+  data <- samples[, int] - samples[, comp]
   moreLess <- if (mean(data) > 0) {"more"}
-              else {"less"}
+                else {"less"}
   moreLess
 }
 
+
+
 # 5) Confidence intervals for cost effectiveness (value = e.g. 0.025 for 2.5th CI, 0.975 for 97.5th CI)
-confIntCE <- function(data, value) {
-  confIntCE <- format(quantile(data, value), digits = 4,  nsmall = 2)
+confIntCE <- function(samples, int, comp, value) {
+  if(int==comp) return(NULL)
+  data <- samples[, int] - samples[, comp]
+  confIntCE <- format(quantile(data, value), digits = 2,  nsmall = 2)
   confIntCE
 }
 
 # 6) Probability cost saving
-pCostsaving <- function(data) {
+pCostsaving <- function(samples, int, comp) {
+  if(int==comp) return(NULL)
+  data <- samples[, int] - samples[, comp]
   pCostsaving <- format(length(which(data < 0)) / length(data), digits = 2, nsmall = 3)
   pCostsaving
 }
 
 # 7) Probability provides more benefits
-pMoreben <- function(data) {
+pMoreben <- function(samples, int, comp) {
+  if(int==comp) return(NULL)
+  data <- samples[, int] - samples[, comp]
   pMoreben <- format(length(which(data > 0)) / length(data), digits = 2, nsmall = 3)
   pMoreben
 }
 
 # 8) ICER
-iCER <- function(costs, bens) {
-  iCER <- format(mean(costs[,2] - costs[,1]) / mean(bens[,2] - bens[,1]), digits = 2, nsmall = 2)
+iCER <- function(costs, bens, int, comp) {
+  if(int==comp) return(NULL)
+  iCER <- format(mean(costs[, int] - costs[, comp]) / mean(bens[, int] - bens[, comp]), digits = 2, nsmall = 2)
   iCER
 }
 
 # 9) Above/Below Detector (for ICER)
-aboveBelow <- function(costs, bens, lambda) {
-  aboveBelow <- if ((mean(costs[,2] - costs[,1]) / mean(bens[,2] - bens[,1])) > lambda) {"above"}
+aboveBelow <- function(costs, bens, int, comp, lambda) {
+  if(int==comp) return(NULL)
+  aboveBelow <- if ((mean(costs[, int] - costs[, comp]) / mean(bens[, int] - bens[, comp])) > lambda) {"above"}
   else {"below"}
   aboveBelow
 }
 
 # 10) Would/Would not Detector (for ICER)
-wouldNot <- function(costs, bens, lambda) {
-  wouldNot <- if ((mean(costs[,2] - costs[,1]) / mean(bens[,2] - bens[,1])) > lambda) {"would not"}
+wouldNot <- function(costs, bens, int, comp, lambda) {
+  if(int==comp) return(NULL)
+  wouldNot <- if ((mean(costs[, int] - costs[, comp]) / mean(bens[, int] - bens[, comp])) > lambda) {"would not"}
   else {"would"}
   wouldNot
 }
 
 # 11) Probability cost-effective
-  pCE <- function (costs, bens, lambda, nInt) {
-  for (i in 1:nInt)
-  pCEAC <- format(max(as.matrix(length(which((bens[,i] - bens[,1]) * lambda - (costs[,i] - costs[,1]) > 0)) / length(costs[,1]))), digits = 2, nsmall = 3)    
-  pCEAC
+# pCE <- function (costs, bens, lambda, nInt) {
+#   for (i in 1:nInt) {
+#     pCEAC <- format(max(as.matrix(length(which((bens[, i] - bens[, 1]) * lambda - (costs[, i] - costs[,1]) > 0)) / length(costs[,1]))), digits = 2, nsmall = 3)    
+#   }
+#   pCEAC
+# }
+
+# 11) Probability cost-effective for int versus comp at lambda WTP
+pCE <- function(int, comp, lambda, cache) {
+  if(int==comp) return(NULL)
+  costs <- get("costs", envir = cache)
+  effects <- get("effects", envir = cache) 
+  sum((effects[, int] * lambda - costs[, int]) > (effects[, comp] * lambda - costs[, comp])) / NROW(costs)
 }
+
 
 # 12) Which most cost effective?
 bestCE <- function(costs, bens, lambda, nInt) {

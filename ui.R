@@ -21,6 +21,7 @@ fluidPage(
                br(),br(),
                h3("New in version 1.005"),
                p("You can now download a report containing all the results from the SAVI analysis. Click on the Downloads tab."), 
+               p("Different interventions and comparators can now be specified for the CE plane."), 
                br()
                ),
                
@@ -176,18 +177,6 @@ fluidPage(
       
       tabPanel("PSA Results",
                h3("Cost-Effectiveness Plane"),
-               p(HTML("<div id='textCEplane1' class='shiny-text-output'></div>")),
-               br(),
-               
-               textOutput("textCEplane2"),
-               br(),
-               
-               textOutput("textCEplane3"),
-               h6("Reference"),
-               p("Section 5.1 in Briggs, Claxton & Sculpher. Decision Modelling for Health Economic Evaluation 
-                 (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (2006).  ISBN-13: 
-                 978-0198526629"),
-               br(),
                
         sidebarLayout(
               sidebarPanel(
@@ -195,20 +184,41 @@ fluidPage(
                           #submitButton("Change"), # this button stops everything else auto-updating!
                           #br(),
                           #br(),
-                          #p("Choose comparator"),
-                          
-                          p(strong("Strategies Compared"), textOutput("textCEplane4")),
+                          h5("Choose intervention"),
+                          radioButtons("decisionOptionCE1", NULL, 
+                          c(""), 
+                          selected = NULL),
                           br(),
-                          
-                          p(strong("Summary")),
-                          textOutput("textCEplane5")
-                          ),
+                        
+                          h5("Choose comparator"),
+                          radioButtons("decisionOptionCE0", NULL, 
+                                             c(""), 
+                                             selected = NULL),
+                          br()
+                       , width=5),
           
-                mainPanel(plotOutput("plots1", width="500px", height="500px")
-                          )
+                mainPanel(
+                  p(strong("Strategies Compared"), textOutput("textCEplane4")),
+                  br(),
+                  plotOutput("plots1", width="500px", height="500px"),
+                  p(strong("Summary")),
+                  textOutput("textCEplane5")
+                  , width = 7)
                     ),
-
-               
+                
+                p(HTML("<div id='textCEplane1' class='shiny-text-output'></div>")),
+                br(),
+                
+                textOutput("textCEplane2"),
+                br(),
+                
+                textOutput("textCEplane3"),
+                h6("Reference"),
+                p("Section 5.1 in Briggs, Claxton & Sculpher. Decision Modelling for Health Economic Evaluation 
+                         (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (2006).  ISBN-13: 
+                         978-0198526629"),
+                br(),
+        
                h3("Table of Key Cost-Effectiveness Statistics"),
                tableOutput("tableCEplane"),
                br(),

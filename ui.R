@@ -265,16 +265,15 @@ fluidPage(
                and how certain a decision maker can be about the differences."),
                br(),
         
-               p("If the credible intervals are small relative to the size of the bars and one decision stands out as being highest in terms 
-               of expected incremental net benefit then the decision maker has an easy choice and there is little decision uncertainty."),
-               br(),
+#                p("If the credible intervals are small relative to the size of the bars and one decision stands out as being highest in terms 
+#                of expected incremental net benefit then the decision maker has an easy choice and there is little decision uncertainty."),
+#                br(),
         
-               p("If the credible intervals are large compared to the size of the bars and there are several strategies with ‘overlapping’ 
-               credible intervals, then several strategies are close in terms of their expected value to a decision maker, and given the 
-               relatively large decision uncertainty, it might be valuable to consider further research to reduce uncertainty. The value of 
-               reducing uncertainty to the decision maker by undertaking further research is the subject of the analyses using expected value 
-               of information calculations. These calculations can consider all decision uncertainty (the overall expected value of perfect 
-               information – overall EVPI) or for particular uncertain parameters within the PSA (expected value of perfect parameter 
+               p("If there are strategies with  
+               credible intervals for incremental net benefit that include zero, then there is decision uncertainty. 
+               Whether it is valuable to consider further research to reduce uncertainty is the subject of the analyses using expected value 
+               of information calculations. These calculations can consider decision uncertainty arising from all uncertain parameters together (the overall expected value of perfect 
+               information – overall EVPI) or for particular sets of uncertain parameters (the expected value of perfect parameter 
                information – EVPPI)."),
                br()#,
         

@@ -232,16 +232,17 @@ shinyServer(
     output$textCEplane3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)      
       paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(get("costs", envir=cache), 
-            get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), ". This is ", 
-            aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall),  
-            " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", 
-            input$decisionOptionCE1,
-            " ", wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall), " be considered cost-effective 
-            relative to ", input$decisionOptionCE0, " at this threshold. There is uncertainty with a ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
-            " probability that ", input$decisionOptionCE1, " is more cost-effective than ", input$decisionOptionCE0, " (", 
-            pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
-            " of the probabilistic model run dots are below and to the right of the diagonal threshold line).", sep="")
+            get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
+            " that ", input$decisionOptionCE1, " is more cost-effective than ", input$decisionOptionCE0, ".", sep="")
     })                         
+    
+    
+#     This is ", 
+#             aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall),  
+#             " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", 
+#     input$decisionOptionCE1,
+#     " ", wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall), " be considered cost-effective 
+#     relative to ", input$decisionOptionCE0, " at this threshold. 
     
     output$textCEplane4 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL) 
@@ -277,7 +278,7 @@ shinyServer(
    output$textNB3 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 97.5% credible 
-           interval for each one.  The strategy with highest expected net benefit is estimated to be ", bestnetBen(get("costs", envir=cache), 
+           interval for each one.  The strategy with highest expected net benefit is ", bestnetBen(get("costs", envir=cache), 
            get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), ", with an expected net benefit of 
            ", input$currency, netBencosts(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
            " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(get("costs", envir=cache), get("effects", envir=cache), 
@@ -331,12 +332,12 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
-      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")"), 
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")", sep=""), 
                             "Comparator", 
                             "Number of PSA runs", 
                             paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
                             paste("Mean inc. Cost per Person (", input$currency, ")", sep=""),
-                            paste("ICER Estimate (", input$currency, "per", input$unitBens, ")", sep=""),
+                            paste("ICER Estimate (", input$currency, " per ", input$unitBens, ")", sep=""),
                             paste("2.5th CI for inc. Effects (", input$unitBens, ")", sep=""), 
                             paste("97.5th CI for inc. Effects (", input$unitBens, ")", sep=""),
                             paste("2.5th CI for inc. Costs (", input$currency, ")", sep=""),

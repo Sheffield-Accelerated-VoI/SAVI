@@ -125,8 +125,6 @@ netBeneffects <- function(costs, bens, lambda, nInt) {
 
 # 15) Which best strategy?
 bestnetBen <- function(costs, bens, lambda, nInt) {
-  for (i in 1:nInt)
-  bestnetBen <- which.max(as.matrix(mean(bens[,i] * lambda - costs[,i]))) + 1 # 1 added on to account for lack of baseline row in calculation
-  bestnetBen <- colnames(costs[bestnetBen])
-  bestnetBen
+  nb <- bens * lambda - costs
+  colnames(costs)[which.max(colMeans(nb))]
 }

@@ -1,16 +1,16 @@
 # this file holds functions that help generate reactive text
 
-# 1) Incremental costs
-incCost <- function (costs){
-  incCost <- (costs[, 2] - costs[, 1])
-  incCost
-}
-
-# 2) Incremental effects
-incBen <- function (effects){
-  incBen <- (effects[, 2] - effects[, 1])  
-  incBen
-}
+# # 1) Incremental costs
+# incCost <- function (costs){
+#   incCost <- (costs[, 2] - costs[, 1])
+#   incCost
+# }
+# 
+# # 2) Incremental effects
+# incBen <- function (effects){
+#   incBen <- (effects[, 2] - effects[, 1])  
+#   incBen
+# }
 
 # 3) Mean Incremental Cost/Benefit
 incValue <- function(samples, int, comp) {
@@ -116,12 +116,12 @@ netBencosts <- function(costs, bens, lambda, nInt) {
   netBencosts
 }
 
-# 14) Net Benefit effects
-netBeneffects <- function(costs, bens, lambda, nInt) {
-  for (i in 1:nInt)
-  netBeneffects <- format(max(as.matrix(mean(bens[,i] - (costs[,i] / lambda)))), digits = 2, nsmall = 2)
-  netBeneffects
-}
+# # 14) Net Benefit effects
+# netBeneffects <- function(costs, bens, lambda, nInt) {
+#   for (i in 1:nInt)
+#   netBeneffects <- format(max(as.matrix(mean(bens[,i] - (costs[,i] / lambda)))), digits = 2, nsmall = 2)
+#   netBeneffects
+# }
 
 # 15) Which best strategy?
 bestnetBen <- function(costs, bens, lambda, nInt) {

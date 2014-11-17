@@ -85,7 +85,7 @@ shinyServer(
     #   load.effects <- function() read.csv("effects.csv")
     # ########### 
     
-    load("adenoma.Rdata", envir=cache) # auto load for testing purposes
+    # load("adenoma.Rdata", envir=cache) # auto load for testing purposes
 
     # Function that loads saved session
     # is evaluated if a new session is loaded

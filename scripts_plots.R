@@ -222,6 +222,7 @@ makeEvppiBar <- function(pEVPI.int, params) {
   EVPPI <- matrix(pEVPI.int[order(pEVPI.int)], ncol = length(pEVPI.int), nrow = 1)
   colnames(EVPPI) <- colnames(params[order(pEVPI.int)])
   op <- par(mar = c(5, 15, 4, 2) + 0.1, pty = "m")
-  barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  
+  barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", 
+          xlab = "Partial EVPI per person", cex.main=0.9)  
   par(op)
 }

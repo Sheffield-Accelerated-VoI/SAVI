@@ -136,17 +136,24 @@ shinyServer(
       if (is.null(inFile))
         return(NULL)
         dat <- read.csv(inFile$datapath)
+        effects <- get("effects", envir = cache)
+        if(!is.null(effects)) {
+          colnames(effects) <- colnames(dat)
+          assign("effects", effects, envir = cache)
+        }
         assign("costs", dat, envir = cache)
         assign("nInt", ncol(dat), envir=cache) # number of interventions
     })
     
-     # Function that imports effect
+     # Function that imports effects
       observe({
       inFile = input$effectsFile      
       if (is.null(inFile))
         return(NULL)
         dat <- read.csv(inFile$datapath)
-        assign("effects", dat, envir = cache)
+        costs <- get("costs", envir=cache)
+        if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
+        assign("effects", dat, envir = cache)   
     })
     
 

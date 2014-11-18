@@ -5,7 +5,7 @@ fluidPage(
   headerPanel("SAVI - Sheffield Accelerated Value of Information"),
   
   mainPanel(
-    h4("Release version 1.005 (2014-11-17)"),
+    h4("Release version 1.006 (2014-11-18)"),
     tabsetPanel( 
 
       tabPanel("Home",
@@ -102,8 +102,8 @@ fluidPage(
                       <br>Please supply the PSA samples in the form of three csv files.
                       <br><br>
                         SAVI assumes that the first row of the parameter file contains the parameter names.<br>
-                        SAVI assumes that the first row of the costs file and the first row of the effects file
-                        both contain the decision option names.
+                        SAVI assumes that the first row of the costs file holds the decision option names. <br>
+                        The first row of the effects file should also hold names, but these are not used at present.
                       <br><br>
                         Costs and effects are assumed to be absolute rather than incremental.<br>
                         Check the import in the next tab<br><br>

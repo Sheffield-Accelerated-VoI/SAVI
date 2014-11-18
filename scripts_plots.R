@@ -140,7 +140,7 @@ make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon
   on.exit(par(opar))
 }
 
-makeInbOptBar <- function(costs.int, effects.int, lambda) { # NOT SURE ABOUT THIS - NEED TO DISCUSS
+makeInbOptBar <- function(costs.int, effects.int, lambda) {
   nb <- createNb(costs.int, effects.int, lambda)
   c <- which.max(as.matrix(colMeans(nb)))
   inbOpt <- nb-nb[,c]
@@ -221,6 +221,7 @@ make2wayDensity <- function(costs.int, effects.int, lambda) {
 makeEvppiBar <- function(pEVPI.int, params) {
   EVPPI <- matrix(pEVPI.int[order(pEVPI.int)], ncol = length(pEVPI.int), nrow = 1)
   colnames(EVPPI) <- colnames(params[order(pEVPI.int)])
+  op <- par(mar = c(5, 15, 4, 2) + 0.1, pty = "m")
   barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  
-  
+  par(op)
 }

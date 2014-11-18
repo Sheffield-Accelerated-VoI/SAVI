@@ -332,7 +332,7 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
       assign("lambdaOverall", input$lambdaOverall, envir = cache)
-      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, ")", sep=""), 
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
                             "Comparator", 
                             "Number of PSA runs", 
                             paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
@@ -416,8 +416,8 @@ shinyServer(
      tableEVPPI[, 2] <- round(pEVPI / overallEvpi , 2)
      tableEVPPI[, 3] <- signif(pEVPI * input$annualPrev, 4)
      tableEVPPI[, 4] <- signif(pEVPI * input$annualPrev * input$horizon, 4)
-     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", 
-                               paste("EVPPI for ", input$jurisdiction, " Per Year"), 
+     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Indexed to Overall EVPI = 1.00", 
+                               paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(get("params", envir=cache))
      tableEVPPI

@@ -263,7 +263,6 @@ fluidPage(
         
                p("Analysis of the expected incremental net benefit helps to visualise whether particular strategies are better than others 
                and how certain a decision maker can be about the differences."),
-               br(),
         
 #                p("If the credible intervals are small relative to the size of the bars and one decision stands out as being highest in terms 
 #                of expected incremental net benefit then the decision maker has an easy choice and there is little decision uncertainty."),

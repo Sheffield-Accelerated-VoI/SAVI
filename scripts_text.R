@@ -1,4 +1,5 @@
 # this file holds functions that help generate reactive text
+# widespread changes made 17/11/14 so that options could be chosen for the CE plane
 
 # # 1) Incremental costs
 # incCost <- function (costs){
@@ -21,11 +22,6 @@ incValue <- function(samples, int, comp) {
 }
 
 # 4) More/Less Detector (for costs and benefits)
-# moreLess <- function (data) {
-#   moreLess <- if (mean(data) > 0) {"more"}
-#               else {"less"}
-#   moreLess
-# }
 
 moreLess <- function(samples, int, comp) {
   if(int==comp) return(NULL)
@@ -34,8 +30,6 @@ moreLess <- function(samples, int, comp) {
                 else {"less"}
   moreLess
 }
-
-
 
 # 5) Confidence intervals for cost effectiveness (value = e.g. 0.025 for 2.5th CI, 0.975 for 97.5th CI)
 confIntCE <- function(samples, int, comp, value) {
@@ -84,13 +78,6 @@ wouldNot <- function(costs, bens, int, comp, lambda) {
   wouldNot
 }
 
-# 11) Probability cost-effective
-# pCE <- function (costs, bens, lambda, nInt) {
-#   for (i in 1:nInt) {
-#     pCEAC <- format(max(as.matrix(length(which((bens[, i] - bens[, 1]) * lambda - (costs[, i] - costs[,1]) > 0)) / length(costs[,1]))), digits = 2, nsmall = 3)    
-#   }
-#   pCEAC
-# }
 
 # 11) Probability cost-effective for int versus comp at lambda WTP
 pCE <- function(int, comp, lambda, cache) {

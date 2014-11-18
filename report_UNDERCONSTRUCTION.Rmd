@@ -5,8 +5,6 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: pdf_document
 ---
 
-# 0. **The SAVI team are working on the report functionality. This is for draft purposes ony at present.** 
-
 # 1. Introduction
 Welcome to the Sheffield Accelerated Value of Information (SAVI) application report. The results of your Value of Information analyses in SAVI are reported below. The results are presented in a standardised format to help with the interpretation of your results and future reporting.
 
@@ -26,8 +24,6 @@ nb <- effects * lambda - costs
 
 # 2. Exploring Current Uncertainty: Probabilistic Sensitivity Analysis Results
 ## 2.1 Probabilistic Sensitivity Analysis Summary
-
-**NB At present this defaults to option 2 versus 1 regardless of which decision options are chosen on SAVI. This will be fixed soon.**
 ```{r, echo=FALSE, results='asis'}
 # Generate PSA table
 #  colnames(tableCePlane) <- colnames(costs)[2]

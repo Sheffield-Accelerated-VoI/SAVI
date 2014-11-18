@@ -116,12 +116,12 @@ netBencosts <- function(costs, bens, lambda, nInt) {
   netBencosts
 }
 
-# # 14) Net Benefit effects
-# netBeneffects <- function(costs, bens, lambda, nInt) {
-#   for (i in 1:nInt)
-#   netBeneffects <- format(max(as.matrix(mean(bens[,i] - (costs[,i] / lambda)))), digits = 2, nsmall = 2)
-#   netBeneffects
-# }
+# 14) Net Benefit effects
+netBeneffects <- function(costs, bens, lambda, nInt) {
+  for (i in 1:nInt)
+  netBeneffects <- format(max(as.matrix(mean(bens[,i] - (costs[,i] / lambda)))), digits = 2, nsmall = 2)
+  netBeneffects
+}
 
 # 15) Which best strategy?
 bestnetBen <- function(costs, bens, lambda, nInt) {

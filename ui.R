@@ -3,7 +3,8 @@ fluidPage(
   tags$head(
     tags$style("body {background-color: #F8F8F8; }")),
   # uni is #F1F2F2
-  headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' target='_blank'><img src = 'uni2.gif' width = '200' alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
+  headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' target='_blank'><img src = 'uni2.gif' width = '200' 
+                   alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
     h4("Release version 1.007 (2014-11-19)"),    
@@ -459,5 +460,5 @@ fluidPage(
   , width = 12 # 12 is the max width of the mainPanel page
  )
 #,theme="bootstrap.css"
-)
+,title="SAVI - Sheffield Accelerated Value of Information")
 #can add id="tabId", before type = "pills"

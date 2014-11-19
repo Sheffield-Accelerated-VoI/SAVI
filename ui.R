@@ -1,11 +1,13 @@
-# new fork
+# 
 fluidPage(
-#  tags$head(includeScript("google-analytics.js")),
-  
-  headerPanel("SAVI - Sheffield Accelerated Value of Information"),
+  tags$head(
+    tags$style("body {background-color: #F8F8F8; }")),
+  # uni is #F1F2F2
+  headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' target='_blank'><img src = 'uni2.gif' width = '200' alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 1.006 (2014-11-18)"),
+    h4("Release version 1.007 (2014-11-19)"),    
+    h6(HTML("Copyright &copy; 2014 University of Sheffield")),  
     tabsetPanel( 
 
       tabPanel("Home",
@@ -448,10 +450,14 @@ fluidPage(
                       the National Institute for Health Research, or the Department of Health. "))
      )
    
-     , type = "pills" # this controls the look of the tabs
+     ,  type = "pills" # this controls the look of the tabs
   ), 
- tags$style(type="text/css", ".tab-content { overflow: visible; }")
-  ,width = 12 # 12 is the max width of the mainPanel page
+ tags$style(type="text/css", ".tab-content { overflow: visible; }", "footer {background-color: #FF0000;
+            width: 100%;
+            bottom: 0;
+            position: relative; }")
+  , width = 12 # 12 is the max width of the mainPanel page
  )
 #,theme="bootstrap.css"
 )
+#can add id="tabId", before type = "pills"

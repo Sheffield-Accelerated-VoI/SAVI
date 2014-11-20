@@ -481,15 +481,16 @@ shinyServer(
      assign("overallEvpi", overallEvpi, envir = cache)
      
      inb <- createInb(costs, effects, lambda)
-     pEVPI <- applyCalcSingleParamGam(params, inb, session)
+     pEVPI <- applyCalcSingleParamGam(params, inb, session, cache)
      assign("pEVPI", pEVPI, envir=cache)
      
-     tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 4)
-     tableEVPPI[, 1] <- round(pEVPI, 2)
-     tableEVPPI[, 2] <- round(pEVPI / overallEvpi , 2)
-     tableEVPPI[, 3] <- signif(pEVPI * input$annualPrev, 4)
-     tableEVPPI[, 4] <- signif(pEVPI * input$annualPrev * input$horizon, 4)
-     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Indexed to Overall EVPI = 1.00", 
+     tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 5)
+     tableEVPPI[, 1] <- round(pEVPI[, 1], 2)
+     tableEVPPI[, 2] <- round(pEVPI[, 2], 2)
+     tableEVPPI[, 3] <- round(pEVPI[, 1] / overallEvpi , 2)
+     tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
+     tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
+     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
                                paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(get("params", envir=cache))
@@ -588,7 +589,7 @@ shinyServer(
     # EVPPi horizontal bar chart
     output$plot7 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeEvppiBar(get("pEVPI", envir=cache), get("params", envir=cache))
+      makeEvppiBar(get("pEVPI", envir=cache)[, 1], get("params", envir=cache))
     })
   
 

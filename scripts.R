@@ -37,13 +37,14 @@ calcEvpi <- function(costs.int, effects.int, lambda, cache, session) {
   return(evpi)
 }
 
-calcEvpiSingle <- function(costs.int, effects.int, lambda, cache, session) {
-  ## this function creates the NB matrix
-  nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
-  params <- get("params", envir=cache)
-  evpi <- gpFunc(nb, 1:NCOL(params), s=10, cache, session)$EVPI
-  return(evpi)
-}
+# this is for the m=1 case - not implemented yet
+# calcEvpiSingle <- function(costs.int, effects.int, lambda, cache, session) {
+#   ## this function creates the NB matrix
+#   nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
+#   params <- get("params", envir=cache)
+#   evpi <- gpFunc(nb, 1:NCOL(params), s=10, cache, session)$EVPI
+#   return(evpi)
+# }
 
 calcSingleParamGAM <- function(inputParam, inb) {
   ## this function calculates EVPI for a single parameter using GAM
@@ -68,7 +69,7 @@ calcSingleParamGAM <- function(inputParam, inb) {
   partial.evpi
 }
 
-applyCalcSingleParamGam <- function(parameterDf, inb, session) {
+applyCalcSingleParamGam <- function(parameterDf, nb, session, cache) {
   ## this function applies singleParamGAM over the parameters
 #   
 #   calc <- function(x, inb) {
@@ -76,26 +77,24 @@ applyCalcSingleParamGam <- function(parameterDf, inb, session) {
 #     calcSingleParamGAM(x, inb)
 #   }
 #   
-  numVar <- sapply(1:NCOL(parameterDf), function(x) is.numeric(parameterDf[, x]))
+  # numVar <- sapply(1:NCOL(parameterDf), function(x) is.numeric(parameterDf[, x]))
   parameterDf <- as.matrix(parameterDf)
     
+  numVar <- NCOL(parameterDf)
   progress <- shiny::Progress$new(session, min=1, max=sum(numVar))
   on.exit(progress$close())
   progress$set(message = 'Calculation in progress',
                detail = 'This may take a while...')
   
-  res <- numeric(NCOL(parameterDf[, numVar]))
+  res <- vector("list",(NCOL(parameterDf)))
   
-  if (sum(numVar)==0) {
-    return(NULL)
-    stop("PSA parameters are non-numeric!") # will this even be called? crash?
-  } else {
-    for (i in 1:NCOL(parameterDf[, numVar])) {
-      progress$set(i)
-      res[i] <- calcSingleParamGAM(cbind(parameterDf[, numVar])[, i], inb)
-    }
+
+
+  for (i in 1:NCOL(parameterDf)) {
+    progress$set(i)
+    res[[i]] <- gamFunc(nb, i, s=1000, cache, session)#calcSingleParamGAM(cbind(parameterDf[, numVar])[, i], inb)
   }
-  res
+  matrix(unlist(res), ncol = 2, byrow=TRUE)
 }
 
 makeCeac <- function(costs.int, effects.int, lambda, session) {

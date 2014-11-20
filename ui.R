@@ -130,7 +130,7 @@ fluidPage(
                #             selected="\"'"),
                #selectInput('dec', 'Decimal mark', c(Dot='.', Comma=','), '.'),
                #br(),
-               h3(textOutput("textCheckTabParams")),
+               h4(textOutput("textCheckTabParams")),
                
                # Button to import costs  data    
                h4("Costs importation"),
@@ -146,7 +146,7 @@ fluidPage(
                #            '"'),
                #selectInput('dec2', 'Decimal mark', c(Dot='.', Comma=','), '.'),
                #br(),
-               h3(textOutput("textCheckTabCosts")),
+               h4(textOutput("textCheckTabCosts")),
                
                # Button to import effects data
                h4("Effects importation"),
@@ -165,8 +165,8 @@ fluidPage(
                #h4("Are uploaded costs and effects incremental or absolute?"),
                #radioButtons('incremental', label="", c("Incremental" = "TRUE", "Absolute" = "FALSE"), "FALSE")
                
-               h3(textOutput("textCheckTabEffects")),
-               h3(textOutput("textCheckTab"))            
+               h4(textOutput("textCheckTabEffects")),
+               h4(textOutput("textCheckTab"))            
                ),
       
  

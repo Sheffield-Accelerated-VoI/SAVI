@@ -2,7 +2,11 @@
 fluidPage(
   tags$head(
     tags$style("body {background-color: #F8F8F8; }")),
-  # uni is #F1F2F2
+    tags$style(type='text/css', '#textCheckTab {background-color: rgba(255,255,0,0.40); color: green;}'),
+    tags$style(type='text/css', '#textCheckTabParams {background-color: rgba(255,255,0,0.40); color: green;}'),
+    tags$style(type='text/css', '#textCheckTabCosts {background-color: rgba(255,255,0,0.40); color: green;}'),
+    tags$style(type='text/css', '#textCheckTabEffects {background-color: rgba(255,255,0,0.40); color: green;}'),
+    # uni is #F1F2F2
   headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' target='_blank'><img src = 'uni2.gif' width = '200' 
                    alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
   
@@ -126,7 +130,7 @@ fluidPage(
                #             selected="\"'"),
                #selectInput('dec', 'Decimal mark', c(Dot='.', Comma=','), '.'),
                #br(),
-               
+               h3(textOutput("textCheckTabParams")),
                
                # Button to import costs  data    
                h4("Costs importation"),
@@ -142,11 +146,12 @@ fluidPage(
                #            '"'),
                #selectInput('dec2', 'Decimal mark', c(Dot='.', Comma=','), '.'),
                #br(),
+               h3(textOutput("textCheckTabCosts")),
                
                # Button to import effects data
                h4("Effects importation"),
                fileInput('effectsFile', 'Choose CSV File',
-                         accept=c('text/csv'))#, 'text/comma-separated-values,text/plain'))
+                         accept=c('text/csv')),#, 'text/comma-separated-values,text/plain'))
                # Various checkboxes and input fields to specify the data file format
                #checkboxInput('header3', 'Is there a header row?', TRUE),
                #checkboxInput('rownames3', 'Does the first column contain row names?', FALSE),
@@ -159,6 +164,9 @@ fluidPage(
                
                #h4("Are uploaded costs and effects incremental or absolute?"),
                #radioButtons('incremental', label="", c("Incremental" = "TRUE", "Absolute" = "FALSE"), "FALSE")
+               
+               h3(textOutput("textCheckTabEffects")),
+               h3(textOutput("textCheckTab"))            
                ),
       
  

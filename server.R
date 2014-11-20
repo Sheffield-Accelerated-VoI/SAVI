@@ -124,10 +124,25 @@ shinyServer(
       inFile <- input$parameterFile
       if (is.null(inFile))
         return(NULL)
-        dat <- read.csv(inFile$datapath, colClasses="numeric")
+        dat <- read.csv(inFile$datapath)
+      print(dim(dat))
         assign("params", dat, envir = cache)
         assign("nParams", ncol(dat), envir=cache)
         assign("nIterate", nrow(dat), envir=cache) # size of PSA
+    })
+    
+    output$textCheckTabParams <- renderText({
+      x1 <- input$parameterFile 
+      x4 <- input$loadSession
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      
+      params <- get("params", envir = cache)
+      if (sum(is.na(params)) > 0) return("There are missing values - please check data and reload")
+      if (prod(unlist(c(lapply(params, function(x) class(x) == "numeric"))))) {
+        return("All columns are numeric and there are no missing values")
+      } else {
+        return("Not all columns are numeric - please check data and reload")
+      }
     })
 
       #  Function that imports costs    
@@ -135,7 +150,7 @@ shinyServer(
       inFile <- input$costsFile
       if (is.null(inFile))
         return(NULL)
-        dat <- read.csv(inFile$datapath, colClasses="numeric")
+        dat <- read.csv(inFile$datapath)
         effects <- get("effects", envir = cache)
         if(!is.null(effects)) {
           colnames(effects) <- colnames(dat)
@@ -145,19 +160,63 @@ shinyServer(
         assign("nInt", ncol(dat), envir=cache) # number of interventions
     })
     
+    output$textCheckTabCosts <- renderText({
+      x2 <- input$costsFile 
+      x4 <- input$loadSession
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      
+      costs <- get("costs", envir = cache)
+      if (sum(is.na(costs)) > 0) return("There are missing values - please check data and reload")
+      if (prod(unlist(c(lapply(costs, function(x) class(x) == "numeric"))))) {
+        return("All columns are numeric and there are no missing values")
+      } else {
+        return("Not all columns are numeric - please check data and reload")
+      }
+    })
+    
      # Function that imports effects
       observe({
       inFile <- input$effectsFile      
       if (is.null(inFile))
         return(NULL)
-        dat <- read.csv(inFile$datapath, colClasses="numeric")
+        dat <- read.csv(inFile$datapath)
         assign("namesEffects", colnames(dat), envir = cache)
         costs <- get("costs", envir=cache)
         if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
         assign("effects", dat, envir = cache)   
     })
     
+    output$textCheckTabEffects <- renderText({
+      x3 <- input$effectsFile 
+      x4 <- input$loadSession
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      
+      effects <- get("effects", envir = cache)
+      if (sum(is.na(effects)) > 0) return("There are missing values - please check data and reload")
+      if (prod(unlist(c(lapply(effects, function(x) class(x) == "numeric"))))) {
+        return("All columns are numeric and there are no missing values")
+      } else {
+        return("Not all columns are numeric - please check data and reload")
+      }
+    })
+    
 
+    output$textCheckTab <- renderText({
+      x1 <- input$parameterFile 
+      x2 <- input$costsFile 
+      x3 <- input$effectsFile 
+      x4 <- input$loadSession
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      print("CHECK")
+      params <- get("params", envir = cache)
+      costs <- get("costs", envir = cache)
+      effects <- get("effects", envir = cache)
+      if(!((NROW(params) == NROW(costs)) & (NROW(effects) == NROW(costs)))) {
+        return("Loaded files have different numbers of rows - please check data and reload")
+      } else {
+        return(NULL)
+      }
+    })
 
     # Function that saves "about the model" variables to the cache if they are changed in the input.
 
@@ -183,16 +242,15 @@ shinyServer(
       x <- input$parameterFile 
       y <- input$loadSession
       tableValues <- get("params", envir=cache)
-      # assign("nParamSamples", nrow(tableValues), envir=cache)
       if (is.null(tableValues)) return(NULL)
       head(tableValues, n=5)
     })
-    
+   
+  
     output$checktable2 <- renderTable({
       x <- input$costsFile 
       y <- input$loadSession
       tableValues <- get("costs", envir=cache)
-
       if (is.null(tableValues)) return(NULL)
       head(tableValues, n=5)  
     })
@@ -205,7 +263,13 @@ shinyServer(
       colnames(tableValues) <- get("namesEffects", envir = cache)
       head(tableValues, n=5)
     })
-      
+    
+    # do some checks on the input files
+    
+
+    
+    
+    
     # function that calculates ceac
     ceac <- reactive({ 
       if (!valuesImportedFLAG(cache, input)) return(NULL)

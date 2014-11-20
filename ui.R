@@ -106,7 +106,7 @@ fluidPage(
                       <br><br>
                         SAVI assumes that the first row of the parameter file contains the parameter names.<br>
                         SAVI assumes that the first row of the costs file holds the decision option names. <br>
-                        The first row of the effects file should also hold names, but these names are not used by SAVI.
+                        The first row of the effects file should also hold names, but these names are not used by SAVI.<br>
                       <br><br>
                         Costs and effects are assumed to be absolute rather than incremental.<br>
                         Check the import in the next tab<br><br>

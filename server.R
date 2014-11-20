@@ -124,7 +124,7 @@ shinyServer(
       inFile <- input$parameterFile
       if (is.null(inFile))
         return(NULL)
-        dat <- read.csv(inFile$datapath)
+        dat <- read.csv(inFile$datapath, colClasses="numeric")
         assign("params", dat, envir = cache)
         assign("nParams", ncol(dat), envir=cache)
         assign("nIterate", nrow(dat), envir=cache) # size of PSA
@@ -135,7 +135,7 @@ shinyServer(
       inFile <- input$costsFile
       if (is.null(inFile))
         return(NULL)
-        dat <- read.csv(inFile$datapath)
+        dat <- read.csv(inFile$datapath, colClasses="numeric")
         effects <- get("effects", envir = cache)
         if(!is.null(effects)) {
           colnames(effects) <- colnames(dat)
@@ -150,7 +150,8 @@ shinyServer(
       inFile <- input$effectsFile      
       if (is.null(inFile))
         return(NULL)
-        dat <- read.csv(inFile$datapath)
+        dat <- read.csv(inFile$datapath, colClasses="numeric")
+        assign("namesEffects", colnames(dat), envir = cache)
         costs <- get("costs", envir=cache)
         if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
         assign("effects", dat, envir = cache)   
@@ -201,6 +202,7 @@ shinyServer(
       y <- input$loadSession
       tableValues <- get("effects", envir=cache)
       if (is.null(tableValues)) return(NULL)
+      colnames(tableValues) <- get("namesEffects", envir = cache)
       head(tableValues, n=5)
     })
       

@@ -115,7 +115,7 @@ fluidPage(
                br(),br(),
                h4("Parameter importation"),
                fileInput('parameterFile', 'Choose CSV File',
-                         accept=c('text/csv', 'text/comma-separated-values,text/plain')),
+                         accept=c('text/csv')),# 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                #checkboxInput('header1', 'Is there a header row?', TRUE),
                #checkboxInput('rownames1', 'Does the first column contain row names?', FALSE),
@@ -131,7 +131,7 @@ fluidPage(
                # Button to import costs  data    
                h4("Costs importation"),
                fileInput('costsFile', 'Choose CSV File',
-                         accept=c('text/csv', 'text/comma-separated-values,text/plain')),
+                         accept=c('text/csv')),# 'text/comma-separated-values,text/plain')),
                # Various checkboxes and input fields to specify the data file format
                #checkboxInput('header2', 'Is there a header row?', TRUE),
                #checkboxInput('rownames2', 'Does the first column contain row names?', FALSE),
@@ -146,7 +146,7 @@ fluidPage(
                # Button to import effects data
                h4("Effects importation"),
                fileInput('effectsFile', 'Choose CSV File',
-                         accept=c('text/csv', 'text/comma-separated-values,text/plain'))
+                         accept=c('text/csv'))#, 'text/comma-separated-values,text/plain'))
                # Various checkboxes and input fields to specify the data file format
                #checkboxInput('header3', 'Is there a header row?', TRUE),
                #checkboxInput('rownames3', 'Does the first column contain row names?', FALSE),

@@ -121,7 +121,7 @@ shinyServer(
     
     #  Function that imports parameters
       observe({
-      inFile = input$parameterFile
+      inFile <- input$parameterFile
       if (is.null(inFile))
         return(NULL)
         dat <- read.csv(inFile$datapath)
@@ -132,7 +132,7 @@ shinyServer(
 
       #  Function that imports costs    
       observe({
-      inFile = input$costsFile
+      inFile <- input$costsFile
       if (is.null(inFile))
         return(NULL)
         dat <- read.csv(inFile$datapath)
@@ -147,7 +147,7 @@ shinyServer(
     
      # Function that imports effects
       observe({
-      inFile = input$effectsFile      
+      inFile <- input$effectsFile      
       if (is.null(inFile))
         return(NULL)
         dat <- read.csv(inFile$datapath)

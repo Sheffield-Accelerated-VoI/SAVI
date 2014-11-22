@@ -36,14 +36,13 @@ shinyServer(
     
     print("cache is")
     print(cache <- new.env())
-    
     print("shinyServer called")
     print("session is")
     print(session)
     
     print("objects in the session environment")
     print(ls(envir=session))
-    
+    # print(lapply(ls(envir=session),function(x)get(x,envir=session))
     print("current environment")
     print(environment())
     
@@ -124,22 +123,21 @@ shinyServer(
       inFile <- input$parameterFile
       if (is.null(inFile))
         return(NULL)
-        dat <- read.csv(inFile$datapath)
-      print(dim(dat))
+        dat <- read.csv(inFile$datapath, sep=input$sep, dec=input$dec)
+
         assign("params", dat, envir = cache)
         assign("nParams", ncol(dat), envir=cache)
         assign("nIterate", nrow(dat), envir=cache) # size of PSA
     })
     
     output$textCheckTabParams <- renderText({
-      x1 <- input$parameterFile 
-      x4 <- input$loadSession
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      x1 <- input$parameterFile   
       
       params <- get("params", envir = cache)
+      if (is.null(params)) return(NULL)    
       if (sum(is.na(params)) > 0) return("There are missing values - please check data and reload")
       if (prod(unlist(c(lapply(params, function(x) class(x) == "numeric"))))) {
-        return("All columns are numeric and there are no missing values")
+        return(NULL)
       } else {
         return("Not all columns are numeric - please check data and reload")
       }
@@ -150,7 +148,8 @@ shinyServer(
       inFile <- input$costsFile
       if (is.null(inFile))
         return(NULL)
-        dat <- read.csv(inFile$datapath)
+        dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2)
+
         effects <- get("effects", envir = cache)
         if(!is.null(effects)) {
           colnames(effects) <- colnames(dat)
@@ -162,13 +161,12 @@ shinyServer(
     
     output$textCheckTabCosts <- renderText({
       x2 <- input$costsFile 
-      x4 <- input$loadSession
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      
+    
       costs <- get("costs", envir = cache)
+      if (is.null(costs)) return(NULL)      
       if (sum(is.na(costs)) > 0) return("There are missing values - please check data and reload")
       if (prod(unlist(c(lapply(costs, function(x) class(x) == "numeric"))))) {
-        return("All columns are numeric and there are no missing values")
+        return(NULL)
       } else {
         return("Not all columns are numeric - please check data and reload")
       }
@@ -177,9 +175,9 @@ shinyServer(
      # Function that imports effects
       observe({
       inFile <- input$effectsFile      
-      if (is.null(inFile))
-        return(NULL)
-        dat <- read.csv(inFile$datapath)
+      if (is.null(inFile)) return(NULL)
+        dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
+      print(dim(dat))
         assign("namesEffects", colnames(dat), envir = cache)
         costs <- get("costs", envir=cache)
         if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
@@ -188,13 +186,11 @@ shinyServer(
     
     output$textCheckTabEffects <- renderText({
       x3 <- input$effectsFile 
-      x4 <- input$loadSession
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      
       effects <- get("effects", envir = cache)
+      if (is.null(effects)) return(NULL)
       if (sum(is.na(effects)) > 0) return("There are missing values - please check data and reload")
       if (prod(unlist(c(lapply(effects, function(x) class(x) == "numeric"))))) {
-        return("All columns are numeric and there are no missing values")
+        return(NULL)
       } else {
         return("Not all columns are numeric - please check data and reload")
       }
@@ -205,9 +201,9 @@ shinyServer(
       x1 <- input$parameterFile 
       x2 <- input$costsFile 
       x3 <- input$effectsFile 
-      x4 <- input$loadSession
+      
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      print("CHECK")
+
       params <- get("params", envir = cache)
       costs <- get("costs", envir = cache)
       effects <- get("effects", envir = cache)
@@ -441,6 +437,7 @@ shinyServer(
    
    output$tableEVPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
+     dummy <- input$lambdaOverall
      tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
      colnames(tableEVPI) <- c(paste("Overall EVPI monetary scale (", input$currency, ")", sep=""), paste("Overall EVPI", input$unitBens, "scale"))
      rownames(tableEVPI) <- c("Per Person Affected by the Decision", 

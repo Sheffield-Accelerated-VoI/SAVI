@@ -86,15 +86,14 @@ applyCalcSingleParamGam <- function(parameterDf, nb, session, cache) {
   progress$set(message = 'Calculation in progress',
                detail = 'This may take a while...')
   
-  res <- vector("list",(NCOL(parameterDf)))
+  res <- matrix(ncol = 2, nrow = NCOL(parameterDf))
   
-
-
   for (i in 1:NCOL(parameterDf)) {
     progress$set(i)
-    res[[i]] <- gamFunc(nb, i, s=1000, cache, session)#calcSingleParamGAM(cbind(parameterDf[, numVar])[, i], inb)
+    result <- gamFunc(nb, i, s=1000, cache, session)
+    res[i, ] <- unlist(result) # <- calcSingleParamGAM(cbind(parameterDf[, numVar])[, i], inb)
   }
-  matrix(unlist(res), ncol = 2, byrow=TRUE)
+  res
 }
 
 makeCeac <- function(costs.int, effects.int, lambda, session) {

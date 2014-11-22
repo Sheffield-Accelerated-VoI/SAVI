@@ -143,13 +143,13 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   
 
   
-  m <- min(20 * p, 100)
+  m <- min(30 * p, 250)
   setForHyperparamEst <- 1:m # sample(1:N, m, replace=FALSE)
   hyperparameters <- estimate.hyperparameters(NB[setForHyperparamEst, ], 
                                               input.matrix[setForHyperparamEst, ], session)
     
-  V <- g.hat <- vector("list",D)
-  g.hat[[1]] <- rep(0,N)
+  V <- g.hat <- vector("list", D)
+  g.hat[[1]] <- rep(0, N)
   
 
   progress1 <- shiny::Progress$new(session, min=1, max=D)
@@ -164,8 +164,6 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
     print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
     delta.hat <- hyperparameters[[d]][1:p]
     nu.hat <- hyperparameters[[d]][p+1]
-    #A <- exp(-(as.matrix(dist(t(t(input.matrix)/delta.hat),
-    #   upper=TRUE,diag=TRUE))^2))
     A <- makeA.Gaussian(input.matrix, delta.hat)
     Astar <- A + nu.hat * diag(N)
     Astarinv <- chol2inv(chol(Astar))
@@ -173,7 +171,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
     AstarinvY <- Astarinv%*%NB[,d]
     tHAstarinv <- t(H)%*%Astarinv
     tHAHinv <- solve(tHAstarinv%*%H + 1e-7* diag(q))
-    betahat <- tHAHinv%*%(tHAstarinv%*%NB[,d])
+    betahat <- tHAHinv%*%(tHAstarinv%*%NB[, d])
     Hbetahat <- H%*%betahat
     resid <- NB[,d] - Hbetahat
     g.hat[[d]] <- Hbetahat+A%*%(Astarinv%*%resid)
@@ -189,7 +187,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   
   partial.evpi <- perfect.info - baseline
   
-  print("computing standard error via Monte Carlo")
+  print("Computing standard error via Monte Carlo")
   tilde.g <- vector("list",D)
   tilde.g[[1]] <- matrix(0, nrow=s, ncol=N)     
   
@@ -201,7 +199,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
 
   for(d in 2:D) {
     progress2$set(value = d)
-    tilde.g[[d]] <- mvrnorm(s, g.hat[[d]][1:(min(N,1000))],V[[d]][1:(min(N,1000)),1:(min(N,1000))])
+    tilde.g[[d]] <- mvrnorm(s, g.hat[[d]][1:(min(N, 1000))], V[[d]][1:(min(N,1000)),1:(min(N,1000))])
   }
   progress2$close()
   
@@ -210,10 +208,10 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   rm(tilde.g);gc()
   sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
   SE <- sd(sampled.partial.evpi)
-  g.hat.short <- lapply(g.hat,function(x) x[1:(min(N,1000))])
-  mean.partial.evpi <- mean(do.call(pmax,g.hat.short)) - max(unlist(lapply(g.hat.short,mean)))
+  # g.hat.short <- lapply(g.hat,function(x) x[1:(min(N, 1000))])
+  # mean.partial.evpi <- mean(do.call(pmax, g.hat.short)) - max(unlist(lapply(g.hat.short,mean)))
   # upward.bias <- mean(sampled.partial.evpi) - mean.partial.evpi 
-  rm(V,g.hat);gc()
+  rm(V, g.hat);gc()
   return(list(EVPI=partial.evpi, SE=SE))
 
 }

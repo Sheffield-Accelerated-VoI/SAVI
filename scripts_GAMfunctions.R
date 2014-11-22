@@ -21,7 +21,8 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   g.hat[[1]] <- 0
   
   input.parameters <- get("params", envir=cache)
-  paramSet <- cbind(input.parameters[, sets])
+  paramSet <- cbind(cbind(input.parameters)[, sets])
+  
   constantParams <- (apply(paramSet, 2, var) == 0)
 
   if (sum(constantParams) == length(sets)) return(list(EVPI=0, SE=0)) # if all regressors are constant

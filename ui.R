@@ -2,16 +2,16 @@
 fluidPage(
   tags$head(
     tags$style("body {background-color: #F8F8F8; }")),
-    tags$style(type='text/css', '#textCheckTab {background-color: rgba(255,255,0,0.40); color: green;}'),
-    tags$style(type='text/css', '#textCheckTabParams {background-color: rgba(255,255,0,0.40); color: green;}'),
-    tags$style(type='text/css', '#textCheckTabCosts {background-color: rgba(255,255,0,0.40); color: green;}'),
-    tags$style(type='text/css', '#textCheckTabEffects {background-color: rgba(255,255,0,0.40); color: green;}'),
+    tags$style(type='text/css', '#textCheckTab {color: red;}'),
+    tags$style(type='text/css', '#textCheckTabParams {color: red;}'),
+    tags$style(type='text/css', '#textCheckTabCosts {color: red;}'),
+    tags$style(type='text/css', '#textCheckTabEffects {color: red;}'),
     # uni is #F1F2F2
   headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' target='_blank'><img src = 'uni2.gif' width = '200' 
                    alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 1.008 (2014-11-20)"),    
+    h4("Release version 1.009 (2014-11-22)"),    
     h6(HTML("Copyright &copy; 2014 University of Sheffield")),  
     tabsetPanel( 
 
@@ -26,7 +26,10 @@ fluidPage(
                  a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=Register')),               
                p("We won't share your email address with anyone."),
                br(),br(),
-               h3("New in version 1.005"),
+               h3("New features and bug fixes"),
+               h5("New in version 1.008"),
+               p("SAVI now accepts text files with the tab or the semicolon separator, and with the comma as the decimal mark."),              
+               h5("New in version 1.005"),
                p("You can now download a report containing all the results from the SAVI analysis. Click on the Downloads tab."), 
                p("Different interventions and comparators can now be specified for the CE plane."), 
                br()
@@ -110,58 +113,57 @@ fluidPage(
                       <br><br>
                         SAVI assumes that the first row of the parameter file contains the parameter names.<br>
                         SAVI assumes that the first row of the costs file holds the decision option names. <br>
-                        The first row of the effects file should also hold names, but these names are not used by SAVI.<br>
+                        The first row of the effects file should also hold names, but these names are not used by SAVI.
                       <br><br>
-                        Costs and effects are assumed to be absolute rather than incremental.<br>
+                        Costs and effects are assumed to be per-person, and to be absolute rather than incremental.<br>
                         Check the import in the next tab<br><br>
                         </div>")),      
                
                br(),br(),
-               h4("Parameter importation"),
-               fileInput('parameterFile', 'Choose CSV File',
-                         accept=c('text/csv')),# 'text/comma-separated-values,text/plain')),
+               h3("Parameter importation"),
                # Various checkboxes and input fields to specify the data file format
                #checkboxInput('header1', 'Is there a header row?', TRUE),
                #checkboxInput('rownames1', 'Does the first column contain row names?', FALSE),
-               #selectInput('sep', 'Separator:',
-               #	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ','),
-               #selectInput('quote', 'Quote:',
-               #            c('None'='none', 'Double Quote'="\"'", 'Single Quote'="\''"),
-               #             selected="\"'"),
-               #selectInput('dec', 'Decimal mark', c(Dot='.', Comma=','), '.'),
+               radioButtons('sep', h5('Separator:'),
+               	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ',', inline=TRUE),
+               #radioButtons('quote', 'Quote:',
+                #           c('None'='none', 'Double Quote'="\"'", 'Single Quote'="\''"),
+                 #           selected="\"'", inline=TRUE),
+               radioButtons('dec', h5('Decimal mark'), c(Dot='.', Comma=','), '.', inline=TRUE),
+               fileInput('parameterFile', 'Choose CSV File',
+                         accept=c('text/csv')),
                #br(),
                h4(textOutput("textCheckTabParams")),
                
                # Button to import costs  data    
-               h4("Costs importation"),
-               fileInput('costsFile', 'Choose CSV File',
-                         accept=c('text/csv')),# 'text/comma-separated-values,text/plain')),
+               h3("Costs importation"),      
                # Various checkboxes and input fields to specify the data file format
                #checkboxInput('header2', 'Is there a header row?', TRUE),
                #checkboxInput('rownames2', 'Does the first column contain row names?', FALSE),
-               #selectInput('sep2', 'Separator:',
-               #	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ','),
-               #selectInput('quote2', 'Quote:',
-               #       c(None='','Double Quote'='"','Single Quote'="'"),
-               #            '"'),
-               #selectInput('dec2', 'Decimal mark', c(Dot='.', Comma=','), '.'),
+               radioButtons('sep2', h5('Separator:'),
+               	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ',', inline=TRUE),
+               #radioButtons('quote2', 'Quote:',
+               #        c(None='','Double Quote'='"','Single Quote'="'"),
+                #           '"', inline=TRUE),
+               radioButtons('dec2', h5('Decimal mark'), c(Dot='.', Comma=','), '.', inline=TRUE),
+               fileInput('costsFile', 'Choose CSV File',
+                         accept=c('text/csv')),
                #br(),
                h4(textOutput("textCheckTabCosts")),
                
                # Button to import effects data
-               h4("Effects importation"),
-               fileInput('effectsFile', 'Choose CSV File',
-                         accept=c('text/csv')),#, 'text/comma-separated-values,text/plain'))
+               h3("Effects importation"),
                # Various checkboxes and input fields to specify the data file format
                #checkboxInput('header3', 'Is there a header row?', TRUE),
                #checkboxInput('rownames3', 'Does the first column contain row names?', FALSE),
-               #selectInput('sep3', 'Separator:',
-               #	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ','),
-               #selectInput('quote3', 'Quote:',
-               #           c(None='','Double Quote'='"','Single Quote'="'"),
-               #            '"'),
-               #selectInput('dec3', 'Decimal mark', c(Dot='.', Comma=','), '.')
-               
+               radioButtons('sep3', h5('Separator:'),
+               	c(Comma=',',Semicolon=';',Tab='\t', Space=' '), ',', inline=TRUE),
+               #radioButtons('quote3', 'Quote:',
+                #          c(None='','Double Quote'='"','Single Quote'="'"),
+                 #          '"', inline=TRUE),
+               radioButtons('dec3', h5('Decimal mark'), c(Dot='.', Comma=','), '.', inline=TRUE),
+               fileInput('effectsFile', 'Choose CSV File',
+                         accept=c('text/csv')),
                #h4("Are uploaded costs and effects incremental or absolute?"),
                #radioButtons('incremental', label="", c("Incremental" = "TRUE", "Absolute" = "FALSE"), "FALSE")
                

@@ -136,11 +136,12 @@ shinyServer(
       params <- get("params", envir = cache)
       if (is.null(params)) return(NULL)    
       if (sum(is.na(params)) > 0) return("There are missing values - please check data and reload")
-      if (prod(unlist(c(lapply(params, function(x) class(x) == "numeric"))))) {
-        return(NULL)
-      } else {
-        return("Not all columns are numeric - please check data and reload")
-      }
+     # print()
+#       if (prod(unlist(c(lapply(params, function(x) class(x) == "numeric"))))) {
+#         return(NULL)
+#       } else {
+#         return("Not all columns are numeric - please check data and reload")
+#       }
     })
 
       #  Function that imports costs    
@@ -165,11 +166,11 @@ shinyServer(
       costs <- get("costs", envir = cache)
       if (is.null(costs)) return(NULL)      
       if (sum(is.na(costs)) > 0) return("There are missing values - please check data and reload")
-      if (prod(unlist(c(lapply(costs, function(x) class(x) == "numeric"))))) {
-        return(NULL)
-      } else {
-        return("Not all columns are numeric - please check data and reload")
-      }
+#       if (prod(unlist(c(lapply(costs, function(x) class(x) == "numeric"))))) {
+#         return(NULL)
+#       } else {
+#         return("Not all columns are numeric - please check data and reload")
+#       }
     })
     
      # Function that imports effects
@@ -189,11 +190,11 @@ shinyServer(
       effects <- get("effects", envir = cache)
       if (is.null(effects)) return(NULL)
       if (sum(is.na(effects)) > 0) return("There are missing values - please check data and reload")
-      if (prod(unlist(c(lapply(effects, function(x) class(x) == "numeric"))))) {
-        return(NULL)
-      } else {
-        return("Not all columns are numeric - please check data and reload")
-      }
+#       if (prod(unlist(c(lapply(effects, function(x) class(x) == "numeric"))))) {
+#         return(NULL)
+#       } else {
+#         return("Not all columns are numeric - please check data and reload")
+#       }
     })
     
 

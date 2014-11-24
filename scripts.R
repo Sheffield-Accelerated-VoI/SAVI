@@ -84,7 +84,7 @@ applyCalcSingleParamGam <- function(parameterDf, nb, session, cache) {
   progress <- shiny::Progress$new(session, min=1, max=sum(numVar))
   on.exit(progress$close())
   progress$set(message = 'Calculation in progress',
-               detail = 'This may take a while...')
+               detail = 'Please wait...')
   
   res <- matrix(ncol = 2, nrow = NCOL(parameterDf))
   
@@ -105,7 +105,7 @@ makeCeac <- function(costs.int, effects.int, lambda, session) {
   progress <- shiny::Progress$new(session, min=0, max=length(l.seq))
   on.exit(progress$close())
   progress$set(message = 'Calculation in progress',
-               detail = 'This may take a while...')
+               detail = 'Please wait...')
   
   p.ce <- matrix(ncol = d, nrow = length(l.seq))
   for (i in 1:length(l.seq)) {

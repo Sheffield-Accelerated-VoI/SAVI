@@ -27,7 +27,7 @@ nb <- effects * lambda - costs
 # 2. Exploring Current Uncertainty: Probabilistic Sensitivity Analysis Results
 ## 2.1 Probabilistic Sensitivity Analysis Summary
 
-**NB At present this defaults to option 2 versus 1 regardless of which decision options are chosen on SAVI. This will be fixed soon.**
+**NB At present this defaults to option 1 as comparator, regardless of which decision options are chosen on SAVI. This will be fixed soon.**
 ```{r, echo=FALSE, results='asis'}
 # Generate PSA table
 #  colnames(tableCePlane) <- colnames(costs)[2]
@@ -99,6 +99,9 @@ if(!is.null(costs) | !is.null(effects)) {
 ```
 
 ## 2.2 Cost-Effectiveness Plane
+
+**NB At present this defaults to option 2 versus 1 regardless of which decision options are chosen on SAVI. This will be fixed soon.**
+
 The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r nIterate` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r if(!is.null(costs)) {colnames(costs[2])}` versus `r if(!is.null(costs)) {colnames(costs[1])}` is `r input$currency` `r if(!is.null(costs)) {format(colMeans(incCost)[1], digits=2, nsmall=2)}`.  There is some uncertainty due to model parameters, with the 95% credible interval for the incremental cost ranging from (`r input$currency` `r if(!is.null(costs)) {format(apply(incCost, 2, quantile, 0.025)[1], digits=4,  nsmall=2)}` , `r input$currency` `r if(!is.null(costs)) {format(apply(incCost, 2, quantile, 0.975)[1], digits=4,  nsmall=2)}`).  The probability that `r if(!is.null(costs)) {colnames(costs[2])}` is cost saving compared to `r if(!is.null(costs)) {colnames(costs[1])}` is `r if(!is.null(costs)) {format(apply(incCost, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)}`. The mean incremental benefit of `r if(!is.null(costs)) {colnames(costs[2])}` versus `r input$current` is `r if(!is.null(effects)) {format(colMeans(incBen)[1], digits=2, nsmall=4)}` `r input$unitBens` .  This suggests that `r if(!is.null(costs)) {colnames(costs[2])}` is more/or less beneficial.  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r if(!is.null(effects)) {format(apply(incBen, 2, quantile, 0.025)[1], digits=4, nsmall=4)}` `r input$unitBens` , `r if(!is.null(effects)) {format(apply(incBen, 2, quantile, 0.975)[1], digits=4, nsmall=4)}` `r input$unitBens`).  The probability that `r if(!is.null(costs)) {colnames(costs[2])}` is more beneficial compared to `r if(!is.null(costs)) {colnames(costs[1])}` is `r if(!is.null(effects)) {format(apply(incBen, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)}`. 
 
 The incremental expected cost per unit of benefit is estimated at `r input$currency` `r if(!is.null(costs)) {format(colMeans(incCost)[1] /  colMeans(incBen)[1], digits=2, nsmall=2)}` per `r input$unitBens`.  This is above/below the threshold of `r input$currency` `r format(lambda,digits=4)` per `r input$unitBens` that `r if(!is.null(costs)) {colnames(costs[2])}` would (not) be considered cost-effective at this threshold.  There is uncertainty with a `r if(!is.null(costs)) {format(apply(inb, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)}` probability that `r if(!is.null(costs)) {colnames(costs[2])}` is more cost-effective (`r if(!is.null(costs)) {format((apply(inb, 2, function(x) sum(x > 0))[1] / npsa)*100, digits=2, nsmall=0)}` % of the probabilistic model run dots are below and to the right of the diagonal thresholdline).  
@@ -399,16 +402,15 @@ if(!is.null(costs) | !is.null(effects)) {
 ## 4.1 Single parameter EVPPI
 
 ```{r, echo=FALSE, results='asis'}
-if(!is.null(costs)) {
-     inb <- createInb(costs, effects, lambda)
-     pEVPI <- applyCalcSingleParamGam(params, inb, session) 
-     tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 4)
-     tableEVPPI[, 1] <- round(pEVPI, 2)
-     tableEVPPI[, 2] <- round(pEVPI / overallEvpi , 2)
-     tableEVPPI[, 3] <- signif(pEVPI * input$annualPrev, 4)
-     tableEVPPI[, 4] <- signif(pEVPI * input$annualPrev * input$horizon, 4)
-     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")"), "Indexed Overall EVPI = 1.00", 
-                               paste("EVPPI for ", input$jurisdiction, " Per Year"), 
+if(!is.null(pEVPI)) {
+     tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 5)
+     tableEVPPI[, 1] <- round(pEVPI[, 1], 2)
+     tableEVPPI[, 2] <- round(pEVPI[, 2], 2)
+     tableEVPPI[, 3] <- round(pEVPI[, 1] / overallEvpi , 2)
+     tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
+     tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
+     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
+                               paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(params)
      print(kable(tableEVPPI))
@@ -416,15 +418,17 @@ if(!is.null(costs)) {
 ```
 
 ```{r, echo=FALSE}
-if(!is.null(costs)) {
-  EVPPI <- matrix(pEVPI[order(pEVPI)], ncol = length(pEVPI), nrow = 1)
-  colnames(EVPPI)<-colnames(params[order(pEVPI)])
+if(!is.null(pEVPI)) {
+  ord <- order(pEVPI[, 1])
+  EVPPI <- matrix(pEVPI[ord, 1], ncol = NROW(pEVPI), nrow = 1)
+  colnames(EVPPI) <- colnames(params[ord])
   barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", xlab = "Partial EVPI per person")  
   }
 ```
 
 ## 4.1 Group parameter EVPPI
 
+# Work in progress - to be added soon ...
 ```{r, echo=FALSE, results='asis'}
 if(!is.null(setStoreMatchEvpiValues)) {
 #tableEvpiValues <- cbind(setStoreMatchEvpiValues, subsetEvpiValues)

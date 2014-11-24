@@ -65,7 +65,7 @@ estimate.hyperparameters <- function(NB, inputs, session) {
   progress1 <- shiny::Progress$new(session, min=1, max=D)
   on.exit(progress1$close())
   progress1$set(message = 'Estimating GP hyperparameters',
-                detail = 'This may take a while...')
+                detail = 'Please wait...')
   progress1$set(value = 1)
   
   for(d in 2:D) {
@@ -155,7 +155,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   progress1 <- shiny::Progress$new(session, min=1, max=D)
   #on.exit(progress1$close())
   progress1$set(message = 'Calculating conditional expected net benefits',
-                detail = 'This may take a while...')
+                detail = 'Please wait...')
   progress1$set(value = 1)
   
   for(d in 2:D)
@@ -194,7 +194,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   progress2 <- shiny::Progress$new(session, min=1, max=D)
   #on.exit(progress2$close())
   progress2$set(message = 'Calculating Standard Error',
-                detail = 'This may take a while...')
+                detail = 'Please wait...')
   progress2$set(value = 1)
 
   for(d in 2:D) {

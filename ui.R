@@ -119,7 +119,7 @@ fluidPage(
                           the parameters in row 1 must be those that correspond to the costs and effects in row 1, and so on.
                         <br><br>
                         Costs and effects are assumed to be per-person, and to be absolute rather than incremental.<br>
-                        <strong>Check the import in the next tab<strong><br><br>
+                        <strong>Check the import in the next tab</strong><br><br>
                         </div>")),      
                
                br(),br(),

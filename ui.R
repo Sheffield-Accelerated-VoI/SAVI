@@ -27,7 +27,7 @@ fluidPage(
                p("We won't share your email address with anyone."),
                br(),br(),
                h3("New features and bug fixes"),
-               h5("New in version 1.008"),
+               h5("New in version 1.009"),
                p("SAVI now accepts text files with the tab or the semicolon separator, and with the comma as the decimal mark."),              
                h5("New in version 1.005"),
                p("You can now download a report containing all the results from the SAVI analysis. Click on the Downloads tab."), 

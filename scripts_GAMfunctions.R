@@ -46,7 +46,7 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   progress <- shiny::Progress$new(session, min=1, max=D-1)
   on.exit(progress$close())
   progress$set(message = 'Calculating conditional expected net benefits',
-               detail = 'This may take a while...')
+               detail = 'Please wait...')
   
   for(d in 2:D)
   {

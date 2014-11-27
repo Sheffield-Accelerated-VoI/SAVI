@@ -91,7 +91,7 @@ estimate.hyperparameters <- function(NB, inputs, session) {
 
 gpFunc <- function(NB, sets, s=1000, cache, session) {
   
-  input.parameters <- get("params", envir=cache)
+  input.parameters <- cache$params
   paramSet <- cbind(input.parameters[, sets])
   constantParams <- (apply(paramSet, 2, var) == 0)
 

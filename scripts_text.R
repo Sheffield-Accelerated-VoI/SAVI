@@ -82,8 +82,8 @@ wouldNot <- function(costs, bens, int, comp, lambda) {
 # 11) Probability cost-effective for int versus comp at lambda WTP
 pCE <- function(int, comp, lambda, cache) {
   if(int==comp) return(NULL)
-  costs <- get("costs", envir = cache)
-  effects <- get("effects", envir = cache) 
+  costs <- cache$costs
+  effects <- cache$effects 
   sum((effects[, int] * lambda - costs[, int]) > (effects[, comp] * lambda - costs[, comp])) / NROW(costs)
 }
 

@@ -20,7 +20,7 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   g.hat <- beta.hat <- Xstar <- V <- tilde.g <- vector("list", D)
   g.hat[[1]] <- 0
   
-  input.parameters <- get("params", envir=cache)
+  input.parameters <- cache$params
   paramSet <- cbind(cbind(input.parameters)[, sets])
   
   constantParams <- (apply(paramSet, 2, var) == 0)

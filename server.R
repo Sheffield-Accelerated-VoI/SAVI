@@ -135,12 +135,19 @@ shinyServer(
       
       params <- get("params", envir = cache)
       if (is.null(params)) return(NULL)    
-      if (sum(is.na(params)) > 0) return("There are missing values - please check data and reload")
-      if (prod(unlist(c(lapply(params, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
-        return(NULL)
-      } else {
+      
+      if (sum(is.na(params)) > 0) {
+        return("There are missing values - please check data and reload")
+      }
+      
+      if (!prod(unlist(c(lapply(params, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
         return("Not all columns are numeric - please check data and reload")
       }
+      
+      if (sum(unlist(lapply(params, function(x) length(unique(x)) > 0 & length(unique(x)) < 5))) > 0) {
+        return("One or more columns contains too few (<5) unique values for EVPPI analysis")
+      }
+      return(NULL)
     })
 
       #  Function that imports costs    

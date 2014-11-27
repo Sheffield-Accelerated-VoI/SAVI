@@ -144,7 +144,7 @@ shinyServer(
         return("Not all columns are numeric - please check data and reload")
       }
       
-      if (sum(unlist(lapply(params, function(x) length(unique(x)) > 0 & length(unique(x)) < 5))) > 0) {
+      if (sum(unlist(lapply(params, function(x) length(unique(x)) > 1 & length(unique(x)) < 5))) > 0) {
         return("One or more columns contains too few (<5) unique values for EVPPI analysis")
       }
       return(NULL)

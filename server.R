@@ -36,6 +36,7 @@ shinyServer(
     
     print("cache is")
     print(cache <- new.env())
+
     print("shinyServer called")
     print("session is")
     print(session)

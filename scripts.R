@@ -9,9 +9,9 @@ valuesImportedFLAG <- function(cache, input){
   dummy4 <- input$loadSession
   
   if (
-      is.null(get("params", envir=cache)) | 
-      is.null(get("costs", envir=cache)) | 
-      is.null(get("effects", envir=cache))
+      is.null(cache$params) | 
+      is.null(cache$costs) | 
+      is.null(cache$effects)
   )   
   {return(FALSE)} else {return (TRUE)}
 }
@@ -41,7 +41,7 @@ calcEvpi <- function(costs.int, effects.int, lambda, cache, session) {
 # calcEvpiSingle <- function(costs.int, effects.int, lambda, cache, session) {
 #   ## this function creates the NB matrix
 #   nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
-#   params <- get("params", envir=cache)
+#   params <- cache$params
 #   evpi <- gpFunc(nb, 1:NCOL(params), s=10, cache, session)$EVPI
 #   return(evpi)
 # }
@@ -126,8 +126,8 @@ calSubsetEvpi <- function(sets, lambda, cache, session) {
   numParams <- length(sets) # number of parameters in the set
   regressionFunction <- ifelse(numParams > 4, "gpFunc", "gamFunc")
   f <- formulaGenerator(sets)
-  costs <- get("costs", envir = cache)
-  effects <- get("effects", envir = cache)
+  costs <- cache$costs
+  effects <- cache$effects
   nb <- effects * lambda - costs
   inb <- nb - nb[ ,1]
   output <- get(regressionFunction)(nb, sets, s=1000, cache, session)

@@ -1,8 +1,8 @@
 # this file holds the table generating functions
 
 makeTableCePlane <- function(lambda, comparator, cache) {
-  costs <- get("costs", envir=cache)
-  effects <- get("effects", envir=cache)
+  costs <- cache$costs
+  effects <- cache$effects
   comp <- which(colnames(costs)%in%comparator)
   incCost <- (costs - costs[, comp])[, -comp, drop=FALSE]
   incBen <- (effects - effects[, comp])[, -comp, drop=FALSE]

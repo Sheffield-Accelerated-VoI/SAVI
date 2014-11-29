@@ -51,32 +51,32 @@ shinyServer(
     
     print(ls())
     
-    assign("savedSession", 0, envir=cache)
-    assign("nIterate", 0, envir = cache)
-    assign("nInt", 0, envir = cache)
-    assign("pEVPI", NULL, envir = cache)
-    assign("params", NULL, envir = cache)
-    assign("costs", NULL, envir = cache)  
-    assign("effects", NULL, envir = cache) 
-    assign("counterAdd", 0, envir = cache)     
-    assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
-    assign("subsetEvpiValues", NULL, envir=cache)
-    assign("setStoreMatchEvpiValues", NULL, envir=cache)
-    assign("currentSelection", NULL, envir=cache)
-    assign("ceac.obj", NULL, envir=cache)
+    cache$savedSession <- 0
+    cache$nIterate <- 0
+    cache$nInt <- 0
+    cache$pEVPI <- NULL
+    cache$params <- NULL
+    cache$costs <- NULL
+    cache$effects <- NULL
+    cache$counterAdd <- 0
+    cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
+    cache$subsetEvpiValues <- NULL
+    cache$setStoreMatchEvpiValues <- NULL
+    cache$currentSelection <- NULL
+    cache$ceac.obj <- NULL
 
     # assign null values to the about the model variables in the cache
-    assign("modelName", NULL, envir = cache)
-    assign("current", NULL, envir = cache)    
-    assign("t3", NULL, envir = cache)       
-    assign("lambdaOverall", 0, envir = cache)  
-    assign("effectDef", NULL, envir = cache)
-    assign("costDef", NULL, envir = cache)
-    assign("annualPrev", 0, envir = cache)
-    assign("horizon", 0, envir = cache)
-    assign("currency", NULL, envir = cache)
-    assign("unitBens", NULL, envir = cache)
-    assign("jurisdiction", NULL, envir = cache)
+    cache$modelName <- NULL
+    cache$current <- NULL  
+    cache$t3 <- NULL       
+    cache$lambdaOverall <- 0
+    cache$effectDef <- NULL
+    cache$costDef <- NULL
+    cache$annualPrev <- 0
+    cache$horizon <- 0
+    cache$currency <- NULL
+    cache$unitBens <- NULL
+    cache$jurisdiction <- NULL
 
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
@@ -96,26 +96,26 @@ shinyServer(
       load(inFile$datapath, envir=cache)
       
       # update "about the model" variables
-      updateTextInput(session, "modelName", value = get("modelName", envir=cache))
-      updateTextInput(session, "current",  value = get("current", envir=cache))
-      updateTextInput(session, "t3",  value = get("t3", envir=cache))
-      updateNumericInput(session, "lambdaOverall",  value = get("lambdaOverall", envir=cache))
-      updateTextInput(session, "effectDef",  value = get("effectDef", envir=cache))
-      updateTextInput(session, "costDef",  value = get("costDef", envir=cache))
-      updateNumericInput(session, "annualPrev",  value = get("annualPrev", envir=cache))
-      updateNumericInput(session, "horizon",  value = get("horizon", envir=cache))
-      updateTextInput(session, "currency",  value = get("currency", envir=cache))
-      updateTextInput(session, "unitBens",  value = get("unitBens", envir=cache))
-      updateTextInput(session, "jurisdiction",  value = get("jurisdiction", envir=cache))
+      updateTextInput(session, "modelName", value = cache$modelName)
+      updateTextInput(session, "current",  value = cache$current)
+      updateTextInput(session, "t3",  value = cache$t3)
+      updateNumericInput(session, "lambdaOverall",  value = cache$lambdaOverall)
+      updateTextInput(session, "effectDef",  value = cache$effectDef)
+      updateTextInput(session, "costDef",  value = cache$costDef)
+      updateNumericInput(session, "annualPrev",  value = cache$annualPrev)
+      updateNumericInput(session, "horizon",  value = cache$horizon)
+      updateTextInput(session, "currency",  value = cache$currency)
+      updateTextInput(session, "unitBens",  value = cache$unitBens)
+      updateTextInput(session, "jurisdiction",  value = cache$jurisdiction)
       
       # set the group EVPI objects to NULL / 0
-      assign("counterAdd", 0, envir = cache)     
-      assign("setStore", vector("list", 100), envir = cache) # up to 100 sets for the group inputs
-      assign("subsetEvpiValues", NULL, envir=cache)
-      assign("setStoreMatchEvpiValues", NULL, envir=cache)
-      assign("currentSelection", NULL, envir=cache)
+      cache$counterAdd <- 0
+      cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
+      cache$subsetEvpiValues <- NULL
+      cache$setStoreMatchEvpiValues <- NULL
+      cache$currentSelection <- NULL
       
-      assign("savedSession", 1, envir=cache)    # not used
+      # cache$savedSession <- 1    # not used
       
     })
     
@@ -126,22 +126,29 @@ shinyServer(
         return(NULL)
         dat <- read.csv(inFile$datapath, sep=input$sep, dec=input$dec)
 
-        assign("params", dat, envir = cache)
-        assign("nParams", ncol(dat), envir=cache)
-        assign("nIterate", nrow(dat), envir=cache) # size of PSA
+        cache$params <- dat
+        cache$nParams <- ncol(dat)
+        cache$nIterate <- nrow(dat) # size of PSA
     })
     
     output$textCheckTabParams <- renderText({
       x1 <- input$parameterFile   
       
-      params <- get("params", envir = cache)
+      params <- cache$params
       if (is.null(params)) return(NULL)    
-      if (sum(is.na(params)) > 0) return("There are missing values - please check data and reload")
-      if (prod(unlist(c(lapply(params, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
-        return(NULL)
-      } else {
+      
+      if (sum(is.na(params)) > 0) {
+        return("There are missing values - please check data and reload")
+      }
+      
+      if (!prod(unlist(c(lapply(params, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
         return("Not all columns are numeric - please check data and reload")
       }
+      
+      if (sum(unlist(lapply(params, function(x) length(unique(x)) > 1 & length(unique(x)) < 5))) > 0) {
+        return("One or more columns contains too few (<5) unique values for EVPPI analysis")
+      }
+      return(NULL)
     })
 
       #  Function that imports costs    
@@ -151,19 +158,19 @@ shinyServer(
         return(NULL)
         dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2)
 
-        effects <- get("effects", envir = cache)
+        effects <- cache$effects
         if(!is.null(effects)) {
           colnames(effects) <- colnames(dat)
-          assign("effects", effects, envir = cache)
+          cache$effects <- effects
         }
-        assign("costs", dat, envir = cache)
-        assign("nInt", ncol(dat), envir=cache) # number of interventions
+        cache$costs <- dat
+        cache$nInt <- ncol(dat) # number of interventions
     })
     
     output$textCheckTabCosts <- renderText({
       x2 <- input$costsFile 
     
-      costs <- get("costs", envir = cache)
+      costs <- cache$costs
       if (is.null(costs)) return(NULL)      
       if (sum(is.na(costs)) > 0) return("There are missing values - please check data and reload")
       if (prod(unlist(c(lapply(costs, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
@@ -179,15 +186,15 @@ shinyServer(
       if (is.null(inFile)) return(NULL)
         dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
       print(dim(dat))
-        assign("namesEffects", colnames(dat), envir = cache)
-        costs <- get("costs", envir=cache)
+        cache$namesEffects <- colnames(dat)
+        costs <- cache$costs
         if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
-        assign("effects", dat, envir = cache)   
+        cache$effects <- dat
     })
     
     output$textCheckTabEffects <- renderText({
       x3 <- input$effectsFile 
-      effects <- get("effects", envir = cache)
+      effects <- cache$effects
       if (is.null(effects)) return(NULL)
       if (sum(is.na(effects)) > 0) return("There are missing values - please check data and reload")
       if (prod(unlist(c(lapply(effects, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
@@ -205,9 +212,9 @@ shinyServer(
       
       if (!valuesImportedFLAG(cache, input)) return(NULL)
 
-      params <- get("params", envir = cache)
-      costs <- get("costs", envir = cache)
-      effects <- get("effects", envir = cache)
+      params <- cache$params
+      costs <- cache$costs
+      effects <- cache$effects
       if(!((NROW(params) == NROW(costs)) & (NROW(effects) == NROW(costs)))) {
         return("Loaded files have different numbers of rows - please check data and reload")
       } else {
@@ -218,17 +225,17 @@ shinyServer(
     # Function that saves "about the model" variables to the cache if they are changed in the input.
 
     observe({
-      assign("modelName", input$modelName, envir = cache)
-      assign("current", input$current, envir = cache)    
-      assign("t3", input$t3, envir = cache)       
-      assign("lambdaOverall", input$lambdaOverall, envir = cache)  
-      assign("effectDef", input$effectDef, envir = cache)
-      assign("costDef", input$costDef, envir = cache)
-      assign("annualPrev", input$annualPrev, envir = cache)
-      assign("horizon", input$horizon, envir = cache)
-      assign("currency", input$currency, envir = cache)
-      assign("unitBens", input$unitBens, envir = cache)
-      assign("jurisdiction", input$jurisdiction, envir = cache)
+      cache$modelName <- input$modelName
+      cache$current <- input$current
+      cache$t3 <- input$t3
+      cache$lambdaOverall <- input$lambdaOverall
+      cache$effectDef <- input$effectDef
+      cache$costDef <- input$costDef
+      cache$annualPrev <- input$annualPrev
+      cache$horizon <- input$horizon
+      cache$currency <- input$currency
+      cache$unitBens <- input$unitBens
+      cache$jurisdiction <- input$jurisdiction
     })
 
 
@@ -238,7 +245,7 @@ shinyServer(
     output$checktable1 <- renderTable({
       x <- input$parameterFile 
       y <- input$loadSession
-      tableValues <- get("params", envir=cache)
+      tableValues <- cache$params
       if (is.null(tableValues)) return(NULL)
       head(tableValues, n=5)
     })
@@ -247,7 +254,7 @@ shinyServer(
     output$checktable2 <- renderTable({
       x <- input$costsFile 
       y <- input$loadSession
-      tableValues <- get("costs", envir=cache)
+      tableValues <- cache$costs
       if (is.null(tableValues)) return(NULL)
       head(tableValues, n=5)  
     })
@@ -255,9 +262,9 @@ shinyServer(
     output$checktable3 <- renderTable({
       x <- input$effectsFile 
       y <- input$loadSession
-      tableValues <- get("effects", envir=cache)
+      tableValues <- cache$effects
       if (is.null(tableValues)) return(NULL)
-      colnames(tableValues) <- get("namesEffects", envir = cache)
+      colnames(tableValues) <- cache$namesEffects
       head(tableValues, n=5)
     })
     
@@ -270,7 +277,7 @@ shinyServer(
     # function that calculates ceac
     ceac <- reactive({ 
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeCeac(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, session)
+      makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
     })
         
   
@@ -278,40 +285,40 @@ shinyServer(
 
     output$textCEplane1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("The figure above shows the (standardised) cost-effectiveness plane based on the ", get("nIterate", envir=cache), 
+      paste("The figure above shows the (standardised) cost-effectiveness plane based on the ", cache$nIterate, 
             " model runs in the probabilistic sensitivity analysis. The willingness-to-pay threshold is shown as a 45 degree line. 
             The mean incremental cost of ", input$decisionOptionCE1, " versus ",  input$decisionOptionCE0," is ",
-            input$currency, incValue(get("costs", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), ". This suggests that ", input$decisionOptionCE1, " is ", 
-            moreLess(get("costs", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), " costly. The incremental cost is uncertain because the model parameters are uncertain. 
-            The 97.5% credible interval for the incremental cost ranges from ", input$currency, confIntCE(get("costs", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0, 0.025)," to ", 
-            input$currency, confIntCE(get("costs", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0, 0.975),". The probability that ", input$decisionOptionCE1, " is cost 
-            saving compared to ", input$decisionOptionCE0," is ", pCostsaving(get("costs", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), ".", sep="")
+            input$currency, incValue(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0), ". This suggests that ", input$decisionOptionCE1, " is ", 
+            moreLess(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0), " costly. The incremental cost is uncertain because the model parameters are uncertain. 
+            The 97.5% credible interval for the incremental cost ranges from ", input$currency, confIntCE(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.025)," to ", 
+            input$currency, confIntCE(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.975),". The probability that ", input$decisionOptionCE1, " is cost 
+            saving compared to ", input$decisionOptionCE0," is ", pCostsaving(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0), ".", sep="")
     })                       
     
     output$textCEplane2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("The mean incremental benefit of ", input$decisionOptionCE1, " versus ", input$decisionOptionCE0, " is ", 
-            incValue(get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
-            moreLess(get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), " beneficial. Again, there is uncertainty in the incremental benefit 
+            incValue(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0), " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
+            moreLess(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0), " beneficial. Again, there is uncertainty in the incremental benefit 
             due to uncertainty in the model parameters. The 97.5% 
-            credible interval for the incremental benefit ranges from ", confIntCE(get("effects", envir=cache), input$decisionOptionCE0, input$decisionOptionCE1, 0.025), " ", input$unitBens, "s to ", 
-            confIntCE(get("effects", envir=cache), input$decisionOptionCE0, input$decisionOptionCE1, 0.975), " ", input$unitBens,"s. The probability that ", input$decisionOptionCE1, 
-            " is more beneficial than ", input$decisionOptionCE0, " is ", pMoreben(get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), ".", sep="")
+            credible interval for the incremental benefit ranges from ", confIntCE(cache$effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.025), " ", input$unitBens, "s to ", 
+            confIntCE(cache$effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.975), " ", input$unitBens,"s. The probability that ", input$decisionOptionCE1, 
+            " is more beneficial than ", input$decisionOptionCE0, " is ", pMoreben(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0), ".", sep="")
     })                        
     
     output$textCEplane3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)      
-      paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(get("costs", envir=cache), 
-            get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0), ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
+      paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(cache$costs, 
+            cache$effects, input$decisionOptionCE1, input$decisionOptionCE0), ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
             " that ", input$decisionOptionCE1, " is more cost-effective than ", input$decisionOptionCE0, ".", sep="")
     })                         
     
     
 #     This is ", 
-#             aboveBelow(get("costs", envir=cache), get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall),  
+#             aboveBelow(cache$costs, cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall),  
 #             " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", 
 #     input$decisionOptionCE1,
-#     " ", wouldNot(get("costs", envir=cache), get("effects", envir=cache), input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall), " be considered cost-effective 
+#     " ", wouldNot(cache$costs, cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall), " be considered cost-effective 
 #     relative to ", input$decisionOptionCE0, " at this threshold. 
     
     output$textCEplane4 <- renderText({
@@ -329,7 +336,7 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
             value for cost-effectiveness of ",input$currency, input$lambdaOverall," per ",input$unitBens," the strategy with the highest 
-            probability of being most cost-effective is ", bestCE(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), 
+            probability of being most cost-effective is ", bestCE(cache$costs, cache$effects, input$lambdaOverall, cache$nInt), 
             ", with a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache),
             ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
@@ -347,27 +354,27 @@ shinyServer(
 
    output$textNB3 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("The plot below shows the expected net benefit of the ", get("nInt", envir=cache), " strategies, together with the 97.5% credible 
-           interval for each one.  The strategy with highest expected net benefit is ", bestnetBen(get("costs", envir=cache), 
-           get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)), ", with an expected net benefit of 
-           ", input$currency, netBencosts(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall, get("nInt", envir=cache)),
-           " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(get("costs", envir=cache), get("effects", envir=cache), 
-           input$lambdaOverall, get("nInt", envir=cache)), " ", input$unitBens, "s). Net benefit and 97.5% credible intervals for all strategies 
+     paste("The plot below shows the expected net benefit of the ", cache$nInt, " strategies, together with the 97.5% credible 
+           interval for each one.  The strategy with highest expected net benefit is ", bestnetBen(cache$costs, 
+           cache$effects, input$lambdaOverall, cache$nInt), ", with an expected net benefit of 
+           ", input$currency, netBencosts(cache$costs, cache$effects, input$lambdaOverall, cache$nInt),
+           " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(cache$costs, cache$effects, 
+           input$lambdaOverall, cache$nInt), " ", input$unitBens, "s). Net benefit and 97.5% credible intervals for all strategies 
            are presented in the above table. ", sep="")
    }) 
 
    output$textEVPI1 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("The overall EVPI per person affected by the decision is estimated to be ", input$currency, format(calcEvpi(get("costs", envir=cache), 
-          get("effects", envir=cache), input$lambdaOverall), digits = 4, nsmall=2), ".  This is equivalent to ", 
-          format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)/input$lambdaOverall, digits = 4, nsmall=1), " ", input$unitBens,
+     paste("The overall EVPI per person affected by the decision is estimated to be ", input$currency, format(calcEvpi(cache$costs, 
+          cache$effects, input$lambdaOverall), digits = 4, nsmall=2), ".  This is equivalent to ", 
+          format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)/input$lambdaOverall, digits = 4, nsmall=1), " ", input$unitBens,
           "s per person on the health effects scale.", sep="")
    })     
 
     output$textEVPI2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("If the number of people affected by the decision per year is " , input$annualPrev, ", then the overall EVPI per year is ", input$currency,
-            format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)*input$annualPrev, digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
+            format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev, digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
     }) 
 
     output$textEVPI3 <- renderText({
@@ -375,7 +382,7 @@ shinyServer(
       paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
             will remain relevant. If the decision relevance horizon is ", input$horizon, " years, then the overall expected value of removing 
             decision uncertainty for ", 
-            input$jurisdiction, " would be ", input$currency, format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+            input$jurisdiction, " would be ", input$currency, format(calcEvpi(cache$costs, cache$effects, 
             input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")
     }) 
 
@@ -384,7 +391,7 @@ shinyServer(
       paste("Research or data collection exercises costing more than this amount would not be considered an efficient use of resources. This is because 
             the return on investment from the research – as measured by the health gain and cost savings resulting from enabling the decision maker to better 
             identify the best decision  option – is expected to be no higher than ", input$currency, 
-            format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")  
+            format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")  
       }) 
 
     output$textEVPI5 <- renderText({
@@ -401,7 +408,7 @@ shinyServer(
     output$tableCEplane <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
-      assign("lambdaOverall", input$lambdaOverall, envir = cache)
+      cache$lambdaOverall <- input$lambdaOverall
       rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
                             "Comparator", 
                             "Number of PSA runs", 
@@ -420,9 +427,8 @@ shinyServer(
 
     output$tableNetBenefit <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-     tableNetBenefit <- makeTableNetBenefit(get("costs", envir=cache), get("effects", 
-                            envir=cache), lambda=input$lambdaOverall, get("nInt", envir=cache))
-     assign("lambdaOverall", input$lambdaOverall, envir = cache)
+     tableNetBenefit <- makeTableNetBenefit(cache$costs, cache$effects, lambda=input$lambdaOverall, cache$nInt)
+     cache$lambdaOverall <- input$lambdaOverall
      rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
                                     paste("Mean", input$costDef), 
                                     paste("Expected Net Benefit at", 
@@ -449,14 +455,14 @@ shinyServer(
                               "Over 20 years", 
                               paste("Over Specified Decision Relevance Horizon (", input$horizon, "years)"))
      
-#      overallEvpi <- ifelse(input$indSim, calcEvpiSingle(get("costs", envir=cache), get("effects", envir=cache), 
+#      overallEvpi <- ifelse(input$indSim, calcEvpiSingle(cache$costs, cache$effects, 
 #                                                   lambda=input$lambdaOverall, cache, session),
-#                            calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+#                            calcEvpi(cache$costs, cache$effects, 
 #              lambda=input$lambdaOverall, cache, session))
-     overallEvpi <- calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+     overallEvpi <- calcEvpi(cache$costs, cache$effects, 
                                            lambda=input$lambdaOverall, cache, session)
-     assign("overallEvpi", overallEvpi, envir = cache)
-     assign("lambdaOverall", input$lambdaOverall, envir = cache)
+     cache$overallEvpi <- overallEvpi
+     cache$lambdaOverall <- input$lambdaOverall
      evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 
                      overallEvpi * input$annualPrev * 10, overallEvpi * input$annualPrev * 15,
                      overallEvpi * input$annualPrev * 20,
@@ -470,17 +476,17 @@ shinyServer(
     output$tableEVPPI <- renderTable({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      lambda <- input$lambdaOverall # re-run if labmda changes
-     assign("lambdaOverall", input$lambdaOverall, envir = cache)
-     params <- get("params", envir=cache)
-     costs <- get("costs", envir=cache)
-     effects <- get("effects", envir=cache)
+     cache$lambdaOverall <- input$lambdaOverall
+     params <- cache$params
+     costs <- cache$costs
+     effects <- cache$effects
 
      overallEvpi <- calcEvpi(costs, effects, lambda)
-     assign("overallEvpi", overallEvpi, envir = cache)
+     cache$overallEvpi <- overallEvpi
      
      inb <- createInb(costs, effects, lambda)
      pEVPI <- applyCalcSingleParamGam(params, inb, session, cache)
-     assign("pEVPI", pEVPI, envir=cache)
+     cache$pEVPI <- pEVPI
      
      tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 5)
      tableEVPPI[, 1] <- round(pEVPI[, 1], 2)
@@ -491,7 +497,7 @@ shinyServer(
      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
                                paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
-     rownames(tableEVPPI) <- colnames(get("params", envir=cache))
+     rownames(tableEVPPI) <- colnames(cache$params)
      tableEVPPI
    }) 
    
@@ -501,7 +507,7 @@ shinyServer(
     observe({
       x <- input$costsFile
       y <- input$loadSession
-      costs <- get("costs", envir=cache)
+      costs <- cache$costs
       if (is.null(costs)) return(NULL)
       namesOptions <- colnames(costs)
       updateRadioButtons(session, "decisionOptionCE1", 
@@ -512,7 +518,7 @@ shinyServer(
     observe({
       x <- input$costsFile
       y <- input$loadSession
-      costs <- get("costs", envir=cache)
+      costs <- cache$costs
       if (is.null(costs)) return(NULL)
       namesOptions <- colnames(costs)
       updateRadioButtons(session, "decisionOptionCE0", 
@@ -524,9 +530,9 @@ shinyServer(
     # CE plane
     output$plots1 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      assign("lambdaOverall", input$lambdaOverall, envir = cache)
-      costs <- get("costs", envir=cache)
-      effects <- get("effects", envir=cache)
+      cache$lambdaOverall <- input$lambdaOverall
+      costs <- cache$costs
+      effects <- cache$effects
       print(dim(costs))
       makeCEPlanePlot(costs, effects, 
                       lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
@@ -535,17 +541,17 @@ shinyServer(
     # CEAC
     output$plots2 <- renderPlot({
        if (!valuesImportedFLAG(cache, input)) return(NULL)
-      ceac.obj <- assign("ceac.obj", ceac(), envir=cache)
-      assign("lambdaOverall", input$lambdaOverall, envir = cache)
+      ceac.obj <- cache$ceac.obj <- ceac()
+      cache$lambdaOverall <- input$lambdaOverall
       makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
-                   names=colnames(get("costs", envir=cache)))
+                   names=colnames(cache$costs))
     })  
 
     # EVPI versus lambda (costs)
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      assign("lambdaOverall", input$lambdaOverall, envir = cache)
-      makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall,
+      cache$lambdaOverall <- input$lambdaOverall
+      makeEvpiPlot(cache$costs, cache$effects, lambda=input$lambdaOverall,
                    main=input$main3, 
                    xlab="Threshold willingness to pay", 
                    ylab="Overall EVPI per person affected (on costs scale)",
@@ -555,7 +561,7 @@ shinyServer(
     # EVPI versus lambda (effects)
     output$plots4 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall,
+      makeEvpiPlot(cache$costs, cache$effects, lambda=input$lambdaOverall,
                    main=input$main4, 
                    xlab="Threshold willingness to pay", 
                    ylab="Overall EVPI per person affected (on effects scale)",
@@ -565,21 +571,21 @@ shinyServer(
     # EVPI INB bar plot
     output$plots5a <- renderPlot({ # NEED TO DISCUSS THIS - MS
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeInbOptBar(get("costs", envir=cache), get("effects", envir=cache), 
+      makeInbOptBar(cache$costs, cache$effects, 
                       lambda=input$lambdaOverall)
     })
 
     # Absolute net benefit densities
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      make2wayDensity(get("costs", envir=cache), get("effects", envir=cache), 
+      make2wayDensity(cache$costs, cache$effects, 
                       lambda=input$lambdaOverall)
     })
     
     # EVPI plots
     output$plots6 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      make4wayEvpiPlot(get("costs", envir=cache), get("effects", envir=cache), lambda=input$lambdaOverall, 
+      make4wayEvpiPlot(cache$costs, cache$effects, lambda=input$lambdaOverall, 
                        prevalence=input$annualPrev, horizon=input$horizon, measure1 = input$currency, 
                        measure2 = input$unitBens, session)
     })
@@ -587,7 +593,8 @@ shinyServer(
     # EVPPi horizontal bar chart
     output$plot7 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeEvppiBar(get("pEVPI", envir=cache)[, 1], get("params", envir=cache))
+      dummy <- input$lambdaOverall
+      makeEvppiBar(cache$pEVPI[, 1], cache$params)
     })
   
 
@@ -596,7 +603,7 @@ shinyServer(
     observe({
       x <- input$parameterFile
       y <- input$loadSession
-      params <- get("params", envir=cache)
+      params <- cache$params
       if (is.null(params)) return(NULL)
       namesParams <- colnames(params)
       namesParams <- paste(1:ncol(params), ") ", namesParams, sep="")
@@ -613,11 +620,11 @@ shinyServer(
     observe({
       currentSelectionNames <- input$pevpiParameters
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      params <- get("params", envir = cache)
+      params <- cache$params
       if (is.null(params)) return(NULL)
       paramNames <- paste(1:ncol(params), ") ", colnames(params), sep="")
       currentSelection <- which(paramNames%in%currentSelectionNames)
-      assign("currentSelection", currentSelection, envir = cache)
+      cache$currentSelection <- currentSelection
     })
 
     # This function responds to the add button being pressed
@@ -630,21 +637,21 @@ shinyServer(
       if (!isolate(valuesImportedFLAG(cache, input))) return(NULL)
       if (dummy == 0) return(NULL)
       
-      counterAdd <- get("counterAdd", envir=cache)
+      counterAdd <- cache$counterAdd
       print(counterAdd <- counterAdd + 1)
-      assign("counterAdd", counterAdd, envir=cache) 
+      cache$counterAdd <- counterAdd
       
-      setStore <- get("setStore", envir=cache)
-      currentSelection <- get("currentSelection", envir=cache)
+      setStore <- cache$setStore
+      currentSelection <- cache$currentSelection
       setStore[[counterAdd]] <- currentSelection
-      assign("setStore", setStore, envir = cache)
+      cache$setStore <- setStore
       
       calc <- function(x, inp, cache, session) { # pass session so the progress bar will work
         calSubsetEvpi(x, inp, cache, session)
       }
       
       #first pull down the existing values
-      subsetEvpiValues <- get("subsetEvpiValues", envir = cache)
+      subsetEvpiValues <- cache$subsetEvpiValues
       if (is.null(subsetEvpiValues)) {
         subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, input$lambdaOverall, cache, session))
       } else {
@@ -652,8 +659,8 @@ shinyServer(
         subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
       }
       
-      assign("subsetEvpiValues", subsetEvpiValues, envir = cache)
-      assign("setStoreMatchEvpiValues", setStore, envir = cache) # cache these for the report in case they change
+      cache$subsetEvpiValues <- subsetEvpiValues
+      cache$setStoreMatchEvpiValues <- setStore # cache these for the report in case they change
 
       buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
     }, sanitize.rownames.function = bold.allrows)
@@ -665,10 +672,10 @@ shinyServer(
        # if (!valuesImportedFLAG(cache, input)) return(NULL)
        print("clearing")
        setStore <- vector("list", 100)
-       assign("setStore", setStore, envir = cache)
-       assign("counterAdd", 0, envir = cache)
-       assign("subsetEvpiValues", NULL, envir = cache)
-       assign("setStoreMatchEvpiValues", NULL, envir = cache) # cache these for the report in case they change
+       cache$setStore <- setStore
+       cache$counterAdd <- 0
+       cache$subsetEvpiValues <- NULL
+       cache$setStoreMatchEvpiValues <- NULL # cache these for the report in case they change
      })
 
     
@@ -678,7 +685,7 @@ shinyServer(
     output$downloadSummary <- downloadHandler(
       filename = "evppi\ values.csv",
       content = function(file) {
-        write.csv(get("pEVPI", envir=cache), file)
+        write.csv(cache$pEVPI, file)
       },
       contentType = "text/plain"
     )
@@ -695,17 +702,17 @@ shinyServer(
       },
       
       content = function(file) {
-        src <- normalizePath('report.Rmd')
-        
+        print(src <- normalizePath('report.Rmd'))
+        print(cache)
         # temporarily switch to the temp dir, in case you do not have write
         # permission to the current working directory
-        owd <- setwd(tempdir())
+        owd <- setwd(print(tempdir()))
         on.exit(setwd(owd))
         file.copy(src, 'report.Rmd', overwrite=TRUE)
-        
+        print(src)
         library(rmarkdown)
-        out <- render('report.Rmd', #pdf_document()
-                      switch(
+        out <- render(input = 'report.Rmd', #pdf_document()
+                      output_format = switch(
                         input$format,
                         PDF = pdf_document(), HTML = html_document(), Word = word_document()),
                       envir = cache

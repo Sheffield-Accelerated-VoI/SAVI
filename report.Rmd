@@ -17,6 +17,7 @@ In section 3 the results of the Expected Value of Perfect Information (EVPI) ana
 In section 4 the results of single parameter Partial Expected Value of Perfect Information (EVPPI) are reported. The results of the analysis of multiple parameter EVPPI, selected in the application are provided. 
 
 ```{r, echo=FALSE, results='hide'}
+print(environment())
 lambda <- lambdaOverall
 npsa <- nIterate
 if(!is.null(costs) | !is.null(effects)) {
@@ -134,7 +135,7 @@ See section 5.1 in Briggs, Claxton, Sculpher.  Decision Modelling for Health Eco
 
 ## 2.3 The Cost-Effectiveness Acceptability Curve 
 
-The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all strategies are cost-effective at varying thresholds.  The results show that at a threshold value for cost-effectiveness of `r input$currency` `r format(lambda, digits = 4)` per `r input$unitBens`, the strategy with the highest probability of being most cost-effective is `r if(!is.null(costs)) {colnames(costs[which.max(ceac.obj$p[which(ceac.obj$l.seq==lambda),])])}`, with a probability of `r if(!is.null(costs)) {max(ceac.obj$p[which(ceac.obj$l.seq==lambda),])}`.
+The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all strategies are cost-effective at varying thresholds.  The results show that at a threshold value for cost-effectiveness of `r input$currency` `r format(lambda, digits = 4)` per `r input$unitBens`, the strategy with the highest probability of being most cost-effective is `r if(!is.null(ceac.obj)) {colnames(costs[which.max(ceac.obj$p[which(ceac.obj$l.seq==lambda),])])}`, with a probability of `r if(!is.null(ceac.obj)) {max(ceac.obj$p[which(ceac.obj$l.seq==lambda),])}`.
 
 ```{r, echo=FALSE}
 
@@ -284,13 +285,13 @@ The calculation begins with the existing confidence intervals (or credible inter
 
 ## 3.2 Overall EVPI
 
-The overall EVPI per person affected by the decision is estimated at `r input$currency` `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), lambda=lambda), digits = 4, nsmall=1)}` per person.  This is equivalent to `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), lambda=lambda)/lambda, digits = 4, nsmall=1)}` `r input$unitBens` per person in decision uncertainty when valuing uncertainty on the `r input$unitBens` scale.
+The overall EVPI per person affected by the decision is estimated at `r input$currency` `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(costs, effects, lambda=lambda), digits = 4, nsmall=1)}` per person.  This is equivalent to `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(costs, effects, lambda=lambda)/lambda, digits = 4, nsmall=1)}` `r input$unitBens` per person in decision uncertainty when valuing uncertainty on the `r input$unitBens` scale.
 
-Assuming an annual number of people affected by the decision of `r annualPrev`, the overall EVPI per year is `r input$currency` `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), lambda=lambda)*annualPrev, digits = 4, nsmall=1)}` for `r jurisdiction`. 
+Assuming an annual number of people affected by the decision of `r annualPrev`, the overall EVPI per year is `r input$currency` `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(costs, effects, lambda=lambda)*annualPrev, digits = 4, nsmall=1)}` for `r jurisdiction`. 
 
-When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified decision relevance horizon of `r horizon` years, the overall expected value of removing decision uncertainty for `r jurisdiction` would in total be `r input$currency` `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), lambda=lambda)*annualPrev*horizon, digits = 4, nsmall=1)}`.
+When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison will remain relevant e.g. if new treatments of options or even cures are anticipated to become available for a disease.  For the specified decision relevance horizon of `r horizon` years, the overall expected value of removing decision uncertainty for `r jurisdiction` would in total be `r input$currency` `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(costs, effects, lambda=lambda)*annualPrev*horizon, digits = 4, nsmall=1)}`.
 
-Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because the return on investment from the research, as measured by the health gain and cost savings of enabling decision makers ability to switch and select other strategies when evidence obtained reduces decision uncertainty, is expected to be no higher than the figure of `r input$currency` `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(get("costs", envir=cache), get("effects", envir=cache), lambda=lambda)*annualPrev*horizon, digits = 4, nsmall=1)}`.
+Research or data collection exercises costing more than this amount would not be considered cost-effective use of resources. This is because the return on investment from the research, as measured by the health gain and cost savings of enabling decision makers ability to switch and select other strategies when evidence obtained reduces decision uncertainty, is expected to be no higher than the figure of `r input$currency` `r if(!is.null(costs) | !is.null(effects)) {format(calcEvpi(costs, effects, lambda=lambda)*annualPrev*horizon, digits = 4, nsmall=1)}`.
 
 The EVPI estimates in the table below quantifies the expected value to decision makers within the jurisdiction of removing all current decision uncertainty at a threshold of `r input$currency` `r format(lambda,digits=4)` per `r input$unitBens`.  This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate for varying willingness to pay thresholds are illustrated in the figures below. 
 
@@ -306,7 +307,7 @@ if(!is.null(costs) | !is.null(effects)) {
                               "Over 20 years", 
                               paste("Over Decision Relevance Horizon (",input$horizon, "years)"))
      
-     overallEvpi <- calcEvpi(get("costs", envir=cache), get("effects", envir=cache), 
+     overallEvpi <- calcEvpi(costs, effects, 
               lambda=lambda)
      assign("overallEvpi", overallEvpi, envir = cache)
      assign("lambdaOverall", lambda, envir = cache)

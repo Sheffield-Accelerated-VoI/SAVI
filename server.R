@@ -32,9 +32,12 @@ shinyServer(
   function(input, output, session) {
     # `cache' is the environment unique to each user visit
     # This is where we will save values that need to persist, 
-    # and that can be picked up and incldued in the report
+    # and that can be picked up and included in the report
+    
+    if(exists("cache")) rm(cache) # we shouldn't need this
     
     print("cache is")
+    
     print(cache <- new.env())
 
     print("shinyServer called")

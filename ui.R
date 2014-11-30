@@ -6,6 +6,7 @@ fluidPage(
     tags$style(type='text/css', '#textCheckTabParams {color: red;}'),
     tags$style(type='text/css', '#textCheckTabCosts {color: red;}'),
     tags$style(type='text/css', '#textCheckTabEffects {color: red;}'),
+  
     # uni is #F1F2F2
   headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' target='_blank'><img src = 'uni2.gif' width = '200' 
                    alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
@@ -99,6 +100,7 @@ fluidPage(
                textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"), value = "England"),
 
                br()
+               
                ),
     
       
@@ -461,12 +463,18 @@ fluidPage(
                       postdoctoral fellowship PDF-2012-05-258). 
                       The views expressed in this publication are those 
                       of the authors and not necessarily those of the National Health Service, 
-                      the National Institute for Health Research, or the Department of Health. "))
+                      the National Institute for Health Research, or the Department of Health. ")),
+               
+               br(),
+               p(HTML("<footer>
+                 <p>This website complies with The University of Sheffield's <a href='http://www.sheffield.ac.uk/privacy' target='_blank'>Privacy
+                 </a> statement</p>
+                 </footer> "))
      )
    
      ,  type = "pills" # this controls the look of the tabs
   ), 
- tags$style(type="text/css", ".tab-content { overflow: visible; }", "footer {background-color: #FF0000;
+ tags$style(type="text/css", ".tab-content { overflow: visible; }", "footer {background-color: #F8F8F8;
             width: 100%;
             bottom: 0;
             position: relative; }")

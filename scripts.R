@@ -56,7 +56,6 @@ calcSingleParamGAM <- function(inputParam, inb) {
     
   for(d in 2:D) {
     
-    #print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
     f <- formula(inb[, d] ~ te(inputParam))
     model <- gam(f) 
     g.hat[[d]] <- model$fitted

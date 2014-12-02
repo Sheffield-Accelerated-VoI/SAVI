@@ -35,24 +35,10 @@ shinyServer(
     # and that can be picked up and included in the report
     
     if(exists("cache")) rm(cache) # we shouldn't need this
-    
-    print("cache is")
-    
-    print(cache <- new.env())
 
-    print("shinyServer called")
-    print("session is")
-    print(session)
-    
-    print("objects in the session environment")
-    print(ls(envir=session))
-    # print(lapply(ls(envir=session),function(x)get(x,envir=session))
-    print("current environment")
-    print(environment())
+    cache <- new.env()
     
     # initialise cached variable values
-    
-    print(ls())
     
     cache$savedSession <- 0
     cache$nIterate <- 0
@@ -188,7 +174,6 @@ shinyServer(
       inFile <- input$effectsFile      
       if (is.null(inFile)) return(NULL)
         dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
-      print(dim(dat))
         cache$namesEffects <- colnames(dat)
         costs <- cache$costs
         if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
@@ -220,9 +205,14 @@ shinyServer(
       effects <- cache$effects
       if(!((NROW(params) == NROW(costs)) & (NROW(effects) == NROW(costs)))) {
         return("Loaded files have different numbers of rows - please check data and reload")
-      } else {
-        return(NULL)
-      }
+      } 
+      
+      if(NCOL(effects) != NCOL(costs)) {
+        return("Costs and effect have different numbers of columns - please check data and reload")
+      } 
+      
+      return(NULL)
+      
     })
 
     # Function that saves "about the model" variables to the cache if they are changed in the input.
@@ -536,7 +526,6 @@ shinyServer(
       cache$lambdaOverall <- input$lambdaOverall
       costs <- cache$costs
       effects <- cache$effects
-      print(dim(costs))
       makeCEPlanePlot(costs, effects, 
                       lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
     })  
@@ -641,7 +630,7 @@ shinyServer(
       if (dummy == 0) return(NULL)
       
       counterAdd <- cache$counterAdd
-      print(counterAdd <- counterAdd + 1)
+      counterAdd <- counterAdd + 1
       cache$counterAdd <- counterAdd
       
       setStore <- cache$setStore
@@ -672,8 +661,6 @@ shinyServer(
      observe({ # clear the selections
        dummy <- input$clearSubsetsEvpi
        dummy1 <- valuesImportedFLAG(cache, input)
-       # if (!valuesImportedFLAG(cache, input)) return(NULL)
-       print("clearing")
        setStore <- vector("list", 100)
        cache$setStore <- setStore
        cache$counterAdd <- 0
@@ -705,14 +692,13 @@ shinyServer(
       },
       
       content = function(file) {
-        print(src <- normalizePath('report.Rmd'))
-        print(cache)
+        src <- normalizePath('report.Rmd')
         # temporarily switch to the temp dir, in case you do not have write
         # permission to the current working directory
-        owd <- setwd(print(tempdir()))
+        owd <- setwd(tempdir())
         on.exit(setwd(owd))
         file.copy(src, 'report.Rmd', overwrite=TRUE)
-        print(src)
+
         library(rmarkdown)
         out <- render(input = 'report.Rmd', #pdf_document()
                       output_format = switch(

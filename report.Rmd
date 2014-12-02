@@ -28,90 +28,48 @@ nb <- effects * lambda - costs
 # 2. Exploring Current Uncertainty: Probabilistic Sensitivity Analysis Results
 ## 2.1 Probabilistic Sensitivity Analysis Summary
 
-**NB At present this defaults to option 1 as comparator, regardless of which decision options are chosen on SAVI. This will be fixed soon.**
-```{r, echo=FALSE, results='asis'}
-# Generate PSA table
-#  colnames(tableCePlane) <- colnames(costs)[2]
-#  table(tableCePlane)
-#   incCost <- costs[,2] - costs[,1]
-#   incBen <- effects[,2] - effects[,1]
-#   npsa <-length(costs[,1])
-#   tableCePlane <- matrix(NA,ncol=ncol(costs)-1, nrow = 13)
-#   tableCePlane[1] <- format(lambdaOverall, digits=4, nsmall = 0)
-#   tableCePlane[2] <- colnames(costs.int)[1]
-#   tableCePlane[3] <- format(npsa)
-#   tableCePlane[4] <- format(mean(incBen), digits=2, nsmall=4)
-#   tableCePlane[5] <- format(mean(incCost), digits=2, nsmall=2)
-#   tableCePlane[6] <- format(mean(incCost) /  mean(incBen), digits=2, nsmall=2)
-#   tableCePlane[7] <- format(quantile((incBen),0.025), digits=4, nsmall=4)
-#   tableCePlane[8] <- format(quantile((incBen),0.975), digits=4, nsmall=4)
-#   tableCePlane[9] <- format(quantile((incCost),0.025), digits=4,  nsmall=2)
-#   tableCePlane[10] <- format(quantile((incCost),0.975), digits=4, nsmall=2)
-#   tableCePlane[11] <- format(length(which((incCost)<0)) / npsa, digits=2, nsmall=3)
-#   tableCePlane[12] <- format(length(which((incBen)>0)) / npsa, digits=2, nsmall=3)
-#   tableCePlane[13] <- format(length(which((incBen) * lambdaOverall - (incCost)>0)) / npsa, digits=2,
-#                              nsmall=3)
-#   colnames(tableCePlane) <- colnames(costs)[2]
-if(!is.null(costs) | !is.null(effects)) {
-  incCost <- (costs - costs[, 1])[, -1, drop=FALSE]
-  incBen <- (effects - effects[, 1])[, -1, drop=FALSE]
-  inb <- incBen * lambda - incCost
-  npsa <- NROW(costs)
 
- makeTableCePlane <- function(costs, effects, lambda) {
-  incCost <- (costs - costs[, 1])[, -1, drop=FALSE]
-  incBen <- (effects - effects[, 1])[, -1, drop=FALSE]
-  inb <- incBen * lambda - incCost
-  npsa <- NROW(costs)
-  tableCePlane <- matrix(NA, ncol=ncol(costs) - 1, nrow = 13) # incremental, no zero column
-  tableCePlane[1, ] <- format(lambda, digits=4, nsmall = 0)
-  tableCePlane[2, ] <- colnames(costs)[1]
-  tableCePlane[3, ] <- format(npsa)
-  tableCePlane[4, ] <- format(colMeans(incBen), digits=2, nsmall=4)
-  tableCePlane[5, ] <- format(colMeans(incCost), digits=2, nsmall=2)
-  tableCePlane[6, ] <- format(colMeans(incCost) /  colMeans(incBen), digits=2, nsmall=2)
-  tableCePlane[7, ] <- format(apply(incBen, 2, quantile, 0.025), digits=4, nsmall=4)
-  tableCePlane[8, ] <- format(apply(incBen, 2, quantile, 0.975), digits=4, nsmall=4)
-  tableCePlane[9, ] <- format(apply(incCost, 2, quantile, 0.025), digits=4,  nsmall=2)
-  tableCePlane[10, ] <- format(apply(incCost, 2, quantile, 0.975), digits=4, nsmall=2)
-  tableCePlane[11, ] <- format(apply(incCost, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
-  tableCePlane[12, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
-  tableCePlane[13, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=3)
-  colnames(tableCePlane) <- colnames(costs)[-1]
-  rownames(tableCePlane) <- c(paste("Threshold (", input$currency, ")"), 
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 80)
+```
+```{r, echo=FALSE, results='asis'}
+if(!is.null(costs) | !is.null(effects)) {
+      tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
+      cache$lambdaOverall <- input$lambdaOverall
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
                             "Comparator", 
                             "Number of PSA runs", 
-                            paste("Mean inc. ",input$unitBens), 
-                            paste("Mean inc. Cost (",input$currency,")"),
-                            paste("ICER Estimate (", input$currency, "per",input$unitBens,")"),
-                            paste("2.5th CI for inc. ",input$unitBens), 
-                            paste("97.5th CI for inc. ",input$unitBens),
-                            paste("2.5th CI for inc. Costs (",input$currency,")"),
-                            paste("97.5th CI for inc. Costs (",input$currency,")"),
-                            "Probability cost saving", 
-                            "Probability more benefit", 
-                            "Probability cost-effective")
-  tableCePlane
-  }
-
-  print(kable(makeTableCePlane(costs, effects, lambda)))
+                            paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
+                            paste("Mean inc. Cost per Person (", input$currency, ")", sep=""),
+                            paste("ICER Estimate (", input$currency, " per ", input$unitBens, ")", sep=""),
+                            paste("2.5th CI for inc. Effects (", input$unitBens, ")", sep=""), 
+                            paste("97.5th CI for inc. Effects (", input$unitBens, ")", sep=""),
+                            paste("2.5th CI for inc. Costs (", input$currency, ")", sep=""),
+                            paste("97.5th CI for inc. Costs (", input$currency, ")", sep=""),
+                            "Probability intervention is cost saving", 
+                            "Probability intervention provides more benefit", 
+                            "Probability that intervention is cost-effective against comparator")
+  kable(tableCEplane)
 
 }
 ```
 
 ## 2.2 Cost-Effectiveness Plane
 
-**NB At present this defaults to option 2 versus 1 regardless of which decision options are chosen on SAVI. This will be fixed soon.**
+The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r nIterate` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r input$decisionOptionCE1` versus `r input$decisionOptionCE0` is `r input$currency` `r if(!is.null(costs)) {format(incValue(costs, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=2)}`.  This suggests that `r input$decisionOptionCE1` is `r moreLess(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0)` costly. The incremental cost is uncertain because the model parameters are uncertain. The 97.5% credible interval for the incremental cost ranges from (`r input$currency` `r if(!is.null(costs)) {format(confIntCE(costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.025), digits=4,  nsmall=2)}` , `r input$currency` `r if(!is.null(costs)) {format(confIntCE(costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.975), digits=4,  nsmall=2)}`).  The probability that `r input$decisionOptionCE1` is cost saving compared to `r input$decisionOptionCE0` is `r if(!is.null(costs)) {format(pCostsaving(costs, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=3)}`. 
 
-The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r nIterate` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r if(!is.null(costs)) {colnames(costs[2])}` versus `r if(!is.null(costs)) {colnames(costs[1])}` is `r input$currency` `r if(!is.null(costs)) {format(colMeans(incCost)[1], digits=2, nsmall=2)}`.  There is some uncertainty due to model parameters, with the 95% credible interval for the incremental cost ranging from (`r input$currency` `r if(!is.null(costs)) {format(apply(incCost, 2, quantile, 0.025)[1], digits=4,  nsmall=2)}` , `r input$currency` `r if(!is.null(costs)) {format(apply(incCost, 2, quantile, 0.975)[1], digits=4,  nsmall=2)}`).  The probability that `r if(!is.null(costs)) {colnames(costs[2])}` is cost saving compared to `r if(!is.null(costs)) {colnames(costs[1])}` is `r if(!is.null(costs)) {format(apply(incCost, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)}`. The mean incremental benefit of `r if(!is.null(costs)) {colnames(costs[2])}` versus `r input$current` is `r if(!is.null(effects)) {format(colMeans(incBen)[1], digits=2, nsmall=4)}` `r input$unitBens` .  This suggests that `r if(!is.null(costs)) {colnames(costs[2])}` is more/or less beneficial.  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r if(!is.null(effects)) {format(apply(incBen, 2, quantile, 0.025)[1], digits=4, nsmall=4)}` `r input$unitBens` , `r if(!is.null(effects)) {format(apply(incBen, 2, quantile, 0.975)[1], digits=4, nsmall=4)}` `r input$unitBens`).  The probability that `r if(!is.null(costs)) {colnames(costs[2])}` is more beneficial compared to `r if(!is.null(costs)) {colnames(costs[1])}` is `r if(!is.null(effects)) {format(apply(incBen, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)}`. 
+The mean incremental benefit of `r input$decisionOptionCE1` versus `r input$decisionOptionCE0` is `r if(!is.null(effects)) {format(incValue(effects, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=4)}` `r input$unitBens` .  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r if(!is.null(effects)) {format(confIntCE(effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.025), digits=4, nsmall=4)}` `r input$unitBens` , `r if(!is.null(effects)) {format(confIntCE(effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.975), digits=4, nsmall=4)}` `r input$unitBens`).  The probability that `r input$decisionOptionCE1` is more beneficial compared to `r input$decisionOptionCE0` is `r if(!is.null(effects)) {format(pMoreben(effects, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=3)}`. 
 
-The incremental expected cost per unit of benefit is estimated at `r input$currency` `r if(!is.null(costs)) {format(colMeans(incCost)[1] /  colMeans(incBen)[1], digits=2, nsmall=2)}` per `r input$unitBens`.  This is above/below the threshold of `r input$currency` `r format(lambda,digits=4)` per `r input$unitBens` that `r if(!is.null(costs)) {colnames(costs[2])}` would (not) be considered cost-effective at this threshold.  There is uncertainty with a `r if(!is.null(costs)) {format(apply(inb, 2, function(x) sum(x > 0))[1] / npsa, digits=2, nsmall=3)}` probability that `r if(!is.null(costs)) {colnames(costs[2])}` is more cost-effective (`r if(!is.null(costs)) {format((apply(inb, 2, function(x) sum(x > 0))[1] / npsa)*100, digits=2, nsmall=0)}` % of the probabilistic model run dots are below and to the right of the diagonal thresholdline).  
+The incremental expected cost per unit of benefit is estimated at `r input$currency` `r if(!is.null(costs)) {format(iCER(costs, effects, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=2)}` per `r input$unitBens`.  There is uncertainty with a `r if(!is.null(costs)) {format(pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), digits=2, nsmall=3)}` probability that `r input$decisionOptionCE1` is more cost-effective than `r input$decisionOptionCE0`.  
 
 ```{r, echo=FALSE}
-if(!is.null(costs) | !is.null(effects)) {
-  lambda<-lambda  
-  inc_costs <- costs[, 2] - costs[, 1]
-  inc_effects <- effects[, 2] - effects[, 1]
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+makeCEPlanePlot <- function(costs.int, effects.int, lambda, intervention, comparator, cache, ...) {
+  ## makes the CE plane
+  int <- which(colnames(costs.int)%in%intervention)
+  com <- which(colnames(costs.int)%in%comparator)
+  inc_costs <- costs.int[, int] - costs.int[, com]
+  inc_effects <- effects.int[, int] - effects.int[, com]
   
   m.costs <- max(abs(inc_costs))
   m.effects <- max(abs(inc_effects))
@@ -120,16 +78,19 @@ if(!is.null(costs) | !is.null(effects)) {
   m3.costs <- max(m.costs, m2.costs)
   m3.effects <- max(m.effects, m2.effects)
   
-  plot(inc_effects, inc_costs, pty="s", cex=0.4,
-       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue", 
-       xlab = "inc. costs", ylab = paste("inc.", input$unitBens), 
-       main = paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda))
+  main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
+  plot(inc_effects, inc_costs, pty="s", cex=0.4, xlab = "Incremental effects", ylab= "Incremental costs",
+       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue", ...)
   abline(1, lambda, lty=2)
   abline(h=0)
   abline(v=0)
   points(mean(inc_effects), mean(inc_costs), pch=20, col="blue", cex=1)
-  }
+  #text(mean(inc_effects), mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
+}
+      makeCEPlanePlot(costs, effects, 
+                      lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
 ```
+
 
 See section 5.1 in Briggs, Claxton, Sculpher.  Decision Modelling for Health Economic Evaluation (Handbooks for Health Economic Evaluation). OUP Oxford; 1 edition (17 Aug 2006).  ISBN-13: 978-0198526629
 

@@ -63,7 +63,7 @@ The mean incremental benefit of `r input$decisionOptionCE1` versus `r input$deci
 The incremental expected cost per unit of benefit is estimated at `r input$currency` `r if(!is.null(costs)) {format(iCER(costs, effects, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=2)}` per `r input$unitBens`.  There is uncertainty with a `r if(!is.null(costs)) {format(pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), digits=2, nsmall=3)}` probability that `r input$decisionOptionCE1` is more cost-effective than `r input$decisionOptionCE0`.  
 
 ```{r, echo=FALSE}
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
+if (valuesImportedFLAG(cache, input)) {
 makeCEPlanePlot <- function(costs.int, effects.int, lambda, intervention, comparator, cache, ...) {
   ## makes the CE plane
   int <- which(colnames(costs.int)%in%intervention)
@@ -89,6 +89,7 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, intervention, compar
 }
       makeCEPlanePlot(costs, effects, 
                       lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
+}
 ```
 
 

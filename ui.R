@@ -12,7 +12,7 @@ fluidPage(
                    alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 1.012 (2014-12-03)"),    
+    h4("Release version 1.013 (2014-12-00)"),    
     h6(HTML("Copyright &copy; 2014 University of Sheffield")),  
     tabsetPanel( 
 
@@ -28,6 +28,8 @@ fluidPage(
                p("We won't share your email address with anyone."),
                br(),br(),
                h3("New features and bug fixes"),
+               h5("New in version 1.013"),
+               p("You can now download some test files to try out on SAVI. See the Import Files tab."),           
                h5("New in version 1.009"),
                p("SAVI now accepts text files with the tab or the semicolon separator, and with the comma as the decimal mark."),              
                h5("New in version 1.005"),
@@ -106,9 +108,26 @@ fluidPage(
       
       
       tabPanel("Import files",     # Button to import parameter data         
-               
+               sidebarLayout(position = "right",
+                             sidebarPanel(
+                               h4("Dowload test files"),
+                               p("Try out SAVI using these test files that we have generated from a hypothetical model. 
+                                 The model has 19 uncertain parameters and two decision options."),
+                               br(),
+                               downloadButton('testParams', 'Download parameters.csv'),
+                               br(),
+                               br(),
+                               downloadButton('testCosts', 'Download costs.csv'),
+                               br(),
+                               br(),
+                               downloadButton('testEffects', 'Download effects.csv')
+                             ),
+                             
+                             
+                             
+                             mainPanel(  
                p(HTML("<div style='border:1px solid
-                      black;width:800px;padding-left: 1em'><h4>Setting up your files for import</h4>
+                      black;width:7;padding-left: 1em'><h4>Setting up your files for import</h4>
                       Import your PSA samples of parameters, costs and effects using the 
                       import buttons below.
                       <br>Please supply the PSA samples in the form of three csv files.
@@ -174,6 +193,8 @@ fluidPage(
                
                h4(textOutput("textCheckTabEffects")),
                h4(textOutput("textCheckTab"))            
+               )
+               )
                ),
       
  

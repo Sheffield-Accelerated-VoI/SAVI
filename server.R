@@ -26,6 +26,11 @@ source("scripts_plots.R")
 source("scripts_tables.R")
 source("scripts_text.R")
 
+testParams <- as.matrix(read.csv("test_data/brennan10000/parameters.csv"))
+testCosts <- as.matrix(read.csv("test_data/brennan10000/costs_2d.csv"))
+testEffects <- as.matrix(read.csv("test_data/brennan10000/effects_2d.csv"))
+
+print(class(testParams))
 
 shinyServer(
   
@@ -67,6 +72,8 @@ shinyServer(
     cache$unitBens <- NULL
     cache$jurisdiction <- NULL
 
+    
+    testParams <- 
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
     #   load.parameters <- function() read.csv("parameters.csv")                                   
@@ -669,7 +676,7 @@ shinyServer(
      })
 
     
-    # Functions that make the reports
+    # Functions that download things
     
     # Download csv file
     output$downloadSummary <- downloadHandler(
@@ -679,6 +686,31 @@ shinyServer(
       },
       contentType = "text/plain"
     )
+
+    # Download csv file
+    output$testParams <- downloadHandler(
+      filename = "parameters.csv",
+      content = function(file) {
+        write.csv(testParams, file, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
+# 
+#     output$testCosts <- downloadHandler(
+#       filename = "costs.csv",
+#       content = function(file) {
+#         write.csv(testCosts, file, row.names = FALSE)
+#       },
+#       contentType = "text/plain"
+#     )
+#     
+#     output$testEffects <- downloadHandler(
+#       filename = "effects.csv",
+#       content = function(file) {
+#         write.csv(testEffects, file, row.names = FALSE)
+#       },
+#       contentType = "text/plain"
+#     )
 
 
     # thanks to yijui for this code

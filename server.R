@@ -73,7 +73,7 @@ shinyServer(
     cache$jurisdiction <- NULL
 
     
-    testParams <- 
+    
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
     #   load.parameters <- function() read.csv("parameters.csv")                                   
@@ -695,22 +695,22 @@ shinyServer(
       },
       contentType = "text/plain"
     )
-# 
-#     output$testCosts <- downloadHandler(
-#       filename = "costs.csv",
-#       content = function(file) {
-#         write.csv(testCosts, file, row.names = FALSE)
-#       },
-#       contentType = "text/plain"
-#     )
-#     
-#     output$testEffects <- downloadHandler(
-#       filename = "effects.csv",
-#       content = function(file) {
-#         write.csv(testEffects, file, row.names = FALSE)
-#       },
-#       contentType = "text/plain"
-#     )
+
+    output$testCosts <- downloadHandler(
+      filename = "costs.csv",
+      content = function(file) {
+        write.csv(testCosts, file, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
+    
+    output$testEffects <- downloadHandler(
+      filename = "effects.csv",
+      content = function(file) {
+        write.csv(testEffects, file, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
 
 
     # thanks to yijui for this code

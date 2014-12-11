@@ -12,7 +12,7 @@ fluidPage(
                    alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 1.013 (2014-12-00)"),    
+    h4("Release version 1.013 (2014-12-11)"),    
     h6(HTML("Copyright &copy; 2014 University of Sheffield")),  
     tabsetPanel( 
 
@@ -84,7 +84,7 @@ fluidPage(
  
       tabPanel("About your model", 
 
-               h4("Specify details about your model here"),
+               h4("Specify details about your model here (you can change these at any time - results will automatically update)"),
                br(),
                textInput("modelName", label = h5("Name of your model"), value ="My Model"),
                #checkboxInput("indSim", label = h5("Is your model an individual level simulation with a single patient per PSA run?"), FALSE),

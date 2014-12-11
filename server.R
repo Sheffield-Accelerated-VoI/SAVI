@@ -26,11 +26,10 @@ source("scripts_plots.R")
 source("scripts_tables.R")
 source("scripts_text.R")
 
+# read in the testdata
 testParams <- as.matrix(read.csv("test_data/brennan10000/parameters.csv"))
 testCosts <- as.matrix(read.csv("test_data/brennan10000/costs_2d.csv"))
 testEffects <- as.matrix(read.csv("test_data/brennan10000/effects_2d.csv"))
-
-print(class(testParams))
 
 shinyServer(
   

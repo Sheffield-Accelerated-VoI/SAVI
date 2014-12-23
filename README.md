@@ -40,9 +40,10 @@ the National Institute for Health Research, or the Department of Health.
 
 ### Copyright and License
 
-Copyright (c) 2014, SAVI authors (see AUTHORS.txt).
+Copyright (c) 2014, the SAVI authors (see AUTHORS.txt).
+
 Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 ### Privacy
 
-This website complies with The University of Sheffield's <a href='http://www.sheffield.ac.uk/privacy' target='_blank'>Privacy Policy</a>
+The SAVI website http://savi.shef.ac.uk/SAVI/ complies with The University of Sheffield's <a href='http://www.sheffield.ac.uk/privacy' target='_blank'>Privacy Policy</a>

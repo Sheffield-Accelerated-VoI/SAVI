@@ -1,3 +1,6 @@
+# Copyright (c) 2014, SAVI authors (see AUTHORS.txt).
+# Licensed under the BSD 3-clause license (see LICENSE.txt)
+
 ##############################################################################
 ## This function estimates EVPI and SE via GAM
 ## S is the simulation size for the Monte Carlo computation of SE

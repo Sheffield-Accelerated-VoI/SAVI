@@ -1,3 +1,6 @@
+# Copyright (c) 2014, SAVI authors (see AUTHORS.txt).
+# Licensed under the BSD 3-clause license (see LICENSE.txt)
+
 # this file holds functions that help generate reactive text
 # widespread changes made 17/11/14 so that options could be chosen for the CE plane
 

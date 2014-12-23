@@ -1,4 +1,6 @@
-# 
+# Copyright (c) 2014, SAVI authors (see AUTHORS.txt).
+# Licensed under the BSD 3-clause license (see LICENSE.txt)
+
 fluidPage(
   tags$head(
     tags$style("body {background-color: #F8F8F8; }")),
@@ -44,14 +46,14 @@ fluidPage(
                 h3("What SAVI does"),
                p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
               # p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
-               p(HTML("In a matter of seconds from the SAVI online application you can receive:")),
+               p(HTML("In a matter of seconds from the SAVI online application you can generate:")),
                tags$ol(
                       tags$li("Standardised assessment of uncertainty (C-E planes and CEACs)"), 
                       tags$li("Overall EVPI per patient, per jurisdiction per year and over your decision relevance horizon"), 
                       tags$li("Expected Value of Perfect Parameter Information (EVPPI) for single and groups of parameters")
                ),
                br(),
-               p(HTML("Disclaimer: This application is made available to all users free of charge.  
+               p(HTML("Disclaimer: This application is made available under the <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/LICENSE.txt' target = '_blank'>BSD 3-clause license</a>.  
                       The application is based on peer-reviewed statistical approximation methods.  
                       It comes with no warranty and should be utilised at the user’s own risk.")),                      
                p(HTML("For more information on the method see   
@@ -487,10 +489,8 @@ fluidPage(
                       the National Institute for Health Research, or the Department of Health. ")),
                
                br(),
-               p(HTML("<footer>
-                 <p>This website complies with The University of Sheffield's <a href='http://www.sheffield.ac.uk/privacy' target='_blank'>Privacy
-                 </a> statement</p>
-                 </footer> "))
+               p(HTML("This website complies with The University of Sheffield's <a href='http://www.sheffield.ac.uk/privacy' target='_blank'>Privacy
+                 Policy</a>"))
      )
    
      ,  type = "pills" # this controls the look of the tabs

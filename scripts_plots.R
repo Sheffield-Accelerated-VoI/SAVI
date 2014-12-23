@@ -1,3 +1,6 @@
+# Copyright (c) 2014, SAVI authors (see AUTHORS.txt).
+# Licensed under the BSD 3-clause license (see LICENSE.txt)
+
 # this file holds the plotting functions
 
 makeCeacPlot <- function(ceac.int, lambda.int, names.int, ...) {

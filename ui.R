@@ -53,9 +53,10 @@ fluidPage(
                       tags$li("Expected Value of Perfect Parameter Information (EVPPI) for single and groups of parameters")
                ),
                br(),
-               p(HTML("Disclaimer: This application is made available under the <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/LICENSE.txt' target = '_blank'>BSD 3-clause license</a>.  
-                      The application is based on peer-reviewed statistical approximation methods.  
-                      It comes with no warranty and should be utilised at the user’s own risk.")),                      
+               p(HTML("Disclaimer: This application is based on peer-reviewed statistical approximation methods.  
+                      It comes with no warranty and should be utilised at the user’s own risk.
+                      The underlying code is made available under the 
+                      <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/LICENSE.txt' target = '_blank'>BSD 3-clause license</a>.")),                      
                p(HTML("For more information on the method see   
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
                       target='_blank'>Mark Strong's website</a> or 

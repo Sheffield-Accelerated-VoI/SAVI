@@ -1,4 +1,4 @@
-# Copyright (c) 2014, SAVI authors (see AUTHORS.txt).
+# Copyright (c) 2014, the SAVI authors (see AUTHORS.txt).
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 fluidPage(
@@ -55,7 +55,7 @@ fluidPage(
                br(),
                p(HTML("Disclaimer: This application is based on peer-reviewed statistical approximation methods.  
                       It comes with no warranty and should be utilised at the user’s own risk.
-                      The underlying code is made available under the 
+                      The <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI' target='_blank'>underlying code</a> is made available under the 
                       <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/LICENSE.txt' target = '_blank'>BSD 3-clause license</a>.")),                      
                p(HTML("For more information on the method see   
                       <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 

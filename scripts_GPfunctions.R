@@ -104,14 +104,14 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   
   # check for linear dependence and remove 
   paramSet <- cbind(cbind(input.parameters)[, sets]) # now with constants removed
-  rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+  rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[, -x])$rank)
   while(length(unique(rankifremoved)) > 1) {
     linearCombs <- which(rankifremoved == max(rankifremoved))
     # print(linearCombs)
     print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
     paramSet <- cbind(paramSet[, -max(linearCombs)])
     sets <- sets[-max(linearCombs)]
-    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+    rankifremoved <- sapply(1:NCOL(paramSet), function(x) qr(paramSet[, -x])$rank)
   }  
   
   inputs.of.interest <- sets
@@ -121,7 +121,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   
   if(!is.null(dim(NB))) 
   {
-    NB <- NB-NB[,1]
+    NB <- NB-NB[, 1]
   }
   else
   {
@@ -137,8 +137,8 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   colmin <- apply(input.matrix, 2, min)
   colmax <- apply(input.matrix, 2, max)
   colrange <- colmax - colmin
-  input.matrix <- sweep(input.matrix, 2, colmin,"-")
-  input.matrix <- sweep(input.matrix, 2, colrange,"/")
+  input.matrix <- sweep(input.matrix, 2, colmin, "-")
+  input.matrix <- sweep(input.matrix, 2, colrange, "/")
   N <- nrow(input.matrix)
   p <- ncol(input.matrix)
   H <- cbind(1, input.matrix)
@@ -171,27 +171,27 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
     Astar <- A + nu.hat * diag(N)
     Astarinv <- chol2inv(chol(Astar))
     rm(Astar); gc()
-    AstarinvY <- Astarinv%*%NB[,d]
-    tHAstarinv <- t(H)%*%Astarinv
-    tHAHinv <- solve(tHAstarinv%*%H + 1e-7* diag(q))
-    betahat <- tHAHinv%*%(tHAstarinv%*%NB[, d])
-    Hbetahat <- H%*%betahat
-    resid <- NB[,d] - Hbetahat
-    g.hat[[d]] <- Hbetahat+A%*%(Astarinv%*%resid)
-    AAstarinvH <- A%*%t(tHAstarinv)
-    sigmasqhat <- as.numeric(t(resid)%*%Astarinv%*%resid)/(N - q - 2)
-    V[[d]] <- sigmasqhat*(nu.hat*diag(N) - nu.hat ^ 2 * Astarinv +
-                            (H-AAstarinvH)%*%(tHAHinv%*%t(H-AAstarinvH)))
+    AstarinvY <- Astarinv %*% NB[, d]
+    tHAstarinv <- t(H) %*% Astarinv
+    tHAHinv <- solve(tHAstarinv %*% H + 1e-7* diag(q))
+    betahat <- tHAHinv %*% (tHAstarinv %*% NB[, d])
+    Hbetahat <- H %*% betahat
+    resid <- NB[, d] - Hbetahat
+    g.hat[[d]] <- Hbetahat+A %*% (Astarinv %*% resid)
+    AAstarinvH <- A %*% t(tHAstarinv)
+    sigmasqhat <- as.numeric(t(resid) %*% Astarinv %*% resid)/(N - q - 2)
+    V[[d]] <- sigmasqhat*(nu.hat * diag(N) - nu.hat ^ 2 * Astarinv +
+                            (H - AAstarinvH) %*% (tHAHinv %*% t(H - AAstarinvH)))
     rm(A, Astarinv, AstarinvY, tHAstarinv, tHAHinv, betahat, Hbetahat, resid, sigmasqhat);gc()
   }
   progress1$close()
-  perfect.info <- mean(do.call(pmax,g.hat)) 
-  baseline <- max(unlist(lapply(g.hat,mean)))
+  perfect.info <- mean(do.call(pmax, g.hat)) 
+  baseline <- max(unlist(lapply(g.hat, mean)))
   
   partial.evpi <- perfect.info - baseline
   
   print("Computing standard error via Monte Carlo")
-  tilde.g <- vector("list",D)
+  tilde.g <- vector("list", D)
   tilde.g[[1]] <- matrix(0, nrow=s, ncol=N)     
   
   progress2 <- shiny::Progress$new(session, min=1, max=D)
@@ -202,12 +202,12 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
 
   for(d in 2:D) {
     progress2$set(value = d)
-    tilde.g[[d]] <- mvrnorm(s, g.hat[[d]][1:(min(N, 1000))], V[[d]][1:(min(N,1000)),1:(min(N,1000))])
+    tilde.g[[d]] <- mvrnorm(s, g.hat[[d]][1:(min(N, 1000))], V[[d]][1:(min(N, 1000)), 1:(min(N, 1000))])
   }
   progress2$close()
   
-  sampled.perfect.info <- rowMeans(do.call(pmax,tilde.g))
-  sampled.baseline <- do.call(pmax,lapply(tilde.g,rowMeans)) 
+  sampled.perfect.info <- rowMeans(do.call(pmax, tilde.g))
+  sampled.baseline <- do.call(pmax, lapply(tilde.g, rowMeans)) 
   rm(tilde.g);gc()
   sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
   SE <- sd(sampled.partial.evpi)

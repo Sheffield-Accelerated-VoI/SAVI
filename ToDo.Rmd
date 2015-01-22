@@ -1,0 +1,7 @@
+# To Do
+### 22 Jan 2015
+
+1. GPy implementation of GP function
+2. Sort out the download report
+3. Add explanation of what is produced by group EVPPI
+4. add m=1 functionality

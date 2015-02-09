@@ -499,8 +499,8 @@ shinyServer(
      tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
      tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
-                               paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
-                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
+                               paste("EVPPI for ", input$jurisdiction, " Per Year (", input$currency, ")", sep=""), 
+                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years (", input$currency, ")", sep=""))
      rownames(tableEVPPI) <- colnames(cache$params)
      tableEVPPI
    }) 

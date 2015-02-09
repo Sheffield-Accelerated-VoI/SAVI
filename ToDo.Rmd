@@ -1,5 +1,5 @@
 # To Do
-### 22 Jan 2015
+### 9 Feb 2015
 
 1. GPy implementation of GP function
 2. Sort out the download report

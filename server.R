@@ -44,7 +44,7 @@ shinyServer(
     
     if(exists("cache")) rm(cache) # we shouldn't need this
 
-    cache <- new.env(parent = emptyenv()) # parent = empytenv stops accidental inheritance of objects from somewhere else
+    cache <- new.env()
     
     # initialise cached variable values
     

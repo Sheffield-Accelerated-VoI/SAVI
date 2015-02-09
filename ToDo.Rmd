@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 # To Do
 ### 9 Feb 2015
 

@@ -7,14 +7,10 @@
 ##############################################################################
 
 gamFunc <- function(NB, sets, s=1000, cache, session) {
-
   
-  if(!is.null(dim(NB))) 
-  {
-    NB <- NB-NB[, 1]
-  }
-  else
-  {
+  if(!is.null(dim(NB))) {
+    NB <- NB - NB[, 1]
+  } else {
     NB <- cbind(0, NB)
   }
   

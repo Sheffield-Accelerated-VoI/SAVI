@@ -117,17 +117,11 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   inputs.of.interest <- sets
   p <- length(inputs.of.interest)
   
-  
-  
-  if(!is.null(dim(NB))) 
-  {
-    NB <- NB-NB[, 1]
-  }
-  else
-  {
+  if(!is.null(dim(NB))) {
+    NB <- NB - NB[, 1]
+  } else {
     NB <- cbind(0, NB)
   }
-  
   
   maxSample <- min(5000, nrow(NB)) # to avoid trying to invert huge matrix
   NB <- as.matrix(NB[1:maxSample, ])

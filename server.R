@@ -24,12 +24,13 @@ library(xtable)
 # source all the functions we need
 source("scripts.R")
 source("scripts_GPfunctions.R")
+## source("scripts_GPfunctions_TEST.R")
 source("scripts_GAMfunctions.R")
 source("scripts_plots.R")
 source("scripts_tables.R")
 source("scripts_text.R")
 
-# read in the testdata
+# read in the testdata that users can download to try out the app
 testParams <- as.matrix(read.csv("test_data/brennan10000/parameters.csv"))
 testCosts <- as.matrix(read.csv("test_data/brennan10000/costs_2d.csv"))
 testEffects <- as.matrix(read.csv("test_data/brennan10000/effects_2d.csv"))
@@ -43,7 +44,7 @@ shinyServer(
     
     if(exists("cache")) rm(cache) # we shouldn't need this
 
-    cache <- new.env()
+    cache <- new.env(parent = emptyenv()) # parent = empytenv stops accidental inheritance of objects from somewhere else
     
     # initialise cached variable values
     
@@ -54,6 +55,7 @@ shinyServer(
     cache$params <- NULL
     cache$costs <- NULL
     cache$effects <- NULL
+    
     cache$counterAdd <- 0
     cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
     cache$subsetEvpiValues <- NULL
@@ -78,9 +80,9 @@ shinyServer(
     
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
-    #   load.parameters <- function() read.csv("parameters.csv")                                   
-    #   load.costs <- function() read.csv("costs.csv")
-    #   load.effects <- function() read.csv("effects.csv")
+    #   load.parameters <- function() read.csv("../test/parameters.csv")                                   
+    #   load.costs <- function() read.csv("../test/costs.csv")
+    #   load.effects <- function() read.csv("../test/effects.csv")
     # ########### 
     
     # load("adenoma.Rdata", envir=cache) # auto load for testing purposes

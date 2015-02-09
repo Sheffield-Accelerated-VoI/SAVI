@@ -5,3 +5,10 @@
 2. Sort out the download report
 3. Add explanation of what is produced by group EVPPI
 4. add m=1 functionality
+5. Download EVPPI for groups
+6. Download data for plots
+7. Same tables for group EVPPI as for single EVPPI
+8. Discounting for >1 year
+9. User guide
+10. Standard error for single param EVPPI
+

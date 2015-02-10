@@ -14,8 +14,8 @@ fluidPage(
                    alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 1.013 (2014-12-11)"),    
-    h6(HTML("Copyright &copy; 2014 University of Sheffield")),  
+    h4("Release version 1.014 (2015-02-10)"),    
+    h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     tabsetPanel( 
 
       tabPanel("Home",

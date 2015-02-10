@@ -85,9 +85,9 @@ fluidPage(
                
       )),
       
-      tabPanel("User Guide",
-               h3("User Guide")
-      ),
+#       tabPanel("User Guide",
+#                h3("User Guide")
+#       ),
  
       tabPanel("About your model", 
 
@@ -408,6 +408,7 @@ fluidPage(
       ),
       
       tabPanel("EVPPI groups",
+               h3("Partial EVPI for groups of parameters"),
                p(HTML("Although EVPPI information about individual parameters is useful, often it is more informative if EVPPI can
                  be performed on groups of associated parameters e.g. all parameters associated with efficacy data. This will
                  enable a maximum value to be put on further research to jointly inform this set of parameters. Previously, such

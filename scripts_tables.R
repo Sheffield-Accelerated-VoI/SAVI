@@ -57,7 +57,7 @@ buildSetStoreTable <- function(store, groupPartialEvpi) {
   print(groups)
   print(df <- data.frame(groups, groupPartialEvpi))
   rownames(df) <- c(paste("Set", 1:(length(store))))
-  colnames(df) <- c("Parameters", "Partial EVPI", "Approx Standard Error")
+  colnames(df) <- c("Parameters", "Per Person EVPPI", "Approx Standard Error")
   df
 }
 

@@ -89,7 +89,7 @@ fluidPage(
 
                h4("Specify details about your model here (you can change these at any time - results will automatically update)"),
                br(),
-               textInput("modelName", label = h5("Name of your model"), value ="My Model"),
+               textInput("modelName", label = h5("Name of your model"), value ="Model name goes here"),
                #checkboxInput("indSim", label = h5("Is your model an individual level simulation with a single patient per PSA run?"), FALSE),
                #textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
                #textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box

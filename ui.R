@@ -417,8 +417,8 @@ fluidPage(
                p(HTML("First, define groups of parameters for which to calculate EVPPI. Choose a subset of parameters
                       using the tick boxes and press the Calculate EVPPI button.")),
                p(HTML("When calculation of the first parameter group is complete, select a new subset (remember to untick
-                      your original choices) and press the Calculate EVPPI button again. This can be repeated as many times 
-                      as you wish, with all results appearing below on an expanding results table.")),
+                      your original choices) and press the Calculate EVPPI button again. This can be repeated for up to 100
+                      groups, with all results appearing below on an expanding results table.")),
                p(HTML("For subsets with up to five parameters, the GAM regression method is used. 
                       For subsets with five or more parameters the GP regression method is used. 
                       See <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a> for details.")),               
@@ -439,6 +439,7 @@ fluidPage(
                    br(),
                    h3("Results"),
                    br(),
+                   h4("EVPPI for parameter groups")
                    tableOutput("selectedTable"),
                   # br(),
                    #h4("Partial EVPI values"),

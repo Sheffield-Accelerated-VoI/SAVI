@@ -418,10 +418,12 @@ fluidPage(
                       using the tick boxes and press the Calculate EVPPI button.")),
                p(HTML("When calculation of the first parameter group is complete, select a new subset (remember to untick
                       your original choices) and press the Calculate EVPPI button again. This can be repeated for up to 100
-                      groups, with all results appearing below on an expanding results table.")),
+                      groups, with all results appearing below on an expanding results table.")), 
                p(HTML("For subsets with up to five parameters, the GAM regression method is used. 
                       For subsets with five or more parameters the GP regression method is used. 
-                      See <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a> for details.")),               
+                      See <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a> for details.")),
+               p(HTML("NOTE - Currently this table does not automatically update when model settings are changed - if you alter 
+                      settings, simply press the Calculate EVPPI button once more to obtain updated values")), 
                br(),
                sidebarLayout(
                  sidebarPanel(

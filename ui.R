@@ -439,7 +439,7 @@ fluidPage(
                    br(),
                    h3("Results"),
                    br(),
-                   h4("EVPPI for parameter groups")
+                   h4("EVPPI for parameter groups"),
                    tableOutput("selectedTable"),
                   # br(),
                    #h4("Partial EVPI values"),

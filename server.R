@@ -665,7 +665,7 @@ shinyServer(
       cache$subsetEvpiValues <- subsetEvpiValues
       cache$setStoreMatchEvpiValues <- setStore # cache these for the report in case they change
 
-      buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
+      buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues, cache)
     }, sanitize.rownames.function = bold.allrows)
 
      # This clears everything, either on pressing the clear all button, or on loading new data.

@@ -75,6 +75,28 @@ buildSetStoreTable <- function(store, groupPartialEvpi, cache) {
   df
 }
 
+buildSetStoreReport <- function(store, groupPartialEvpi, cache) {
+  # maxRows <- max(unlist(lapply(store, length)))
+  # tableRows <- lapply(store, function(x) c(x, rep("", maxRows - length(x))))
+  groups <- sapply(store, function(x) {
+    output <- paste(x, ", ", sep="", collapse="")
+    output <- substr(output, 1, nchar(output) - 2)
+    output})
+  print(groups)
+  print(df <- data.frame(groups, groupPartialEvpi))
+  #Add and define extra columns
+  df$indexed <- 0
+  df$annualPrev <- 0
+  df$horizon <- 0
+  #rownames(df) <- groups
+  df1 <- data.matrix(df)
+  df1[,4] <- round(df1[,2]/calcEvpi(cache$costs, cache$effects, cache$lambdaOverall),3)
+  df1[,5] <- round(df1[,2]*cache$annualPrev,3)
+  df1[,6] <- df1[,2]*cache$annualPrev*cache$horizon      
+  df1
+}
+
+
 bold.allrows <- function(x) {
   h <- paste('<strong>',x,'</strong>', sep ='')
   h

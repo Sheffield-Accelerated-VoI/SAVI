@@ -386,7 +386,6 @@ if(!is.null(pEVPI)) {
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(params)
      kable(tableEVPPI)
-     print(pEVPI)
      }
 ```
 
@@ -401,20 +400,20 @@ if(!is.null(pEVPI)) {
 
 ## 4.1 Group parameter EVPPI
 
-# Work in progress - to be added soon ...
-```{r, echo=TRUE, results='asis'}
+```{r, echo=FALSE, results='asis'}
 if(!is.null(setStoreMatchEvpiValues)) {
- df<-matrix(setStoreMatchEvpiValues[1:3,1:6], nrow = length(setStoreMatchEvpiValues[,1]), ncol = 6)
- #print(df)
- groupEvpiTable <- matrix(NA, nrow = dim(setStoreMatchEvpiValues)[1], ncol = 6)
- #groupEvpiTable[1,1]<-df[1,1]
- #colnames(groupEvpiTable) <- c("parameters", paste("Per Person EVPPI (", input$currency, ")", sep=""), "S.Error","Indexed to Overall EVPI = 1.00", paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
- #rownames(groupEvpiTable, do.NULL = TRUE)
- print(df[1[9]])
- groupEvpiTable[2,2] <- df[[1]]
- #print(groupEvpiTable)
- kable(groupEvpiTable)
-
+ #setStoreMatchEvpiValues<-round(setStoreMatchEvpiValues,3)
+ groups <- sapply(setStore[1:counterAdd], function(x) {
+    output <- paste(x, ", ", sep="", collapse="")
+    output <- substr(output, 1, nchar(output) - 2)
+    output})
+    
+ setStoreMatchEvpiValues[,1]<-groups
+ colnames(setStoreMatchEvpiValues) <- c("parameters", paste("Per Person EVPPI (", input$currency, ")", sep=""), "S.Error","Indexed to Overall EVPI = 1.00", 
+                               paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
+                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
+ kable(setStoreMatchEvpiValues)
+ 
 }
 ```
 

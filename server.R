@@ -666,7 +666,7 @@ shinyServer(
       # cache$setStoreMatchEvpiValues <- setStore # cache these for the report in case they change
 
       tableOut <- buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues, cache)
-      cache$setStoreMatchEvpiValues <- as.matrix(tableOut)
+      cache$setStoreMatchEvpiValues <- as.matrix(buildSetStoreReport(setStore[1:counterAdd], subsetEvpiValues, cache))
       tableOut
     }, sanitize.rownames.function = bold.allrows)
 

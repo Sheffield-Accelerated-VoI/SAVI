@@ -55,10 +55,7 @@ if(!is.null(costs) | !is.null(effects)) {
                             "Probability that intervention is cost-effective against comparator")
       column<-length(tableCEplane[1,])
       names<-colnames(tableCEplane[,1:min(column,4)])
-      library(pander)
-      #panderOptions('knitr.auto.asis', FALSE)
-      #panderOptions('table.style', 'simple')
-        pander(tableCEplane[,1:column],col.names=names)
+       kable(tableCEplane[,1:column],col.names=names)
 }
 ```
 
@@ -158,7 +155,7 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
 if(!is.null(costs) | !is.null(effects)) {
   tableNetBenefit<-makeTableNetBenefit(costs, effects, lambda , nInt)
       column<-length(tableNetBenefit[1,])
-        pander(tableNetBenefit[,1:column])
+        kable(tableNetBenefit[,1:column])
 }
 ```
 
@@ -389,7 +386,7 @@ if(!is.null(pEVPI)) {
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(params)
      kable(tableEVPPI)
-     #pander(tableEVPPI)
+     print(pEVPI)
      }
 ```
 
@@ -407,18 +404,17 @@ if(!is.null(pEVPI)) {
 # Work in progress - to be added soon ...
 ```{r, echo=TRUE, results='asis'}
 if(!is.null(setStoreMatchEvpiValues)) {
-  #groupEVPPItable <- buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
- setStoreMatchEvpiValues
- colnames(setStoreMatchEvpiValues) <-  c("parameters", paste("Per Person EVPPI (", input$currency, ")", sep=""), "S.Error","Indexed to Overall EVPI = 1.00", 
-                               paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
-                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
- print(dim(setStoreMatchEvpiValues))
- print(class(setStoreMatchEvpiValues))
- #names(setStoreMatchEvpiValues)
-  #colnames(setStoreMatchEvpiValues)
-  rownames(setStoreMatchEvpiValues)
-  #kable(setStoreMatchEvpiValues)
- print(setStoreMatchEvpiValues[, 2])
+ df<-matrix(setStoreMatchEvpiValues[1:3,1:6], nrow = length(setStoreMatchEvpiValues[,1]), ncol = 6)
+ #print(df)
+ groupEvpiTable <- matrix(NA, nrow = dim(setStoreMatchEvpiValues)[1], ncol = 6)
+ #groupEvpiTable[1,1]<-df[1,1]
+ #colnames(groupEvpiTable) <- c("parameters", paste("Per Person EVPPI (", input$currency, ")", sep=""), "S.Error","Indexed to Overall EVPI = 1.00", paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
+ #rownames(groupEvpiTable, do.NULL = TRUE)
+ print(df[1[9]])
+ groupEvpiTable[2,2] <- df[[1]]
+ #print(groupEvpiTable)
+ kable(groupEvpiTable)
+
 }
 ```
 

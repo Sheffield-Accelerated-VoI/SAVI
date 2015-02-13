@@ -388,8 +388,8 @@ if(!is.null(pEVPI)) {
                                paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(params)
-     #print(kable(tableEVPPI, longtable = TRUE))
-     pander(tableEVPPI)
+     kable(tableEVPPI)
+     #pander(tableEVPPI)
      }
 ```
 
@@ -405,9 +405,20 @@ if(!is.null(pEVPI)) {
 ## 4.1 Group parameter EVPPI
 
 # Work in progress - to be added soon ...
-```{r, echo=FALSE, results='asis'}
+```{r, echo=TRUE, results='asis'}
 if(!is.null(setStoreMatchEvpiValues)) {
-      pander(buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues))
+  #groupEVPPItable <- buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
+ setStoreMatchEvpiValues
+ colnames(setStoreMatchEvpiValues) <-  c("parameters", paste("Per Person EVPPI (", input$currency, ")", sep=""), "S.Error","Indexed to Overall EVPI = 1.00", 
+                               paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
+                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
+ print(dim(setStoreMatchEvpiValues))
+ print(class(setStoreMatchEvpiValues))
+ #names(setStoreMatchEvpiValues)
+  #colnames(setStoreMatchEvpiValues)
+  rownames(setStoreMatchEvpiValues)
+  #kable(setStoreMatchEvpiValues)
+ print(setStoreMatchEvpiValues[, 2])
 }
 ```
 

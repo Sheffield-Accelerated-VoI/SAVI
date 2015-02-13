@@ -21,7 +21,7 @@ library(knitr)
 library(rmarkdown)
 library(xtable)
 
-# source all the functions we need
+# # source all the functions we need
 source("scripts.R")
 source("scripts_GPfunctions.R")
 ## source("scripts_GPfunctions_TEST.R")
@@ -663,9 +663,11 @@ shinyServer(
       }
       
       cache$subsetEvpiValues <- subsetEvpiValues
-      cache$setStoreMatchEvpiValues <- setStore # cache these for the report in case they change
+      # cache$setStoreMatchEvpiValues <- setStore # cache these for the report in case they change
 
-      buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues, cache)
+      tableOut <- buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues, cache)
+      cache$setStoreMatchEvpiValues <- as.matrix(tableOut)
+      tableOut
     }, sanitize.rownames.function = bold.allrows)
 
      # This clears everything, either on pressing the clear all button, or on loading new data.

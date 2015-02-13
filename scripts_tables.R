@@ -48,7 +48,7 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
 }
 
 # function for building up table of parameter sets for partial EVPI
-buildSetStoreTable <- function(store, groupPartialEvpi) {
+buildSetStoreTable <- function(store, groupPartialEvpi, cache) {
   # maxRows <- max(unlist(lapply(store, length)))
   # tableRows <- lapply(store, function(x) c(x, rep("", maxRows - length(x))))
   groups <- sapply(store, function(x) {
@@ -57,8 +57,21 @@ buildSetStoreTable <- function(store, groupPartialEvpi) {
     output})
   print(groups)
   print(df <- data.frame(groups, groupPartialEvpi))
+  #Add and define extra columns
+  df$indexed <- 0
+  df$annualPrev <- 0
+  df$horizon <- 0
+  df1 <- data.matrix(df)
+  df1[,4] <- df1[,2]/calcEvpi(cache$costs, cache$effects, cache$lambdaOverall)
+  df1[,5] <- df1[,2]*cache$annualPrev
+  df1[,6] <- df1[,2]*cache$annualPrev*cache$horizon      
   rownames(df) <- c(paste("Set", 1:(length(store))))
-  colnames(df) <- c("Parameters", "Partial EVPI", "Approx Standard Error")
+  colnames(df) <- c("Parameters", paste("Per Person EVPPI (", cache$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
+                    paste("EVPPI for ", cache$jurisdiction, " Per Year (", cache$currency, ")", sep=""), 
+                    paste("EVPPI for ", cache$jurisdiction, " over ", cache$horizon, " years (", cache$currency, ")", sep=""))
+  df[,4] <- df1[,4]
+  df[,5] <- df1[,5]
+  df[,6] <- df1[,6]   
   df
 }
 

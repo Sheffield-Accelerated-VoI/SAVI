@@ -14,8 +14,8 @@ fluidPage(
                    alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 1.013 (2014-12-11)"),    
-    h6(HTML("Copyright &copy; 2014 University of Sheffield")),  
+    h4("Release version 1.014 (2015-02-10)"),    
+    h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     tabsetPanel( 
 
       tabPanel("Home",
@@ -84,12 +84,16 @@ fluidPage(
                
                
       )),
+      
+#       tabPanel("User Guide",
+#                h3("User Guide")
+#       ),
  
       tabPanel("About your model", 
 
                h4("Specify details about your model here (you can change these at any time - results will automatically update)"),
                br(),
-               textInput("modelName", label = h5("Name of your model"), value ="My Model"),
+               textInput("modelName", label = h5("Name of your model"), value ="Model name goes here"),
                #checkboxInput("indSim", label = h5("Is your model an individual level simulation with a single patient per PSA run?"), FALSE),
                #textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
                #textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
@@ -363,7 +367,7 @@ fluidPage(
                h4("Overall EVPI per population and time horizon"),
                plotOutput("plots6", width="700px", height="600px"),
                
-               h4("Understanding the EVPI: a non-technical intuition for the meaning"),
+               h4("Understanding the EVPI: a non-technical explanation"),
                br(),
                
                p("The calculation begins with the existing confidence intervals (or credible intervals) for the model parameters as used 
@@ -386,7 +390,13 @@ fluidPage(
                #h3("Specify lambda"),
                #sliderInput('lambdaSingleEvppiTab', label="", 0, 60000, 20000, 1000),
                h3("Partial EVPI for each parameter separately"),
-               h4("This is the expected value of removing current uncertainty about each parameter"),
+               p("Partial EVPI enables identification of those parameters that contribute particularly
+                 highly to decision uncertainty. For each parameter, the expected value of removing
+                 current uncertainty is displayed in the table below. The barplot shows parameters in 
+                 descending order of importance."),
+               br(),
+               
+               h4("EVPPI for individual parameters"),
                tableOutput("tableEVPPI"),
                
                #h3("Partial EVPI for single parameters"),
@@ -398,11 +408,22 @@ fluidPage(
       ),
       
       tabPanel("EVPPI groups",
-               p(HTML("Here you can define subsets of parameters for which to calculate partial EVPI. Choose a subset of parameters
+               h3("Partial EVPI for groups of parameters"),
+               p(HTML("Although EVPPI information about individual parameters is useful, often it is more informative if EVPPI can
+                 be performed on groups of associated parameters e.g. all parameters associated with efficacy data. This will
+                 enable a maximum value to be put on further research to jointly inform this set of parameters. Previously, such
+                 calculations have been very computationally intensive. Our method will allow you to calculate EVPPI for different
+                 parameter groups in a matter of seconds.")),
+               p(HTML("First, define groups of parameters for which to calculate EVPPI. Choose a subset of parameters
                       using the tick boxes and press the Calculate EVPPI button.")),
+               p(HTML("When calculation of the first parameter group is complete, select a new subset (remember to untick
+                      your original choices) and press the Calculate EVPPI button again. This can be repeated for up to 100
+                      groups, with all results appearing below on an expanding results table.")), 
                p(HTML("For subsets with up to five parameters, the GAM regression method is used. 
-                      For subsets with five or more parameters the GP regresison method is used. 
-                      See <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a> for details.")),               
+                      For subsets with five or more parameters the GP regression method is used. 
+                      See <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a> for details.")),
+               p(HTML("NOTE - Currently this table does not automatically update when model settings are changed - if you alter 
+                      settings, simply press the Calculate EVPPI button once more to obtain updated values")), 
                br(),
                sidebarLayout(
                  sidebarPanel(
@@ -420,6 +441,7 @@ fluidPage(
                    br(),
                    h3("Results"),
                    br(),
+                   h4("EVPPI for parameter groups"),
                    tableOutput("selectedTable"),
                   # br(),
                    #h4("Partial EVPI values"),

@@ -11,21 +11,22 @@ makeTableCePlane <- function(lambda, comparator, cache) {
   incBen <- (effects - effects[, comp])[, -comp, drop=FALSE]
   inb <- incBen * lambda - incCost
   npsa <- NROW(costs)
-  tableCePlane <- matrix(NA, ncol=ncol(costs) - 1, nrow = 13) # incremental, no zero column
-  tableCePlane[1, ] <- format(lambda, digits=4, nsmall = 0)
-  tableCePlane[2, ] <- colnames(costs)[comp]
-  tableCePlane[3, ] <- format(npsa)
-  tableCePlane[4, ] <- format(colMeans(incBen), digits=2, nsmall=2)
-  tableCePlane[5, ] <- format(colMeans(incCost), digits=2, nsmall=2)
-  tableCePlane[6, ] <- format(colMeans(incCost) /  colMeans(incBen), digits=2, nsmall=2)
-  tableCePlane[7, ] <- format(apply(incBen, 2, quantile, 0.025), digits=2, nsmall=2)
-  tableCePlane[8, ] <- format(apply(incBen, 2, quantile, 0.975), digits=2, nsmall=2)
-  tableCePlane[9, ] <- format(apply(incCost, 2, quantile, 0.025), digits=2,  nsmall=2)
-  tableCePlane[10, ] <- format(apply(incCost, 2, quantile, 0.975), digits=2, nsmall=2)
-  tableCePlane[11, ] <- format(apply(incCost, 2, function(x) sum(x < 0)) / npsa, digits=2, nsmall=2)
-  tableCePlane[12, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
-  tableCePlane[13, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
-  colnames(tableCePlane) <- colnames(costs)[-comp]
+  tableCePlane <- matrix(NA, ncol=ncol(costs) - 1, nrow = 14) # incremental, no zero column
+  tableCePlane[1, ] <- colnames(costs)[-comp]
+  tableCePlane[2, ] <- format(lambda, digits=4, nsmall = 0)
+  tableCePlane[3, ] <- colnames(costs)[comp]
+  tableCePlane[4, ] <- format(npsa)
+  tableCePlane[5, ] <- format(colMeans(incBen), digits=2, nsmall=2)
+  tableCePlane[6, ] <- format(colMeans(incCost), digits=2, nsmall=2)
+  tableCePlane[7, ] <- format(colMeans(incCost) /  colMeans(incBen), digits=2, nsmall=2)
+  tableCePlane[8, ] <- format(apply(incBen, 2, quantile, 0.025), digits=2, nsmall=2)
+  tableCePlane[9, ] <- format(apply(incBen, 2, quantile, 0.975), digits=2, nsmall=2)
+  tableCePlane[10, ] <- format(apply(incCost, 2, quantile, 0.025), digits=2,  nsmall=2)
+  tableCePlane[11, ] <- format(apply(incCost, 2, quantile, 0.975), digits=2, nsmall=2)
+  tableCePlane[12, ] <- format(apply(incCost, 2, function(x) sum(x < 0)) / npsa, digits=2, nsmall=2)
+  tableCePlane[13, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
+  tableCePlane[14, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
+  #colnames(tableCePlane) <- colnames(costs)[-comp]
   tableCePlane
 }
 

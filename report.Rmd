@@ -41,8 +41,9 @@ options(width = 80)
 if(!is.null(costs) | !is.null(effects)) {
       tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
       cache$lambdaOverall <- input$lambdaOverall
-      rownames(tableCEplane) <- c("Intervention",paste("Threshold (", input$currency, " per ", 
-                            input$unitBens, ")", sep=""), "Comparator", "Number of PSA runs", 
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
+                            "Comparator", 
+                            "Number of PSA runs", 
                             paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
                             paste("Mean inc. Cost per Person (", input$currency, ")", sep=""),
                             paste("ICER Estimate (", input$currency, " per ", input$unitBens, ")", sep=""),
@@ -53,12 +54,10 @@ if(!is.null(costs) | !is.null(effects)) {
                             "Probability intervention is cost saving", 
                             "Probability intervention provides more benefit", 
                             "Probability that intervention is cost-effective against comparator")
-      column<-length(tableCEplane[1,])
-      names<-colnames(tableCEplane[,1:min(column,4)])
-       kable(tableCEplane[,1:column],col.names=names)
+  kable(tableCEplane)
+
 }
 ```
-
 
 ## 2.2 Cost-Effectiveness Plane
 
@@ -153,12 +152,9 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
   tableNetBenefit
 }
 if(!is.null(costs) | !is.null(effects)) {
-  tableNetBenefit<-makeTableNetBenefit(costs, effects, lambda , nInt)
-      column<-length(tableNetBenefit[1,])
-        kable(tableNetBenefit[,1:column])
+print(kable(makeTableNetBenefit(costs, effects, lambda , nInt)))
 }
 ```
-
 
 ## 2.4.2 Incremental Net Benefit of compared with the optimal comparator
 The graph shows the incremental expected net benefit of the strategies compared with `r if(!is.null(costs) | !is.null(effects)) {colnames(costs[which.max(as.matrix(colMeans(nb)))])}`.  
@@ -373,7 +369,7 @@ if(!is.null(costs) | !is.null(effects)) {
 # 4. Which parameters are causing most of the decision uncertainty and what is the potential value of reducing uncertainty by collecting more data: Partial Expected Value of Perfect Information
 ## 4.1 Single parameter EVPPI
 
-```{r, echo=FALSE, out.extra='angle=90', results='asis'}
+```{r, echo=FALSE, results='asis'}
 if(!is.null(pEVPI)) {
      tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 5)
      tableEVPPI[, 1] <- round(pEVPI[, 1], 2)
@@ -381,11 +377,11 @@ if(!is.null(pEVPI)) {
      tableEVPPI[, 3] <- round(pEVPI[, 1] / overallEvpi , 2)
      tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
      tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
-     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "S.Error","Indexed to Overall EVPI = 1.00", 
+     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
                                paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
      rownames(tableEVPPI) <- colnames(params)
-     kable(tableEVPPI)
+     print(kable(tableEVPPI))
      }
 ```
 
@@ -400,20 +396,11 @@ if(!is.null(pEVPI)) {
 
 ## 4.1 Group parameter EVPPI
 
+# Work in progress - to be added soon ...
 ```{r, echo=FALSE, results='asis'}
 if(!is.null(setStoreMatchEvpiValues)) {
- #setStoreMatchEvpiValues<-round(setStoreMatchEvpiValues,3)
- groups <- sapply(setStore[1:counterAdd], function(x) {
-    output <- paste(x, ", ", sep="", collapse="")
-    output <- substr(output, 1, nchar(output) - 2)
-    output})
-    
- setStoreMatchEvpiValues[,1]<-groups
- colnames(setStoreMatchEvpiValues) <- c("parameters", paste("Per Person EVPPI (", input$currency, ")", sep=""), "S.Error","Indexed to Overall EVPI = 1.00", 
-                               paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
-                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
- kable(setStoreMatchEvpiValues)
- 
+#tableEvpiValues <- cbind(setStoreMatchEvpiValues, subsetEvpiValues)
+#print(kable(tableEvpiValues))
 }
 ```
 

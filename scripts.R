@@ -3,7 +3,7 @@
 
 ## calculator functions
 ## more comments https://github.com/Sheffield-Accelerated-VoI/SAVI.git
-#new
+
 valuesImportedFLAG <- function(cache, input){  
   
   dummy1 <- input$parameterFile 

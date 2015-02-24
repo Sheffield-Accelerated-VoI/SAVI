@@ -398,7 +398,7 @@ if(!is.null(pEVPI)) {
 
 # Work in progress - to be added soon ...
 ```{r, echo=FALSE, results='asis'}
-#if(!is.null(setStoreMatchEvpiValues)) {
+if(!is.null(setStoreMatchEvpiValues)) {
 #tableEvpiValues <- cbind(setStoreMatchEvpiValues, subsetEvpiValues)
 #print(kable(tableEvpiValues))
 }

@@ -55,6 +55,9 @@ shinyServer(
     cache$params <- NULL
     cache$costs <- NULL
     cache$effects <- NULL
+    #cache$loadedCosts <- FALSE
+    #cache$loadedEffects <- FALSE
+    #cache$loadedParameters <- FALSE
     
     cache$counterAdd <- 0
     cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
@@ -62,6 +65,7 @@ shinyServer(
     cache$setStoreMatchEvpiValues <- NULL
     cache$currentSelection <- NULL
     cache$ceac.obj <- NULL
+    
 
     # assign null values to the about the model variables in the cache
     cache$modelName <- NULL
@@ -93,8 +97,9 @@ shinyServer(
       inFile = input$loadSession
       if (is.null(inFile)) return(NULL)
       load(inFile$datapath, envir=cache)
-      
+    
       # update "about the model" variables
+  
       updateTextInput(session, "modelName", value = cache$modelName)
       updateTextInput(session, "current",  value = cache$current)
       updateTextInput(session, "t3",  value = cache$t3)
@@ -113,21 +118,21 @@ shinyServer(
       cache$subsetEvpiValues <- NULL
       cache$setStoreMatchEvpiValues <- NULL
       cache$currentSelection <- NULL
-      
+   
       # cache$savedSession <- 1    # not used
       
     })
     
     #  Function that imports parameters
-      observe({
+    observe({
       inFile <- input$parameterFile
-      if (is.null(inFile))
-        return(NULL)
-        dat <- read.csv(inFile$datapath, sep=input$sep, dec=input$dec)
+      if (is.null(inFile)) return(NULL)
+      dat <- read.csv(inFile$datapath, sep=input$sep, dec=input$dec)
 
-        cache$params <- dat
-        cache$nParams <- ncol(dat)
-        cache$nIterate <- nrow(dat) # size of PSA
+      cache$params <- dat
+      cache$nParams <- NCOL(dat)
+      cache$nIterate <- NROW(dat) # size of PSA
+      # cache$loadedParameters <- TRUE
     })
     
     # function that checks sanity of parameter file
@@ -151,19 +156,21 @@ shinyServer(
     })
 
       #  Function that imports costs    
-      observe({
+    observe({
       inFile <- input$costsFile
-      if (is.null(inFile))
-        return(NULL)
-        dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2)
-
-        effects <- cache$effects
-        if(!is.null(effects)) {
-          colnames(effects) <- colnames(dat)
-          cache$effects <- effects
-        }
-        cache$costs <- dat
-        cache$nInt <- ncol(dat) # number of interventions
+      if (is.null(inFile)) return(NULL)
+      dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2)
+      cache$costs <- dat
+      cache$namesDecisions <- paste(1:ncol(dat), ") ", colnames(dat), sep="")
+      
+      #effects <- cache$effects
+      #if(!is.null(effects)) {
+      #  colnames(effects) <- colnames(dat)
+      #  cache$effects <- effects
+      #}
+      
+      cache$nInt <- NCOL(dat) # number of interventions
+      # cache$loadedCosts <- TRUE
     })
 
     # function that checks sanity of costs file
@@ -172,23 +179,32 @@ shinyServer(
     
       costs <- cache$costs
       if (is.null(costs)) return(NULL)      
+      
       if (sum(is.na(costs)) > 0) return("There are missing values - please check data and reload")
-      if (prod(unlist(c(lapply(costs, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
-        return(NULL)
-      } else {
-        return("Not all columns are numeric - please check data and reload")
+      
+      if (NCOL(costs) == 1) return("There must be at least two decision options. If you have a single set of incremental 
+                                   costs for a two-decision option problem, either upload the absolute costs, or include a column of zeroes.")
+
+      if (!prod(unlist(c(lapply(costs, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
+        return("Not all columns are numeric - please check data and reload") 
       }
+        
+      return(NULL)
     })
     
      # Function that imports effects
       observe({
       inFile <- input$effectsFile      
       if (is.null(inFile)) return(NULL)
-        dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
-        cache$namesEffects <- colnames(dat)
-        costs <- cache$costs
-        if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
-        cache$effects <- dat
+      
+      dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
+      cache$effects <- dat
+      # cache$namesEffects <- colnames(dat)
+      #cache$namesEffects <- colnames(dat)
+      #costs <- cache$costs
+      #if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
+
+      # cache$loadedEffects <- TRUE
     })
   
     # function that checks sanity of effects file
@@ -196,12 +212,18 @@ shinyServer(
       x3 <- input$effectsFile 
       effects <- cache$effects
       if (is.null(effects)) return(NULL)
+      
       if (sum(is.na(effects)) > 0) return("There are missing values - please check data and reload")
+      
+      if (NCOL(effects) == 1) return("There must be at least two decision options. If you have a single set of 
+                                  incremental effects for a two-decision option problem, 
+                                     either upload the absolute effects, or include a column of zeroes.")
+      
       if (prod(unlist(c(lapply(effects, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
-        return(NULL)
-      } else {
         return("Not all columns are numeric - please check data and reload")
-      }
+      } 
+      
+      return(NULL)
     })
     
     # function that checks that files have the right number of rows and columns
@@ -269,15 +291,13 @@ shinyServer(
       y <- input$loadSession
       tableValues <- cache$effects
       if (is.null(tableValues)) return(NULL)
-      colnames(tableValues) <- cache$namesEffects
+      # colnames(tableValues) <- cache$namesEffects
       head(tableValues, n=5)
     })
     
     # do some checks on the input files
     
-
-    
-    
+  
     
     # function that calculates ceac
     ceac <- reactive({ 
@@ -293,28 +313,28 @@ shinyServer(
       paste("The figure above shows the (standardised) cost-effectiveness plane based on the ", cache$nIterate, 
             " model runs in the probabilistic sensitivity analysis. The willingness-to-pay threshold is shown as a 45 degree line. 
             The mean incremental cost of ", input$decisionOptionCE1, " versus ",  input$decisionOptionCE0," is ",
-            input$currency, incValue(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0), ". This suggests that ", input$decisionOptionCE1, " is ", 
-            moreLess(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0), " costly. The incremental cost is uncertain because the model parameters are uncertain. 
-            The 97.5% credible interval for the incremental cost ranges from ", input$currency, confIntCE(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.025)," to ", 
-            input$currency, confIntCE(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.975),". The probability that ", input$decisionOptionCE1, " is cost 
-            saving compared to ", input$decisionOptionCE0," is ", pCostsaving(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0), ".", sep="")
+            input$currency, incValue(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), ". This suggests that ", input$decisionOptionCE1, " is ", 
+            moreLess(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), " costly. The incremental cost is uncertain because the model parameters are uncertain. 
+            The 97.5% credible interval for the incremental cost ranges from ", input$currency, confIntCE(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.025, cache)," to ", 
+            input$currency, confIntCE(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.975, cache),". The probability that ", input$decisionOptionCE1, " is cost 
+            saving compared to ", input$decisionOptionCE0," is ", pCostsaving(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
     })                       
     
     output$textCEplane2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("The mean incremental benefit of ", input$decisionOptionCE1, " versus ", input$decisionOptionCE0, " is ", 
-            incValue(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0), " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
-            moreLess(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0), " beneficial. Again, there is uncertainty in the incremental benefit 
+            incValue(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
+            moreLess(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), " beneficial. Again, there is uncertainty in the incremental benefit 
             due to uncertainty in the model parameters. The 97.5% 
-            credible interval for the incremental benefit ranges from ", confIntCE(cache$effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.025), " ", input$unitBens, "s to ", 
-            confIntCE(cache$effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.975), " ", input$unitBens,"s. The probability that ", input$decisionOptionCE1, 
-            " is more beneficial than ", input$decisionOptionCE0, " is ", pMoreben(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0), ".", sep="")
+            credible interval for the incremental benefit ranges from ", confIntCE(cache$effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.025, cache), " ", input$unitBens, "s to ", 
+            confIntCE(cache$effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.975, cache), " ", input$unitBens,"s. The probability that ", input$decisionOptionCE1, 
+            " is more beneficial than ", input$decisionOptionCE0, " is ", pMoreben(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
     })                        
     
     output$textCEplane3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)      
       paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(cache$costs, 
-            cache$effects, input$decisionOptionCE1, input$decisionOptionCE0), ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
+            cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
             " that ", input$decisionOptionCE1, " is more cost-effective than ", input$decisionOptionCE0, ".", sep="")
     })                         
     
@@ -512,22 +532,22 @@ shinyServer(
     observe({
       x <- input$costsFile
       y <- input$loadSession
-      costs <- cache$costs
-      if (is.null(costs)) return(NULL)
-      namesOptions <- colnames(costs)
+      #costs <- cache$costs
+      #if (is.null(costs)) return(NULL)
+      namesOptions <- cache$namesDecisions
       updateRadioButtons(session, "decisionOptionCE1", 
-                               choices = namesOptions, selected = colnames(costs)[2])
+                               choices = namesOptions, selected = namesOptions[2])
     })    
 
     # The output is the checkbox list for the comparator for the CE plane
     observe({
       x <- input$costsFile
       y <- input$loadSession
-      costs <- cache$costs
-      if (is.null(costs)) return(NULL)
-      namesOptions <- colnames(costs)
+      #costs <- cache$costs
+      #if (is.null(costs)) return(NULL)
+      namesOptions <- cache$namesDecisions
       updateRadioButtons(session, "decisionOptionCE0", 
-                               choices = namesOptions, selected = colnames(costs)[1])
+                               choices = namesOptions, selected = namesOptions[1])
     })    
 
 

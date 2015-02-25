@@ -6,7 +6,7 @@
 makeTableCePlane <- function(lambda, comparator, cache) {
   costs <- cache$costs
   effects <- cache$effects
-  comp <- which(colnames(costs)%in%comparator)
+  comp <- which(cache$namesDecisions%in%comparator)
   incCost <- (costs - costs[, comp])[, -comp, drop=FALSE]
   incBen <- (effects - effects[, comp])[, -comp, drop=FALSE]
   inb <- incBen * lambda - incCost

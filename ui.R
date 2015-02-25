@@ -146,11 +146,11 @@ fluidPage(
                         The csv files must each have the same number of rows, and the rows must correspond, i.e. 
                           the parameters in row 1 must be those that correspond to the costs and effects in row 1, and so on.
                         <br><br>
-                        Costs and effects are assumed to be per-person, and to be absolute rather than incremental.<br>
-                        <strong>Check the import in the next tab</strong><br><br>
+                        Costs and effects are assumed to be per-person, and to be absolute rather than incremental (i.e. there must be 
+                        the same number of columns as decision options, including the baseline decision).<br>
+                        <br>
                         </div>")),      
                                
-                               br(),br(),
                                h3("Parameter importation"),
                                # Various checkboxes and input fields to specify the data file format
                                #checkboxInput('header1', 'Is there a header row?', TRUE),

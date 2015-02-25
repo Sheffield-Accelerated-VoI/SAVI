@@ -24,8 +24,8 @@ makeCeacPlot <- function(ceac.int, lambda.int, names.int, ...) {
 
 makeCEPlanePlot <- function(costs.int, effects.int, lambda, intervention, comparator, cache, ...) {
   ## makes the CE plane
-  int <- which(colnames(costs.int)%in%intervention)
-  com <- which(colnames(costs.int)%in%comparator)
+  int <- which(cache$namesDecisions%in%intervention)
+  com <- which(cache$namesDecisions%in%comparator)
   inc_costs <- costs.int[, int] - costs.int[, com]
   inc_effects <- effects.int[, int] - effects.int[, com]
   

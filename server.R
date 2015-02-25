@@ -8,7 +8,7 @@
 print("server.R called") # this is called when we start the shiny server on SAVI via $ sudo start shiny-server
 
 # max upload for files
-options(shiny.maxRequestSize=400*1024^2) # increase max upload to 100Mb
+options(shiny.maxRequestSize=400*1024^2) # increase max upload to 400Mb
 
 # debugging option
 options(shiny.reactlog=FALSE)
@@ -76,8 +76,7 @@ shinyServer(
     cache$unitBens <- NULL
     cache$jurisdiction <- NULL
 
-    
-    
+      
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
     #   load.parameters <- function() read.csv("../test/parameters.csv")                                   
@@ -131,9 +130,9 @@ shinyServer(
         cache$nIterate <- nrow(dat) # size of PSA
     })
     
+    # function that checks sanity of parameter file
     output$textCheckTabParams <- renderText({
-      x1 <- input$parameterFile   
-      
+      x1 <- input$parameterFile     
       params <- cache$params
       if (is.null(params)) return(NULL)    
       
@@ -166,7 +165,8 @@ shinyServer(
         cache$costs <- dat
         cache$nInt <- ncol(dat) # number of interventions
     })
-    
+
+    # function that checks sanity of costs file
     output$textCheckTabCosts <- renderText({
       x2 <- input$costsFile 
     
@@ -190,7 +190,8 @@ shinyServer(
         if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
         cache$effects <- dat
     })
-    
+  
+    # function that checks sanity of effects file
     output$textCheckTabEffects <- renderText({
       x3 <- input$effectsFile 
       effects <- cache$effects
@@ -203,7 +204,7 @@ shinyServer(
       }
     })
     
-
+    # function that checks that files have the right number of rows and columns
     output$textCheckTab <- renderText({
       x1 <- input$parameterFile 
       x2 <- input$costsFile 

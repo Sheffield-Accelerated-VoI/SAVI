@@ -49,37 +49,31 @@ calcEvpi <- function(costs.int, effects.int, lambda, cache, session) {
 #   return(evpi)
 # }
 
-calcSingleParamGAM <- function(inputParam, inb) {
-  ## this function calculates EVPI for a single parameter using GAM
-  if(var(inputParam) == 0) return(0) # screen out constants
-  D <- ncol(inb)
-  N <- nrow(inb)
-  g.hat <- vector("list", D)
-  g.hat[[1]] <- rep(0, N)   
-    
-  for(d in 2:D) {
-    
-    f <- formula(inb[, d] ~ te(inputParam))
-    model <- gam(f) 
-    g.hat[[d]] <- model$fitted
-  }
-  
-  perfect.info <- mean(do.call(pmax, g.hat)) 
-  baseline <- max(unlist(lapply(g.hat, mean)))
-  
-  partial.evpi <- perfect.info - baseline
-  partial.evpi
-}
+# calcSingleParamGAM <- function(inputParam, inb) {
+#   ## this function calculates EVPI for a single parameter using GAM
+#   if(var(inputParam) == 0) return(0) # screen out constants
+#   D <- ncol(inb)
+#   N <- nrow(inb)
+#   g.hat <- vector("list", D)
+#   g.hat[[1]] <- rep(0, N)   
+#     
+#   for(d in 2:D) {
+#     
+#     f <- formula(inb[, d] ~ te(inputParam))
+#     model <- gam(f) 
+#     g.hat[[d]] <- model$fitted
+#   }
+#   
+#   perfect.info <- mean(do.call(pmax, g.hat)) 
+#   baseline <- max(unlist(lapply(g.hat, mean)))
+#   
+#   partial.evpi <- perfect.info - baseline
+#   partial.evpi
+# }
 
 applyCalcSingleParamGam <- function(parameterDf, nb, session, cache) {
   ## this function applies singleParamGAM over the parameters
-#   
-#   calc <- function(x, inb) {
-# 
-#     calcSingleParamGAM(x, inb)
-#   }
-#   
-  # numVar <- sapply(1:NCOL(parameterDf), function(x) is.numeric(parameterDf[, x]))
+
   parameterDf <- as.matrix(parameterDf)
     
   numVar <- NCOL(parameterDf)
@@ -93,7 +87,7 @@ applyCalcSingleParamGam <- function(parameterDf, nb, session, cache) {
   for (i in 1:NCOL(parameterDf)) {
     progress$set(i)
     result <- gamFunc(nb, i, s=1000, cache, session)
-    res[i, ] <- unlist(result) # <- calcSingleParamGAM(cbind(parameterDf[, numVar])[, i], inb)
+    res[i, ] <- unlist(result) 
   }
   res
 }

@@ -47,8 +47,7 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   progress$set(message = 'Calculating conditional expected net benefits',
                detail = 'Please wait...')
   
-  for(d in 2:D)
-  {
+  for(d in 2:D) {
     progress$set(value = d-1)
     print(paste("estimating g.hat for incremental NB for option",d,"versus 1"))
     f <- update(formula(NB[,d]~.), formula(paste(".~", regression.model)))
@@ -65,8 +64,7 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   rm(g.hat); gc()
   
   print("computing standard error via Monte Carlo")
-  for(d in 2:D)
-  {
+  for(d in 2:D) {
     sampled.coef <- mvrnorm(s, beta.hat[[d]], V[[d]])
     tilde.g[[d]] <- sampled.coef%*%t(Xstar[[d]])  
   }

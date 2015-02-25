@@ -94,7 +94,7 @@ fluidPage(
                h4("Specify details about your model here (you can change these at any time - results will automatically update)"),
                br(),
                textInput("modelName", label = h5("Name of your model"), value ="Model name goes here"),
-               #checkboxInput("indSim", label = h5("Is your model an individual level simulation with a single patient per PSA run?"), FALSE),
+               checkboxInput("indSim", label = h5("Is your model an individual level simulation with a single patient per PSA run?"), FALSE),
                #textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
                #textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
                numericInput("lambdaOverall", label = h5("Threshold value of one unit of health effect (lambda)"), value = 20000, min = 0, step = 1000),
@@ -417,7 +417,7 @@ fluidPage(
                p(HTML("First, define groups of parameters for which to calculate EVPPI. Choose a subset of parameters
                       using the tick boxes and press the Calculate EVPPI button.")),
                p(HTML("When calculation of the first parameter group is complete, select a new subset (remember to untick
-                      your original choices) and press the Calculate EVPPI button again. This can be repeated for up to 100
+                      your original choices) and press the Calculate EVPPI button again. This can be repeated for any number of different
                       groups, with all results appearing below on an expanding results table.")), 
                p(HTML("For subsets with up to five parameters, the GAM regression method is used. 
                       For subsets with five or more parameters the GP regression method is used. 

@@ -1,18 +1,26 @@
 # Copyright (c) 2014, the SAVI authors (see AUTHORS.txt).
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
-#######################################
-# START SHINY SERVER
-#######################################
+######################
+# START SHINY SERVER #
+######################
 
 print("server.R called") # this is called when we start the shiny server on SAVI via $ sudo start shiny-server
 
-# max upload for files
-options(shiny.maxRequestSize=400*1024^2) # increase max upload to 400Mb
 
-# debugging option
+##################
+# SET OPTIONS    #
+# LOAD LIBRARIES #
+# SOURCE SCRIPTS #
+##################
+
+
+
+# max upload for files
+options(shiny.maxRequestSize=400*1024^2) # Max upload 400Mb
+
+# debugging option. Only set to true for debugging. MUST BE FALSE FOR LIVE USE
 options(shiny.reactlog=FALSE)
-# options(shiny.reactlog=TRUE) # only set to true for debugging. MUST BE FALSE FOR LIVE USE
 
 # load the libraries we need
 library(MASS)
@@ -24,29 +32,50 @@ library(xtable)
 # source all the functions we need
 source("scripts.R")
 source("scripts_GPfunctions.R")
-## source("scripts_GPfunctions_TEST.R")
 source("scripts_GAMfunctions.R")
 source("scripts_plots.R")
 source("scripts_tables.R")
 source("scripts_text.R")
 
-# read in the testdata that users can download to try out the app
+
+
+
+
+###########################
+# read in the testdata    #
+# users can download this # 
+# to try out the app      #
+###########################
+
 testParams <- as.matrix(read.csv("test_data/brennan10000/parameters.csv"))
 testCosts <- as.matrix(read.csv("test_data/brennan10000/costs_2d.csv"))
 testEffects <- as.matrix(read.csv("test_data/brennan10000/effects_2d.csv"))
 
+
+
+
+###################
+# SERVER FUNCTION #
+###################
+
+
 shinyServer(
   
   function(input, output, session) {
+
+    
+    
+    #####################################
+    # CREATE NEW ENVIRONMENT 'cache'    #
+    # Initialise cached variable values #
+    #####################################
+    
     # `cache' is the environment unique to each user visit
     # This is where we will save values that need to persist, 
     # and that can be picked up and included in the report
     
     if(exists("cache")) rm(cache) # we shouldn't need this
-
     cache <- new.env()
-    
-    # initialise cached variable values
     
     cache$savedSession <- 0
     cache$nIterate <- 0
@@ -66,7 +95,6 @@ shinyServer(
     cache$currentSelection <- NULL
     cache$ceac.obj <- NULL
     
-
     # assign null values to the about the model variables in the cache
     cache$modelName <- NULL
     cache$current <- NULL  
@@ -81,25 +109,44 @@ shinyServer(
     cache$jurisdiction <- NULL
 
       
+    
+    ########################
+    # AUTOLOAD FOR TESTING #
+    ########################
+    
+    
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
     #   load.parameters <- function() read.csv("../test/parameters.csv")                                   
     #   load.costs <- function() read.csv("../test/costs.csv")
     #   load.effects <- function() read.csv("../test/effects.csv")
     # ########### 
-    
+    # Or load an Rdata file
     # load("adenoma.Rdata", envir=cache) # auto load for testing purposes
 
-    # Function that loads saved session
-    # is evaluated if a new session is loaded
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ############
+    # HOME TAB #
+    ############
+    
+    # Function that loads saved session
+    # is evaluated if a new session is loaded 
     observe({
       inFile = input$loadSession
       if (is.null(inFile)) return(NULL)
       load(inFile$datapath, envir=cache)
-    
-      # update "about the model" variables
-  
+      
+      # update "about the model" variables  
       updateTextInput(session, "modelName", value = cache$modelName)
       updateTextInput(session, "current",  value = cache$current)
       updateTextInput(session, "t3",  value = cache$t3)
@@ -118,24 +165,57 @@ shinyServer(
       cache$subsetEvpiValues <- NULL
       cache$setStoreMatchEvpiValues <- NULL
       cache$currentSelection <- NULL
-   
-      # cache$savedSession <- 1    # not used
       
+      cache$namesDecisions <- paste(1:ncol(cache$costs), ") ", 
+                                    colnames(cache$costs), sep="") # defines the decision option names   
     })
+    
+    
+    
+    
+    
+    ########################
+    # ABOUT YOUR MODEL TAB #
+    ########################  
+    
+    # Function that saves "about the model" variables to the cache if they are changed in the input.
+    
+    observe({
+      cache$modelName <- input$modelName
+      cache$current <- input$current
+      cache$t3 <- input$t3
+      cache$lambdaOverall <- input$lambdaOverall
+      cache$effectDef <- input$effectDef
+      cache$costDef <- input$costDef
+      cache$annualPrev <- input$annualPrev
+      cache$horizon <- input$horizon
+      cache$currency <- input$currency
+      cache$unitBens <- input$unitBens
+      cache$jurisdiction <- input$jurisdiction
+    })
+    
+    
+    
+    
+    
+    
+    ####################
+    # IMPORT FILES TAB #
+    ####################
+    
+    ### Parameters
     
     #  Function that imports parameters
     observe({
       inFile <- input$parameterFile
       if (is.null(inFile)) return(NULL)
       dat <- read.csv(inFile$datapath, sep=input$sep, dec=input$dec)
-
       cache$params <- dat
       cache$nParams <- NCOL(dat)
       cache$nIterate <- NROW(dat) # size of PSA
-      # cache$loadedParameters <- TRUE
     })
     
-    # function that checks sanity of parameter file
+    # Function that checks sanity of parameter file
     output$textCheckTabParams <- renderText({
       x1 <- input$parameterFile     
       params <- cache$params
@@ -154,26 +234,22 @@ shinyServer(
       }
       return(NULL)
     })
-
-      #  Function that imports costs    
+    
+      
+    ### Costs
+       
+    #  Function that imports costs    
     observe({
       inFile <- input$costsFile
       if (is.null(inFile)) return(NULL)
       dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2)
       cache$costs <- dat
-      cache$namesDecisions <- paste(1:ncol(dat), ") ", colnames(dat), sep="")
-      
-      #effects <- cache$effects
-      #if(!is.null(effects)) {
-      #  colnames(effects) <- colnames(dat)
-      #  cache$effects <- effects
-      #}
-      
+      cache$namesDecisions <- paste(1:ncol(dat), ") ", colnames(dat), sep="") # defines the decision option names      
       cache$nInt <- NCOL(dat) # number of interventions
-      # cache$loadedCosts <- TRUE
+
     })
 
-    # function that checks sanity of costs file
+    # Function that checks sanity of costs file
     output$textCheckTabCosts <- renderText({
       x2 <- input$costsFile 
     
@@ -191,23 +267,20 @@ shinyServer(
         
       return(NULL)
     })
+
+        
+    ### Effects
     
-     # Function that imports effects
-      observe({
+    # Function that imports effects
+    observe({
       inFile <- input$effectsFile      
       if (is.null(inFile)) return(NULL)
       
       dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
       cache$effects <- dat
-      # cache$namesEffects <- colnames(dat)
-      #cache$namesEffects <- colnames(dat)
-      #costs <- cache$costs
-      #if(!is.null(costs)) {colnames(dat) <- colnames(costs)}
-
-      # cache$loadedEffects <- TRUE
     })
   
-    # function that checks sanity of effects file
+    # Function that checks sanity of effects file
     output$textCheckTabEffects <- renderText({
       x3 <- input$effectsFile 
       effects <- cache$effects
@@ -219,14 +292,14 @@ shinyServer(
                                   incremental effects for a two-decision option problem, 
                                      either upload the absolute effects, or include a column of zeroes.")
       
-      if (prod(unlist(c(lapply(effects, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
+      if (!prod(unlist(c(lapply(effects, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
         return("Not all columns are numeric - please check data and reload")
       } 
       
       return(NULL)
     })
     
-    # function that checks that files have the right number of rows and columns
+    # Function that checks that files have the right number of rows and columns
     output$textCheckTab <- renderText({
       x1 <- input$parameterFile 
       x2 <- input$costsFile 
@@ -249,23 +322,13 @@ shinyServer(
       
     })
 
-    # Function that saves "about the model" variables to the cache if they are changed in the input.
-
-    observe({
-      cache$modelName <- input$modelName
-      cache$current <- input$current
-      cache$t3 <- input$t3
-      cache$lambdaOverall <- input$lambdaOverall
-      cache$effectDef <- input$effectDef
-      cache$costDef <- input$costDef
-      cache$annualPrev <- input$annualPrev
-      cache$horizon <- input$horizon
-      cache$currency <- input$currency
-      cache$unitBens <- input$unitBens
-      cache$jurisdiction <- input$jurisdiction
-    })
-
-
+    
+    
+    
+    
+    ####################
+    # CHECK UPLOAD TAB #
+    ####################
 
     # Functions that render the data files and pass them to ui.R
     
@@ -277,7 +340,6 @@ shinyServer(
       head(tableValues, n=5)
     })
    
-  
     output$checktable2 <- renderTable({
       x <- input$costsFile 
       y <- input$loadSession
@@ -295,7 +357,12 @@ shinyServer(
       head(tableValues, n=5)
     })
     
-    # do some checks on the input files
+
+    
+    
+    
+    
+    
     
   
     

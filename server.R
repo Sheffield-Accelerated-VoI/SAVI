@@ -82,11 +82,12 @@ shinyServer(
     cache$nInt <- 0
     cache$pEVPI <- NULL
     cache$params <- NULL
+    cache$uploadedCosts <- NULL   # these are the costs that are uploaded
+    cache$uploadedEffects <- NULL # these are the effects that are uploaded
+    cache$modelledCosts <- NULL   # these are the costs that are modelled in the ind sim case
+    cache$modelledEffects <- NULL # these are the effects that are uploaded in the ind sim case
     cache$costs <- NULL
     cache$effects <- NULL
-    #cache$loadedCosts <- FALSE
-    #cache$loadedEffects <- FALSE
-    #cache$loadedParameters <- FALSE
     
     cache$counterAdd <- 0
     cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
@@ -212,6 +213,7 @@ shinyServer(
       cache$currency <- input$currency
       cache$unitBens <- input$unitBens
       cache$jurisdiction <- input$jurisdiction
+      cache$indSim <- input$indSim
     })
     
     
@@ -461,8 +463,6 @@ shinyServer(
     observe({
       x <- input$costsFile
       y <- input$loadSession
-      #costs <- cache$costs
-      #if (is.null(costs)) return(NULL)
       namesOptions <- cache$namesDecisions
       updateRadioButtons(session, "decisionOptionCE1", 
                          choices = namesOptions, selected = namesOptions[2])
@@ -472,13 +472,22 @@ shinyServer(
     observe({
       x <- input$costsFile
       y <- input$loadSession
-      #costs <- cache$costs
-      #if (is.null(costs)) return(NULL)
       namesOptions <- cache$namesDecisions
       updateRadioButtons(session, "decisionOptionCE0", 
                          choices = namesOptions, selected = namesOptions[1])
     }) 
     
+    
+    # if the ind sim flag is set and the cache$modelledCosts is still null then get the modelled costs and effects
+    observe({
+      if (input$indSim & is.null(cache$modelledCosts)) {  
+        modelledCostsAndEffects <- getModelledCostsAndEffects(cache, session)
+        cache$costs <-  cache$modelledCosts
+        cache$effects <-  cache$modelledEffects
+      }
+    })
+    
+    #what if it is unticked???????????
     
     # CE plane
     output$plots1 <- renderPlot({

@@ -99,54 +99,54 @@ formulaGenerator <- function(namesList) {
 # This function builds a GAM model of all the parameters and returns the fitted values - to get the CEAC and overall
 # EVPI when the indiv sim box in tixed.
 
-fullGAMmodel <- function(NB, cache, session) {
-  
-  if(!is.null(dim(NB))) {
-    NB <- NB - NB[, 1]
-  } else {
-    NB <- cbind(0, NB)
-  }
-  
-  D <- ncol(NB)
-  N <- nrow(NB)
-  g.hat <- beta.hat <- Xstar <- V <- tilde.g <- vector("list", D)
-  g.hat[[1]] <- 0
-  
-  input.parameters <- cache$params
-  paramSet <- cbind(cbind(input.parameters)[, sets])
-  
-  constantParams <- (apply(paramSet, 2, var) == 0)
-  
-  if (sum(constantParams) == length(sets)) return(list(EVPI=0, SE=0)) # if all regressors are constant
-  if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
-  
-  # check for linear dependence and remove 
-  paramSet <- cbind(cbind(input.parameters)[, sets]) # now with constants removed
-  rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
-  while(length(unique(rankifremoved)) > 1) {
-    linearCombs <- which(rankifremoved == max(rankifremoved))
-    # print(linearCombs)
-    print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
-    paramSet <- cbind(paramSet[, -max(linearCombs)])
-    sets <- sets[-max(linearCombs)]
-    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
-  }
-  
-  regression.model <- formulaGenerator(colnames(input.parameters))
-  
-  progress <- shiny::Progress$new(session, min=1, max=D-1)
-  on.exit(progress$close())
-  progress$set(message = 'Averaging over patients',
-               detail = 'Please wait...')
-  
-  for(d in 2:D) {
-    progress$set(value = d-1)
-    print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
-    f <- update(formula(NB[,d]~.), formula(paste(".~", regression.model)))
-    model <- gam(f, data=data.frame(input.parameters)) 
-    g.hat[[d]] <- model$fitted
-  }  
-  g.hat  
+getModelledCostsAndEffects <- function(cache, session) {
+  print("THIS FUNCTION WILL COMPUTE MODELLED COSTS AND EFFECTS")
+  return(list(costs = cache$costs, effects=cache$effects))
 }
+
+# getModelledCostsAndEffects <- function(cache, session) {  
+#   costs <- cache$uploadedCosts
+#   effects <- cache$uploadedEffects  
+#   D <- ncol(NB)
+#   N <- nrow(NB)
+#   g.hat <- beta.hat <- Xstar <- V <- tilde.g <- vector("list", D)
+#   g.hat[[1]] <- 0
+#   
+#   input.parameters <- cache$params
+#   paramSet <- cbind(cbind(input.parameters)[, sets])
+#   
+#   constantParams <- (apply(paramSet, 2, var) == 0)
+#   
+#   if (sum(constantParams) == length(sets)) return(list(EVPI=0, SE=0)) # if all regressors are constant
+#   if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
+#   
+#   # check for linear dependence and remove 
+#   paramSet <- cbind(cbind(input.parameters)[, sets]) # now with constants removed
+#   rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+#   while(length(unique(rankifremoved)) > 1) {
+#     linearCombs <- which(rankifremoved == max(rankifremoved))
+#     # print(linearCombs)
+#     print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
+#     paramSet <- cbind(paramSet[, -max(linearCombs)])
+#     sets <- sets[-max(linearCombs)]
+#     rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+#   }
+#   
+#   regression.model <- formulaGenerator(colnames(input.parameters))
+#   
+#   progress <- shiny::Progress$new(session, min=1, max=D-1)
+#   on.exit(progress$close())
+#   progress$set(message = 'Averaging over patients',
+#                detail = 'Please wait...')
+#   
+#   for(d in 2:D) {
+#     progress$set(value = d-1)
+#     print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
+#     f <- update(formula(NB[,d]~.), formula(paste(".~", regression.model)))
+#     model <- gam(f, data=data.frame(input.parameters)) 
+#     g.hat[[d]] <- model$fitted
+#   }  
+#   g.hat  
+# }
 
 

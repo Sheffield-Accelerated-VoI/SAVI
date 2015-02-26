@@ -135,6 +135,18 @@ shinyServer(
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     ############
     # HOME TAB #
     ############
@@ -174,6 +186,21 @@ shinyServer(
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     ########################
     # ABOUT YOUR MODEL TAB #
     ########################  
@@ -193,6 +220,17 @@ shinyServer(
       cache$unitBens <- input$unitBens
       cache$jurisdiction <- input$jurisdiction
     })
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -321,7 +359,45 @@ shinyServer(
       return(NULL)
       
     })
-
+    
+    
+    ### DOWNLOAD TEST FILES
+    
+    # Download csv file
+    output$testParams <- downloadHandler(
+      filename = "parameters.csv",
+      content = function(file) {
+        write.csv(testParams, file, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
+    
+    output$testCosts <- downloadHandler(
+      filename = "costs.csv",
+      content = function(file) {
+        write.csv(testCosts, file, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
+    
+    output$testEffects <- downloadHandler(
+      filename = "effects.csv",
+      content = function(file) {
+        write.csv(testEffects, file, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -364,17 +440,65 @@ shinyServer(
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ###################
+    # PSA RESULTS TAB #
+    ###################
   
     
-    # function that calculates ceac
-    ceac <- reactive({ 
+    ### CE PLANE
+      
+    # This function gets the parameter names
+    # The output is the checkbox list for the intervention for the CE plane
+    observe({
+      x <- input$costsFile
+      y <- input$loadSession
+      #costs <- cache$costs
+      #if (is.null(costs)) return(NULL)
+      namesOptions <- cache$namesDecisions
+      updateRadioButtons(session, "decisionOptionCE1", 
+                         choices = namesOptions, selected = namesOptions[2])
+    })    
+    
+    # The output is the checkbox list for the comparator for the CE plane
+    observe({
+      x <- input$costsFile
+      y <- input$loadSession
+      #costs <- cache$costs
+      #if (is.null(costs)) return(NULL)
+      namesOptions <- cache$namesDecisions
+      updateRadioButtons(session, "decisionOptionCE0", 
+                         choices = namesOptions, selected = namesOptions[1])
+    }) 
+    
+    
+    # CE plane
+    output$plots1 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
+      cache$lambdaOverall <- input$lambdaOverall
+      costs <- cache$costs
+      effects <- cache$effects
+      makeCEPlanePlot(costs, effects, 
+                      lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
     })
-        
-  
+    
+    
     # Functions that make reactive text to accompany plots
-
     output$textCEplane1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("The figure above shows the (standardised) cost-effectiveness plane based on the ", cache$nIterate, 
@@ -404,15 +528,7 @@ shinyServer(
             cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
             " that ", input$decisionOptionCE1, " is more cost-effective than ", input$decisionOptionCE0, ".", sep="")
     })                         
-    
-    
-#     This is ", 
-#             aboveBelow(cache$costs, cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall),  
-#             " the threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, " indicating that ", 
-#     input$decisionOptionCE1,
-#     " ", wouldNot(cache$costs, cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall), " be considered cost-effective 
-#     relative to ", input$decisionOptionCE0, " at this threshold. 
-    
+      
     output$textCEplane4 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL) 
       paste(input$decisionOptionCE1, "versus", input$decisionOptionCE0)
@@ -424,6 +540,39 @@ shinyServer(
       than ", input$decisionOptionCE0, " at a threshold of ",input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
     })                       
     
+    # Table of Key Cost-Effectiveness Statistics
+    output$tableCEplane <- renderTable({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
+      cache$lambdaOverall <- input$lambdaOverall
+      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
+                                  "Comparator", 
+                                  "Number of PSA runs", 
+                                  paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
+                                  paste("Mean inc. Cost per Person (", input$currency, ")", sep=""),
+                                  paste("ICER Estimate (", input$currency, " per ", input$unitBens, ")", sep=""),
+                                  paste("2.5th CI for inc. Effects (", input$unitBens, ")", sep=""), 
+                                  paste("97.5th CI for inc. Effects (", input$unitBens, ")", sep=""),
+                                  paste("2.5th CI for inc. Costs (", input$currency, ")", sep=""),
+                                  paste("97.5th CI for inc. Costs (", input$currency, ")", sep=""),
+                                  "Probability intervention is cost saving", 
+                                  "Probability intervention provides more benefit", 
+                                  "Probability that intervention is cost-effective against comparator")
+      tableCEplane
+    })  
+    
+    
+    
+    
+
+    ### CEAC
+
+    # function that calculates ceac
+    ceac <- reactive({ 
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
+    })
+
     output$textCEAC1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
@@ -432,29 +581,104 @@ shinyServer(
             ", with a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache),
             ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
-                       
-   output$textNB1 <- renderText({
-     if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("Net benefit is a calculation that puts ", input$costDef, " and ", input$effectDef, " onto the same scale.  This is done by calculating 
+                 
+    # CEAC plot
+    output$plots2 <- renderPlot({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      ceac.obj <- cache$ceac.obj <- ceac()
+      cache$lambdaOverall <- input$lambdaOverall
+      makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
+                   names=colnames(cache$costs))
+    })
+    
+    
+    
+   ### NET BENEFIT
+    
+    output$textNB1 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("Net benefit is a calculation that puts ", input$costDef, " and ", input$effectDef, " onto the same scale.  This is done by calculating 
            the monetary value of ", input$effectDef, " using a simple multiplication i.e. ", input$unitBens, "s * lambda, where:", sep="")
-   })  
+    })  
 
-   output$textNB2 <- renderText({
-     if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("Net benefit for a strategy = ", input$unitBens, "s * ", input$lambdaOverall, " - Cost (" ,input$currency, ").", sep="")
-   }) 
-
-   output$textNB3 <- renderText({
-     if (!valuesImportedFLAG(cache, input)) return(NULL)
-     paste("The plot below shows the expected net benefit of the ", cache$nInt, " strategies, together with the 97.5% credible 
+    output$textNB2 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("Net benefit for a strategy = ", input$unitBens, "s * ", input$lambdaOverall, " - Cost (" ,input$currency, ").", sep="")
+    }) 
+    
+    output$textNB3 <- renderText({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      paste("The plot below shows the expected net benefit of the ", cache$nInt, " strategies, together with the 97.5% credible 
            interval for each one.  The strategy with highest expected net benefit is ", bestnetBen(cache$costs, 
            cache$effects, input$lambdaOverall, cache$nInt), ", with an expected net benefit of 
            ", input$currency, netBencosts(cache$costs, cache$effects, input$lambdaOverall, cache$nInt),
            " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(cache$costs, cache$effects, 
            input$lambdaOverall, cache$nInt), " ", input$unitBens, "s). Net benefit and 97.5% credible intervals for all strategies 
            are presented in the above table. ", sep="")
-   }) 
-
+    }) 
+    
+    # Table of Summary of Absolute Net Benefit Statistics
+    output$tableNetBenefit <- renderTable({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      tableNetBenefit <- makeTableNetBenefit(cache$costs, cache$effects, lambda=input$lambdaOverall, cache$nInt)
+      cache$lambdaOverall <- input$lambdaOverall
+      rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
+                                    paste("Mean", input$costDef), 
+                                    paste("Expected Net Benefit at", 
+                                          input$currency, input$lambdaOverall, "per", input$unitBens), 
+                                    "95% Lower CI (on Costs Scale)", 
+                                    "95% Upper CI (on Costs Scale)", 
+                                    "Expected Net Benefit on Effects Scale", 
+                                    "95% Lower CI (on Effects Scale)", 
+                                    "95% Upper CI (on Effects Scale)")
+      tableNetBenefit 
+    })  
+    
+    # EVPI INB bar plot
+    output$plots5a <- renderPlot({ # NEED TO DISCUSS THIS - MS
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      makeInbOptBar(cache$costs, cache$effects, 
+                   lambda=input$lambdaOverall)
+    })
+    
+    # Absolute net benefit densities
+    output$plots5 <- renderPlot({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      make2wayDensity(cache$costs, cache$effects, 
+                     lambda=input$lambdaOverall)
+    })
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   ############
+   # EVPI TAB #
+   ############
+   
+   
    output$textEVPI1 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      paste("The overall EVPI per person affected by the decision is estimated to be ", input$currency, format(calcEvpi(cache$costs, 
@@ -495,149 +719,37 @@ shinyServer(
     })
 
 
-    # Functions that make tables 
-
-    output$tableCEplane <- renderTable({
+    # Table Overall EVPI
+    output$tableEVPI <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
-      cache$lambdaOverall <- input$lambdaOverall
-      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
-                            "Comparator", 
-                            "Number of PSA runs", 
-                            paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
-                            paste("Mean inc. Cost per Person (", input$currency, ")", sep=""),
-                            paste("ICER Estimate (", input$currency, " per ", input$unitBens, ")", sep=""),
-                            paste("2.5th CI for inc. Effects (", input$unitBens, ")", sep=""), 
-                            paste("97.5th CI for inc. Effects (", input$unitBens, ")", sep=""),
-                            paste("2.5th CI for inc. Costs (", input$currency, ")", sep=""),
-                            paste("97.5th CI for inc. Costs (", input$currency, ")", sep=""),
-                            "Probability intervention is cost saving", 
-                            "Probability intervention provides more benefit", 
-                            "Probability that intervention is cost-effective against comparator")
-      tableCEplane
-    })  
-
-    output$tableNetBenefit <- renderTable({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-     tableNetBenefit <- makeTableNetBenefit(cache$costs, cache$effects, lambda=input$lambdaOverall, cache$nInt)
-     cache$lambdaOverall <- input$lambdaOverall
-     rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
-                                    paste("Mean", input$costDef), 
-                                    paste("Expected Net Benefit at", 
-                                          input$currency, input$lambdaOverall, "per", input$unitBens), 
-                                    "95% Lower CI (on Costs Scale)", 
-                                    "95% Upper CI (on Costs Scale)", 
-                                    "Expected Net Benefit on Effects Scale", 
-                                    "95% Lower CI (on Effects Scale)", 
-                                    "95% Upper CI (on Effects Scale)")
-     tableNetBenefit
-
-   })  
-   
-   output$tableEVPI <- renderTable({
-     if (!valuesImportedFLAG(cache, input)) return(NULL)
-     dummy <- input$lambdaOverall
-     tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
-     colnames(tableEVPI) <- c(paste("Overall EVPI monetary scale (", input$currency, ")", sep=""), paste("Overall EVPI", input$unitBens, "scale"))
-     rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
+      dummy <- input$lambdaOverall
+      tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
+      colnames(tableEVPI) <- c(paste("Overall EVPI monetary scale (", input$currency, ")", sep=""), paste("Overall EVPI", input$unitBens, "scale"))
+      rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
                               paste("Per Year in", input$jurisdiction, "Assuming", input$annualPrev, "Persons Affected per Year"), 
                               "Over 5 Years", 
                               "Over 10 Years", 
                               "Over 15 Years", 
                               "Over 20 years", 
                               paste("Over Specified Decision Relevance Horizon (", input$horizon, "years)"))
-     
-#      overallEvpi <- ifelse(input$indSim, calcEvpiSingle(cache$costs, cache$effects, 
-#                                                   lambda=input$lambdaOverall, cache, session),
-#                            calcEvpi(cache$costs, cache$effects, 
-#              lambda=input$lambdaOverall, cache, session))
-     overallEvpi <- calcEvpi(cache$costs, cache$effects, 
+      
+      #      overallEvpi <- ifelse(input$indSim, calcEvpiSingle(cache$costs, cache$effects, 
+      #                                                   lambda=input$lambdaOverall, cache, session),
+      #                            calcEvpi(cache$costs, cache$effects, 
+      #              lambda=input$lambdaOverall, cache, session))
+      overallEvpi <- calcEvpi(cache$costs, cache$effects, 
                                            lambda=input$lambdaOverall, cache, session)
-     cache$overallEvpi <- overallEvpi
-     cache$lambdaOverall <- input$lambdaOverall
-     evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 
+      cache$overallEvpi <- overallEvpi
+      cache$lambdaOverall <- input$lambdaOverall
+      evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 
                      overallEvpi * input$annualPrev * 10, overallEvpi * input$annualPrev * 15,
                      overallEvpi * input$annualPrev * 20,
                      overallEvpi * input$annualPrev * input$horizon)     
-     tableEVPI[, 1] <- signif(evpiVector, 4)          
-     tableEVPI[, 2] <- signif(evpiVector / input$lambdaOverall, 4)   
-     tableEVPI
-   }, digits=cbind(rep(0, 7), rep(0, 7), rep(2, 7))) 
+      tableEVPI[, 1] <- signif(evpiVector, 4)          
+      tableEVPI[, 2] <- signif(evpiVector / input$lambdaOverall, 4)   
+      tableEVPI
+    }, digits=cbind(rep(0, 7), rep(0, 7), rep(2, 7))) 
    
-
-    output$tableEVPPI <- renderTable({
-     if (!valuesImportedFLAG(cache, input)) return(NULL)
-     lambda <- input$lambdaOverall # re-run if labmda changes
-     cache$lambdaOverall <- input$lambdaOverall
-     params <- cache$params
-     costs <- cache$costs
-     effects <- cache$effects
-
-     overallEvpi <- calcEvpi(costs, effects, lambda)
-     cache$overallEvpi <- overallEvpi
-     
-     inb <- createInb(costs, effects, lambda)
-     pEVPI <- applyCalcSingleParamGam(params, inb, session, cache)
-     cache$pEVPI <- pEVPI
-     
-     tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 5)
-     tableEVPPI[, 1] <- round(pEVPI[, 1], 2)
-     tableEVPPI[, 2] <- round(pEVPI[, 2], 2)
-     tableEVPPI[, 3] <- round(pEVPI[, 1] / overallEvpi , 2)
-     tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
-     tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
-     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
-                               paste("EVPPI for ", input$jurisdiction, " Per Year (", input$currency, ")", sep=""), 
-                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years (", input$currency, ")", sep=""))
-     rownames(tableEVPPI) <- colnames(cache$params)
-     tableEVPPI
-   }) 
-   
-
-    # This function gets the parameter names
-    # The output is the checkbox list for the intervention for the CE plane
-    observe({
-      x <- input$costsFile
-      y <- input$loadSession
-      #costs <- cache$costs
-      #if (is.null(costs)) return(NULL)
-      namesOptions <- cache$namesDecisions
-      updateRadioButtons(session, "decisionOptionCE1", 
-                               choices = namesOptions, selected = namesOptions[2])
-    })    
-
-    # The output is the checkbox list for the comparator for the CE plane
-    observe({
-      x <- input$costsFile
-      y <- input$loadSession
-      #costs <- cache$costs
-      #if (is.null(costs)) return(NULL)
-      namesOptions <- cache$namesDecisions
-      updateRadioButtons(session, "decisionOptionCE0", 
-                               choices = namesOptions, selected = namesOptions[1])
-    })    
-
-
-    # Functions that make plots
-    # CE plane
-    output$plots1 <- renderPlot({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      cache$lambdaOverall <- input$lambdaOverall
-      costs <- cache$costs
-      effects <- cache$effects
-      makeCEPlanePlot(costs, effects, 
-                      lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
-    })  
- 
-    # CEAC
-    output$plots2 <- renderPlot({
-       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      ceac.obj <- cache$ceac.obj <- ceac()
-      cache$lambdaOverall <- input$lambdaOverall
-      makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
-                   names=colnames(cache$costs))
-    })  
-
     # EVPI versus lambda (costs)
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -658,29 +770,72 @@ shinyServer(
                    ylab="Overall EVPI per person affected (on effects scale)",
                    col="blue",  costscale = FALSE, session)
     })
-    
-    # EVPI INB bar plot
-    output$plots5a <- renderPlot({ # NEED TO DISCUSS THIS - MS
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      makeInbOptBar(cache$costs, cache$effects, 
-                      lambda=input$lambdaOverall)
-    })
-
-    # Absolute net benefit densities
-    output$plots5 <- renderPlot({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      make2wayDensity(cache$costs, cache$effects, 
-                      lambda=input$lambdaOverall)
-    })
-    
-    # EVPI plots
+   
     output$plots6 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make4wayEvpiPlot(cache$costs, cache$effects, lambda=input$lambdaOverall, 
                        prevalence=input$annualPrev, horizon=input$horizon, measure1 = input$currency, 
                        measure2 = input$unitBens, session)
     })
- 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+    ###############################
+    # EVPPI SINGLE PARAMETERS TAB #
+    ###############################
+     
+    output$tableEVPPI <- renderTable({
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      lambda <- input$lambdaOverall # re-run if labmda changes
+      cache$lambdaOverall <- input$lambdaOverall
+      params <- cache$params
+      costs <- cache$costs
+      effects <- cache$effects
+  
+      overallEvpi <- calcEvpi(costs, effects, lambda)
+      cache$overallEvpi <- overallEvpi
+     
+      inb <- createInb(costs, effects, lambda)
+      pEVPI <- applyCalcSingleParamGam(params, inb, session, cache)
+      cache$pEVPI <- pEVPI
+     
+      tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 5)
+      tableEVPPI[, 1] <- round(pEVPI[, 1], 2)
+      tableEVPPI[, 2] <- round(pEVPI[, 2], 2)
+      tableEVPPI[, 3] <- round(pEVPI[, 1] / overallEvpi , 2)
+      tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
+      tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
+      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
+                                paste("EVPPI for ", input$jurisdiction, " Per Year (", input$currency, ")", sep=""), 
+                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years (", input$currency, ")", sep=""))
+      rownames(tableEVPPI) <- colnames(cache$params)
+      tableEVPPI
+    }) 
+   
     # EVPPi horizontal bar chart
     output$plot7 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -689,6 +844,37 @@ shinyServer(
     })
   
 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+    
+    ################
+    # EVPPI GROUPS #
+    ################  
+    
     # This function gets the parameter names
     # The output is the checkbox list
     observe({
@@ -707,7 +893,6 @@ shinyServer(
     # and then output the results.
 
     # This function gets the selection and assigns it to cache
-
     observe({
       currentSelectionNames <- input$pevpiParameters
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -720,8 +905,7 @@ shinyServer(
 
     # This function responds to the add button being pressed
     # This function saves the current selection and then increase counter
-    # It does the calculation and then outputs the selection table 
-    
+    # It does the calculation and then outputs the selection table   
     output$selectedTable <- renderTable({
       dummy <- input$calculateSubsetsEvpi
       if (dummy == 0) return(NULL)
@@ -757,17 +941,52 @@ shinyServer(
     }, sanitize.rownames.function = bold.allrows)
 
      # This clears everything, either on pressing the clear all button, or on loading new data.
-     observe({ # clear the selections
-       dummy <- input$clearSubsetsEvpi
-       dummy1 <- valuesImportedFLAG(cache, input)
-       setStore <- vector("list", 100)
-       cache$setStore <- setStore
-       cache$counterAdd <- 0
-       cache$subsetEvpiValues <- NULL
-       cache$setStoreMatchEvpiValues <- NULL # cache these for the report in case they change
-     })
+    observe({ # clear the selections
+      dummy <- input$clearSubsetsEvpi
+      dummy1 <- valuesImportedFLAG(cache, input)
+      setStore <- vector("list", 100)
+      cache$setStore <- setStore
+      cache$counterAdd <- 0
+      cache$subsetEvpiValues <- NULL
+      cache$setStoreMatchEvpiValues <- NULL # cache these for the report in case they change
+    })
 
     
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+    #################
+    # DOWNLOADS TAB #
+    #################
+   
+   
     # Functions that download things
     
     # Download csv file
@@ -778,32 +997,6 @@ shinyServer(
       },
       contentType = "text/plain"
     )
-
-    # Download csv file
-    output$testParams <- downloadHandler(
-      filename = "parameters.csv",
-      content = function(file) {
-        write.csv(testParams, file, row.names = FALSE)
-      },
-      contentType = "text/plain"
-    )
-
-    output$testCosts <- downloadHandler(
-      filename = "costs.csv",
-      content = function(file) {
-        write.csv(testCosts, file, row.names = FALSE)
-      },
-      contentType = "text/plain"
-    )
-    
-    output$testEffects <- downloadHandler(
-      filename = "effects.csv",
-      content = function(file) {
-        write.csv(testEffects, file, row.names = FALSE)
-      },
-      contentType = "text/plain"
-    )
-
 
     # thanks to yijui for this code
     # https://github.com/rstudio/shiny-examples/blob/master/016-knitr-pdf/server.R
@@ -835,7 +1028,26 @@ shinyServer(
       contentType = "text/plain"
     )
     
-
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+    ####################
+    # SAVE SESSION TAB #
+    ####################
+   
+   
     # Download .Rdata file
     output$saveSession <- downloadHandler(
       filename =  function() paste(input$RdataFileName),
@@ -846,3 +1058,22 @@ shinyServer(
     
     
     })
+
+
+
+
+    ######################################################## ENDS #############################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+

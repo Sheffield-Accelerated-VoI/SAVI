@@ -1,7 +1,18 @@
 # Copyright (c) 2014, the SAVI authors (see AUTHORS.txt).
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
+
+
+##################
+# BEGIN FUNCTION #
+##################
+
 fluidPage(
+  
+  ###########
+  # STYLING #
+  ###########
+  
   tags$head(
     tags$style("body {background-color: #F8F8F8; }")),
   tags$style(type='text/css', '#textCheckTab {color: red;}'),
@@ -9,15 +20,31 @@ fluidPage(
   tags$style(type='text/css', '#textCheckTabCosts {color: red;}'),
   tags$style(type='text/css', '#textCheckTabEffects {color: red;}'),
   
+  
+  
+  
+  ################
+  # HEADER PANEL #
+  ################
+  
+  
   # uni is #F1F2F2
   headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' target='_blank'><img src = 'uni2.gif' width = '200' 
                    alt='University of Sheffield logo' /></a> SAVI - Sheffield Accelerated Value of Information")),
-  
+   
   mainPanel(
     h4("Release version 1.015 (2015-02-24)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
-    tabsetPanel( 
-      
+
+  
+  
+  
+  
+  ############
+  # HOME TAB #
+  ############
+  
+    tabsetPanel(       
       tabPanel("Home",
                sidebarLayout(position = "right",
                              sidebarPanel(
@@ -89,6 +116,20 @@ fluidPage(
       #                h3("User Guide")
       #       ),
       
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      ########################
+      # ABOUT YOUR MODEL TAB #
+      ########################
+      
       tabPanel("About your model", 
                
                h4("Specify details about your model here (you can change these at any time - results will automatically update)"),
@@ -113,6 +154,14 @@ fluidPage(
       ),
       
       
+      
+      
+      
+      
+      
+      ####################
+      # IMPORT FILES TAB #
+      ####################
       
       tabPanel("Import files",     # Button to import parameter data         
                sidebarLayout(position = "right",
@@ -206,6 +255,14 @@ fluidPage(
       
       
       
+      
+      
+      
+      
+      ####################
+      # CHECK UPLOAD TAB #
+      ####################
+      
       tabPanel("Check upload",
                
                h3("Check data import"),
@@ -220,6 +277,19 @@ fluidPage(
                tableOutput("checktable3")
       ),
       
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      ###################
+      # PSA RESULTS TAB #
+      ###################     
       
       tabPanel("PSA Results",
                h3("Cost-Effectiveness Plane"),
@@ -327,8 +397,22 @@ fluidPage(
                
       ),
       
-      # Graphic
-      # coming from the function output$boxplots in server.R
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      ############
+      # EVPI TAB #
+      ############
+      
       tabPanel("EVPI",
                h3("Overall Expected Value of Perfect Information"),
                #p("The Table below quantifies the expected value to decision makers of removing all 
@@ -386,6 +470,21 @@ fluidPage(
                
       ),
       
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      ###############################
+      # EVPPI SINGLE PARAMETERS TAB #
+      ###############################
+      
       tabPanel("EVPPI single parameters",
                #h3("Specify lambda"),
                #sliderInput('lambdaSingleEvppiTab', label="", 0, 60000, 20000, 1000),
@@ -406,6 +505,23 @@ fluidPage(
                plotOutput("plot7", width="500px", height="500px")
                
       ),
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      ####################
+      # EVPPI GROUPS TAB #
+      ####################
+      
       
       tabPanel("EVPPI groups",
                h3("Partial EVPI for groups of parameters"),
@@ -454,6 +570,18 @@ fluidPage(
       # Numerical summary of the dataset,
       # coming from the function output$summary in server.R
       
+      
+      
+      
+      
+      
+      
+      
+      
+      #################
+      # DOWNLOADS TAB #
+      #################
+      
       tabPanel("Downloads", 
                
                h3("Download summary report"),
@@ -469,11 +597,36 @@ fluidPage(
                downloadButton('downloadSummary', 'Download EVPI values')
       ),
       
+      
+      
+      
+      
+      
+      
+      
+      
+      ####################
+      # SAVE SESSION TAB #
+      ####################
+      
       tabPanel("Save session", 
                textInput("RdataFileName", strong("Filename"), value="SAVISession.Rdata"),
                br(), br(),
                downloadButton('saveSession', 'Save SAVI session')
       ),
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      ################
+      # ABOUT US TAB #
+      ################
       
       tabPanel("About us", 
                h3("About us"),
@@ -516,14 +669,30 @@ fluidPage(
                  Policy</a>"))
       )
       
+      
+      
+      
+      
+      
+      ########################
+      # CONTROL LOOK OF TABS #
+      ########################
       ,  type = "pills" # this controls the look of the tabs
     ), 
+  
+  
+  
+    ##########
+    # FOOTER #
+    ##########
+  
     tags$style(type="text/css", ".tab-content { overflow: visible; }", "footer {background-color: #F8F8F8;
             width: 100%;
             bottom: 0;
             position: relative; }")
     , width = 12 # 12 is the max width of the mainPanel page
   )
-  #,theme="bootstrap.css"
-  ,title="SAVI - Sheffield Accelerated Value of Information")
+  #,theme="bootstrap.css" # can style with bootstrap
+  , title="SAVI - Sheffield Accelerated Value of Information") # BROWSER WINDOW TITLE
+
 #can add id="tabId", before type = "pills"

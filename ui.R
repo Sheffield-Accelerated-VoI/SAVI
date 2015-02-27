@@ -107,15 +107,13 @@ fluidPage(
                                
                                h3("If you get stuck, or if something doesn't work, please let us know"),
                                p(HTML("Our email address is"), a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk')),               
-                               br(),br(),br())
+                               br(),br(),br()
+                              )
                              
                              
                )),
       
-      #       tabPanel("User Guide",
-      #                h3("User Guide")
-      #       ),
-      
+
       
       
       
@@ -131,25 +129,36 @@ fluidPage(
       ########################
       
       tabPanel("About your model", 
-               
-               h4("Specify details about your model here (you can change these at any time - results will automatically update)"),
-               br(),
-               textInput("modelName", label = h5("Name of your model"), value ="Model name goes here"),
-               checkboxInput("indSim", label = h5("Is your model an individual level simulation with a single patient per PSA run?"), FALSE),
-               #textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
-               #textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
-               numericInput("lambdaOverall", label = h5("Threshold value of one unit of health effect (lambda)"), value = 20000, min = 0, step = 1000),
-               textInput("effectDef", label = h5("Definition of effectiveness measure"), value ="Discounted Lifetime QALYs"),
-               textInput("costDef", label = h5("Definition of cost measure"), value ="Discounted Lifetime Costs (£)"),
-               numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 1000, min = 0, step = 10),
-               numericInput("horizon", label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 10, min = 1),
-               #numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
-               #numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
-               textInput("currency", label = h5("Units used for costs"), value ="£"),
-               textInput("unitBens", label = h5("Units used for benefits"), value ="QALY"),
-               textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"), value = "England"),
-               
-               br()
+               sidebarLayout(position = "right",
+                             sidebarPanel(
+                               h3("Individual level simulation models"),
+                               h5("This box is relevant if your model is an individual level simulation model."),
+                               br(),
+                               p("If individuals within a simulation model are independent (conditional on the PSA parameters)
+                                 then the optimum number of individuals to simulate per sample of the PSA parameter parameters is
+                                 1. This will lead to the most efficient (lowest variance) estimators for the mean costs, mean effects and
+                                 mean net benefits." ), 
+                               radioButtons("indSim", label = h5("Is the model an individual level simulation with a single patient per PSA run?"), choices = c("No", "Yes"), inline=TRUE),                             
+                               br()
+                               ,width = 6),
+                             mainPanel(                
+                               h3("Specify details about your model here"),
+                               h5("These can changed at any time - results will automatically update"),
+                               textInput("modelName", label = h5("Name of your model"), value ="Model name goes here"),
+                               #textInput("current", label = h5("Name of strategy considered to be current/standard care"), value ="Current Care"),
+                               #textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),#Need some way of adding more than one name to box
+                               numericInput("lambdaOverall", label = h5("Threshold value of one unit of health effect (lambda)"), value = 20000, min = 0, step = 1000),
+                               textInput("effectDef", label = h5("Definition of effectiveness measure"), value ="Discounted Lifetime QALYs"),
+                               textInput("costDef", label = h5("Definition of cost measure"), value ="Discounted Lifetime Costs (£)"),
+                               numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction (number of patients affected by the decision each year)"), value = 1000, min = 0, step = 10),
+                               numericInput("horizon", label = h5("Decision relevance horizon (number of years that decision between these strategies is likely to be relevant)"), value = 10, min = 1),
+                               #numericInput("n1",label = h5("Number of strategies compared in the model (including current/standard care)"), value = 2, min = 2),
+                               #numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),value = 0, min = 0, step = 100),
+                               textInput("currency", label = h5("Units used for costs"), value ="£"),
+                               textInput("unitBens", label = h5("Units used for benefits"), value ="QALY"),
+                               textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"), value = "England")
+                               , width = 6)
+              )     
                
       ),
       

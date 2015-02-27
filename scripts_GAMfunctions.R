@@ -112,18 +112,19 @@ getModelledCostsAndEffects <- function(cache, session) {
   #cache$modelledEffects <- cache$uploadedEffects
   #return(NULL)
 
-  costs <- fitFullModel(cache$uploadedCosts)
-  effects <- fitFullModel(cache$uploadedEffects)
+  cache$modelledCosts <- fitFullModel(cache$uploadedCosts, cache, session)
+  print(dim(cache$modelledCosts))
+  cache$modelledEffects <- fitFullModel(cache$uploadedEffects, cache, session)
+  print(dim(cache$modelledEffects))
 }
 
-fitFullModel <- function(outcomeVar) {
+fitFullModel <- function(outcomeVar, cache, session) {
 
   D <- ncol(outcomeVar)
   N <- nrow(outcomeVar)
   modelFitted <- matrix(0, ncol=D, nrow=N)
   
   input.parameters <- cache$params[, ,drop=FALSE]
-  print(head(input.parameters))
   paramSet <- cbind(input.parameters)
   sets <- colnames(input.parameters)
   
@@ -146,40 +147,38 @@ fitFullModel <- function(outcomeVar) {
     print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
     paramSet <- cbind(paramSet[, -max(linearCombs), drop=FALSE])
     # sets <- sets[-max(linearCombs)]
-    print(rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank))
-    print(qr(paramSet)$rank)
+    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   }
   
   while(qr(paramSet)$rank == rankifremoved[1]) {
     print(paste("Linear dependence... removing column", colnames(paramSet)[1]))
     paramSet <- cbind(paramSet[, -1, drop=FALSE]) # special case only lincomb left
-    print(rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank))
+    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   }
   
-  print(head(paramSet))
+
   regression.model <- formulaGeneratorAdditive(colnames(paramSet))
   
-#   progress <- shiny::Progress$new(session, min=1, max=D-1)
-#   on.exit(progress$close())
-#   progress$set(message = 'Averaging over patients',
-#                detail = 'Please wait...')
+  progress <- shiny::Progress$new(session, min=1, max=D-1)
+  on.exit(progress$close())
+  progress$set(message = 'Averaging over patients',
+               detail = 'Please wait...')
   
   for(d in 1:D) {
 
-#     progress$set(value = d)
+   progress$set(value = d)
     print(paste("estimating fitted for option", d))
     dependent <- outcomeVar[, d]
     f <- update(formula(dependent~.), formula(paste(".~", regression.model)))
-    print(f)
     model <- gam(f, data=data.frame(input.parameters)) 
     modelFitted[, d] <- model$fitted
   }  
+  print("here")
+  print(head(  modelFitted))
+  colnames(modelFitted) <- colnames(outcomeVar)
   modelFitted 
 
 }
-
-output <- fitFullModel(out)
-head(output)
 
 
 formulaGeneratorAdditive <- function(namesList) {
@@ -190,4 +189,3 @@ formulaGeneratorAdditive <- function(namesList) {
   strtrim(regModel, nchar(regModel)-1)
 }
 
-formulaGeneratorAdditive(colnames(cache$params))

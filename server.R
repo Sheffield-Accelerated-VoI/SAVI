@@ -482,7 +482,7 @@ shinyServer(
     observe({
       # cache$indSim <- input$indSim
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      if (input$indSim) {
+      if (input$indSim == "Yes") {
         print("1")
         print(input$indSim)
         if (is.null(cache$modelledCosts)) {
@@ -727,6 +727,8 @@ shinyServer(
    
    output$textEVPI1 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
+     dummy <- input$indSim # ensure update with ind sim box tick
+     
      paste("The overall EVPI per person affected by the decision is estimated to be ", input$currency, format(calcEvpi(cache$costs, 
           cache$effects, input$lambdaOverall), digits = 4, nsmall=2), ".  This is equivalent to ", 
           format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)/input$lambdaOverall, digits = 4, nsmall=1), " ", input$unitBens,
@@ -735,12 +737,16 @@ shinyServer(
 
     output$textEVPI2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("If the number of people affected by the decision per year is " , input$annualPrev, ", then the overall EVPI per year is ", input$currency,
             format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev, digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
     }) 
 
     output$textEVPI3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
             will remain relevant. If the decision relevance horizon is ", input$horizon, " years, then the overall expected value of removing 
             decision uncertainty for ", 
@@ -750,6 +756,8 @@ shinyServer(
 
     output$textEVPI4 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("Research or data collection exercises costing more than this amount would not be considered an efficient use of resources. This is because 
             the return on investment from the research – as measured by the health gain and cost savings resulting from enabling the decision maker to better 
             identify the best decision  option – is expected to be no higher than ", input$currency, 
@@ -758,6 +766,7 @@ shinyServer(
 
     output$textEVPI5 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      
       paste("The EVPI estimates in the table below quantify the expected value to decision makers within ", input$jurisdiction, " of removing all current 
             decision uncertainty at a threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, ".  This will enable comparison against 
             previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate 
@@ -768,7 +777,9 @@ shinyServer(
     # Table Overall EVPI
     output$tableEVPI <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$lambdaOverall
+      dummy1 <- input$indSim # ensure update with ind sim box tick
+      dummy2 <- input$lambdaOverall#
+      
       tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
       colnames(tableEVPI) <- c(paste("Overall EVPI monetary scale (", input$currency, ")", sep=""), paste("Overall EVPI", input$unitBens, "scale"))
       rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
@@ -799,6 +810,8 @@ shinyServer(
     # EVPI versus lambda (costs)
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       cache$lambdaOverall <- input$lambdaOverall
       makeEvpiPlot(cache$costs, cache$effects, lambda=input$lambdaOverall,
                    main=input$main3, 
@@ -809,6 +822,8 @@ shinyServer(
    
     # EVPI versus lambda (effects)
     output$plots4 <- renderPlot({
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       makeEvpiPlot(cache$costs, cache$effects, lambda=input$lambdaOverall,
                    main=input$main4, 
@@ -818,6 +833,8 @@ shinyServer(
     })
    
     output$plots6 <- renderPlot({
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make4wayEvpiPlot(cache$costs, cache$effects, lambda=input$lambdaOverall, 
                        prevalence=input$annualPrev, horizon=input$horizon, measure1 = input$currency, 
@@ -857,6 +874,8 @@ shinyServer(
     output$tableEVPPI <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       lambda <- input$lambdaOverall # re-run if labmda changes
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       cache$lambdaOverall <- input$lambdaOverall
       params <- cache$params
       costs <- cache$costs

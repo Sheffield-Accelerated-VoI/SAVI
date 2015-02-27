@@ -135,12 +135,15 @@ fluidPage(
                                h5("This box is relevant if your model is an individual level simulation model."),
                                br(),
                                p("If individuals within a simulation model are independent (conditional on the PSA parameters)
-                                 then the optimum number of individuals to simulate per sample of the PSA parameter parameters is
+                                 then the optimum number of individuals to simulate per sample of the PSA parameters is
                                  1. This will lead to the most efficient (lowest variance) estimators for the mean costs, mean effects and
                                  mean net benefits." ), 
+                               p(),
                                radioButtons("indSim", label = h5("Is the model an individual level simulation with a single patient per PSA run?"), choices = c("No", "Yes"), inline=TRUE),                             
                                br()
                                ,width = 6),
+                             
+                             
                              mainPanel(                
                                h3("Specify details about your model here"),
                                h5("These can changed at any time - results will automatically update"),
@@ -161,6 +164,9 @@ fluidPage(
               )     
                
       ),
+      
+      
+      
       
       
       

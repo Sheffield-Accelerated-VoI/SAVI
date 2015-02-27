@@ -13,8 +13,8 @@ valuesImportedFLAG <- function(cache, input){
   
   if (
       is.null(cache$params) | 
-      is.null(cache$costs) | 
-      is.null(cache$effects)) {return(FALSE)} else {return (TRUE)}
+      is.null(cache$uploadedCosts) | 
+      is.null(cache$uploadedEffects)) {return(FALSE)} else {return (TRUE)}
 }
 
 

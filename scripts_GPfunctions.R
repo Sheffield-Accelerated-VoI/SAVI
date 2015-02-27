@@ -113,6 +113,11 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
     sets <- sets[-max(linearCombs)]
     rankifremoved <- sapply(1:NCOL(paramSet), function(x) qr(paramSet[, -x])$rank)
   }  
+  if(qr(paramSet)$rank == rankifremoved[1]) {
+    paramSet <- cbind(paramSet[, -1]) # special case only lincomb left
+    sets <- sets[-1]
+    print(paste("Linear dependence: removing column", colnames(paramSet)[1]))
+  }
   
   inputs.of.interest <- sets
   p <- length(inputs.of.interest)

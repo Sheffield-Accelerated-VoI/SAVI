@@ -42,7 +42,7 @@ source("scripts_text.R")
 
 
 ###########################
-# read in the testdata    #
+# TEST DATA               #
 # users can download this # 
 # to try out the app      #
 ###########################
@@ -276,7 +276,7 @@ shinyServer(
       inFile <- input$costsFile
       if (is.null(inFile)) return(NULL)
       dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2)
-      cache$costs <- dat
+      cache$uploadedCosts <- dat
       cache$namesDecisions <- paste(1:ncol(dat), ") ", colnames(dat), sep="") # defines the decision option names      
       cache$nInt <- NCOL(dat) # number of interventions
 
@@ -286,7 +286,7 @@ shinyServer(
     output$textCheckTabCosts <- renderText({
       x2 <- input$costsFile 
     
-      costs <- cache$costs
+      costs <- cache$uploadedCosts
       if (is.null(costs)) return(NULL)      
       
       if (sum(is.na(costs)) > 0) return("There are missing values - please check data and reload")
@@ -310,13 +310,13 @@ shinyServer(
       if (is.null(inFile)) return(NULL)
       
       dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
-      cache$effects <- dat
+      cache$uploadedEffects <- dat
     })
   
     # Function that checks sanity of effects file
     output$textCheckTabEffects <- renderText({
       x3 <- input$effectsFile 
-      effects <- cache$effects
+      effects <- cache$uploadedEffects
       if (is.null(effects)) return(NULL)
       
       if (sum(is.na(effects)) > 0) return("There are missing values - please check data and reload")
@@ -341,8 +341,8 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
 
       params <- cache$params
-      costs <- cache$costs
-      effects <- cache$effects
+      costs <- cache$uploadedCosts
+      effects <- cache$uploadedEffects
       if(!((NROW(params) == NROW(costs)) & (NROW(effects) == NROW(costs)))) {
         return("Loaded files have different numbers of rows - please check data and reload")
       } 
@@ -480,21 +480,40 @@ shinyServer(
     
     # if the ind sim flag is set and the cache$modelledCosts is still null then get the modelled costs and effects
     observe({
-      if (input$indSim & is.null(cache$modelledCosts)) {  
-        modelledCostsAndEffects <- getModelledCostsAndEffects(cache, session)
-        cache$costs <-  cache$modelledCosts
-        cache$effects <-  cache$modelledEffects
+      # cache$indSim <- input$indSim
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      if (input$indSim) {
+        print("1")
+        print(input$indSim)
+        if (is.null(cache$modelledCosts)) {
+          print("2")
+          print(is.null(cache$modelledCosts))
+          getModelledCostsAndEffects(cache, session)
+          print("ends")
+        }
+        cache$costs <- cache$modelledCosts
+        cache$effects <- cache$modelledEffects
+        print(head(cache$effects))
+      } else {
+        print("3")
+        print(input$indSim)
+        cache$costs <- cache$uploadedCosts
+        cache$effects <- cache$uploadedEffects
+        print("4")
+        print(head(cache$effects))
       }
     })
     
-    #what if it is unticked???????????
     
     # CE plane
     output$plots1 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      cache$indSim <- input$indSim # ensure update with ind sim box tick / untick
+      
       cache$lambdaOverall <- input$lambdaOverall
       costs <- cache$costs
       effects <- cache$effects
+      print(head(effects))
       makeCEPlanePlot(costs, effects, 
                       lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
     })
@@ -503,6 +522,8 @@ shinyServer(
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("The figure above shows the (standardised) cost-effectiveness plane based on the ", cache$nIterate, 
             " model runs in the probabilistic sensitivity analysis. The willingness-to-pay threshold is shown as a 45 degree line. 
             The mean incremental cost of ", input$decisionOptionCE1, " versus ",  input$decisionOptionCE0," is ",
@@ -515,6 +536,8 @@ shinyServer(
     
     output$textCEplane2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("The mean incremental benefit of ", input$decisionOptionCE1, " versus ", input$decisionOptionCE0, " is ", 
             incValue(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
             moreLess(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), " beneficial. Again, there is uncertainty in the incremental benefit 
@@ -525,7 +548,9 @@ shinyServer(
     })                        
     
     output$textCEplane3 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)      
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(cache$costs, 
             cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
             " that ", input$decisionOptionCE1, " is more cost-effective than ", input$decisionOptionCE0, ".", sep="")
@@ -538,6 +563,8 @@ shinyServer(
     
     output$textCEplane5 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("There is a ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), " probability that ", input$decisionOptionCE1, " is more cost-effective 
       than ", input$decisionOptionCE0, " at a threshold of ",input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
     })                       
@@ -545,6 +572,8 @@ shinyServer(
     # Table of Key Cost-Effectiveness Statistics
     output$tableCEplane <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
       cache$lambdaOverall <- input$lambdaOverall
       rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
@@ -572,11 +601,14 @@ shinyServer(
     # function that calculates ceac
     ceac <- reactive({ 
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
       makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
     })
 
     output$textCEAC1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
             value for cost-effectiveness of ",input$currency, input$lambdaOverall," per ",input$unitBens," the strategy with the highest 
             probability of being most cost-effective is ", bestCE(cache$costs, cache$effects, input$lambdaOverall, cache$nInt), 
@@ -587,6 +619,8 @@ shinyServer(
     # CEAC plot
     output$plots2 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       ceac.obj <- cache$ceac.obj <- ceac()
       cache$lambdaOverall <- input$lambdaOverall
       makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
@@ -599,6 +633,8 @@ shinyServer(
     
     output$textNB1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("Net benefit is a calculation that puts ", input$costDef, " and ", input$effectDef, " onto the same scale.  This is done by calculating 
            the monetary value of ", input$effectDef, " using a simple multiplication i.e. ", input$unitBens, "s * lambda, where:", sep="")
     })  
@@ -610,6 +646,8 @@ shinyServer(
     
     output$textNB3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       paste("The plot below shows the expected net benefit of the ", cache$nInt, " strategies, together with the 97.5% credible 
            interval for each one.  The strategy with highest expected net benefit is ", bestnetBen(cache$costs, 
            cache$effects, input$lambdaOverall, cache$nInt), ", with an expected net benefit of 
@@ -622,6 +660,8 @@ shinyServer(
     # Table of Summary of Absolute Net Benefit Statistics
     output$tableNetBenefit <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       tableNetBenefit <- makeTableNetBenefit(cache$costs, cache$effects, lambda=input$lambdaOverall, cache$nInt)
       cache$lambdaOverall <- input$lambdaOverall
       rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
@@ -637,8 +677,10 @@ shinyServer(
     })  
     
     # EVPI INB bar plot
-    output$plots5a <- renderPlot({ # NEED TO DISCUSS THIS - MS
+    output$plots5a <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       makeInbOptBar(cache$costs, cache$effects, 
                    lambda=input$lambdaOverall)
     })
@@ -646,6 +688,8 @@ shinyServer(
     # Absolute net benefit densities
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
+      dummy <- input$indSim # ensure update with ind sim box tick
+      
       make2wayDensity(cache$costs, cache$effects, 
                      lambda=input$lambdaOverall)
     })

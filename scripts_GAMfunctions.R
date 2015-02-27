@@ -20,7 +20,7 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   g.hat[[1]] <- 0
   
   input.parameters <- cache$params
-  paramSet <- cbind(cbind(input.parameters)[, sets])
+  paramSet <- cbind(cbind(input.parameters)[, sets, drop=FALSE])
   
   constantParams <- (apply(paramSet, 2, var) == 0)
 
@@ -28,14 +28,20 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
   
   # check for linear dependence and remove 
-  paramSet <- cbind(cbind(input.parameters)[, sets]) # now with constants removed
+  paramSet <- cbind(cbind(input.parameters)[, sets, drop=FALSE]) # now with constants removed
   rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   while(length(unique(rankifremoved)) > 1) {
     linearCombs <- which(rankifremoved == max(rankifremoved))
     # print(linearCombs)
     print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
-    paramSet <- cbind(paramSet[, -max(linearCombs)])
+    paramSet <- cbind(paramSet[, -max(linearCombs), drop=FALSE])
     sets <- sets[-max(linearCombs)]
+    rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+  }
+  while(qr(paramSet)$rank == rankifremoved[1]) { # special case only lincomb left
+    print(paste("Linear dependence: removing column", colnames(paramSet)[1]))
+    paramSet <- cbind(paramSet[, -1, drop=FALSE]) 
+    sets <- sets[-1]
     rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   }
   
@@ -50,7 +56,8 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   for(d in 2:D) {
     progress$set(value = d-1)
     print(paste("estimating g.hat for incremental NB for option", d ,"versus 1"))
-    f <- update(formula(NB[,d]~.), formula(paste(".~", regression.model)))
+    dependent <- NB[, d]
+    f <- update(formula(dependent~.), formula(paste(".~", regression.model)))
     model <- gam(f, data=data.frame(input.parameters)) 
     g.hat[[d]] <- model$fitted
     beta.hat[[d]] <- model$coef
@@ -101,52 +108,86 @@ formulaGenerator <- function(namesList) {
 
 getModelledCostsAndEffects <- function(cache, session) {
   print("THIS FUNCTION WILL COMPUTE MODELLED COSTS AND EFFECTS")
-  return(list(costs = cache$costs, effects=cache$effects))
+  #cache$modelledCosts <- cache$uploadedCosts * 100
+  #cache$modelledEffects <- cache$uploadedEffects
+  #return(NULL)
+
+  costs <- fitFullModel(cache$uploadedCosts)
+  effects <- fitFullModel(cache$uploadedEffects)
 }
 
-# getModelledCostsAndEffects <- function(cache, session) {  
-#   costs <- cache$uploadedCosts
-#   effects <- cache$uploadedEffects  
-#   D <- ncol(NB)
-#   N <- nrow(NB)
-#   g.hat <- beta.hat <- Xstar <- V <- tilde.g <- vector("list", D)
-#   g.hat[[1]] <- 0
-#   
-#   input.parameters <- cache$params
-#   paramSet <- cbind(cbind(input.parameters)[, sets])
-#   
-#   constantParams <- (apply(paramSet, 2, var) == 0)
-#   
-#   if (sum(constantParams) == length(sets)) return(list(EVPI=0, SE=0)) # if all regressors are constant
-#   if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
-#   
-#   # check for linear dependence and remove 
-#   paramSet <- cbind(cbind(input.parameters)[, sets]) # now with constants removed
-#   rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
-#   while(length(unique(rankifremoved)) > 1) {
-#     linearCombs <- which(rankifremoved == max(rankifremoved))
-#     # print(linearCombs)
-#     print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
-#     paramSet <- cbind(paramSet[, -max(linearCombs)])
-#     sets <- sets[-max(linearCombs)]
-#     rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
-#   }
-#   
-#   regression.model <- formulaGenerator(colnames(input.parameters))
-#   
+fitFullModel <- function(outcomeVar) {
+
+  D <- ncol(outcomeVar)
+  N <- nrow(outcomeVar)
+  modelFitted <- matrix(0, ncol=D, nrow=N)
+  
+  input.parameters <- cache$params[, ,drop=FALSE]
+  print(head(input.parameters))
+  paramSet <- cbind(input.parameters)
+  sets <- colnames(input.parameters)
+  
+  constantParams <- (apply(paramSet, 2, var) == 0)
+
+  if (sum(constantParams) == NCOL(paramSet)) { # if all regressors are constant
+    modelFitted <- matrix(rep(apply(outcomeVar, 2, mean), each = N), ncol = D)
+    return(modelFitted)
+  } 
+
+  if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
+
+  # check for linear dependence and remove 
+  paramSet <- cbind(cbind(input.parameters)[, sets, drop=FALSE]) # now with constants removed
+  rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
+  while(length(unique(rankifremoved)) > 1) {
+    print("HERE 1")
+    linearCombs <- which(rankifremoved == max(rankifremoved))
+    print(linearCombs)
+    print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
+    paramSet <- cbind(paramSet[, -max(linearCombs), drop=FALSE])
+    # sets <- sets[-max(linearCombs)]
+    print(rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank))
+    print(qr(paramSet)$rank)
+  }
+  
+  while(qr(paramSet)$rank == rankifremoved[1]) {
+    print(paste("Linear dependence... removing column", colnames(paramSet)[1]))
+    paramSet <- cbind(paramSet[, -1, drop=FALSE]) # special case only lincomb left
+    print(rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank))
+  }
+  
+  print(head(paramSet))
+  regression.model <- formulaGeneratorAdditive(colnames(paramSet))
+  
 #   progress <- shiny::Progress$new(session, min=1, max=D-1)
 #   on.exit(progress$close())
 #   progress$set(message = 'Averaging over patients',
 #                detail = 'Please wait...')
-#   
-#   for(d in 2:D) {
-#     progress$set(value = d-1)
-#     print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
-#     f <- update(formula(NB[,d]~.), formula(paste(".~", regression.model)))
-#     model <- gam(f, data=data.frame(input.parameters)) 
-#     g.hat[[d]] <- model$fitted
-#   }  
-#   g.hat  
-# }
+  
+  for(d in 1:D) {
+
+#     progress$set(value = d)
+    print(paste("estimating fitted for option", d))
+    dependent <- outcomeVar[, d]
+    f <- update(formula(dependent~.), formula(paste(".~", regression.model)))
+    print(f)
+    model <- gam(f, data=data.frame(input.parameters)) 
+    modelFitted[, d] <- model$fitted
+  }  
+  modelFitted 
+
+}
+
+output <- fitFullModel(out)
+head(output)
 
 
+formulaGeneratorAdditive <- function(namesList) {
+  regModel <- NULL
+  for (i in namesList) {
+    regModel <- paste("te(", i, ")+", regModel, sep="")
+  }
+  strtrim(regModel, nchar(regModel)-1)
+}
+
+formulaGeneratorAdditive(colnames(cache$params))

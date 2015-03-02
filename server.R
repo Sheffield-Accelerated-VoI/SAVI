@@ -6,7 +6,7 @@
 ######################
 
 print("server.R called") # this is called when we start the shiny server on SAVI via $ sudo start shiny-server
-
+print(serverEnv <- environment())
 
 ##################
 # SET OPTIONS    #
@@ -17,7 +17,7 @@ print("server.R called") # this is called when we start the shiny server on SAVI
 
 
 # max upload for files
-options(shiny.maxRequestSize=400*1024^2) # Max upload 400Mb
+options(shiny.maxRequestSize=1024*1024^2) # Max upload 1Gb
 
 # debugging option. Only set to true for debugging. MUST BE FALSE FOR LIVE USE
 options(shiny.reactlog=FALSE)
@@ -52,8 +52,6 @@ testCosts <- as.matrix(read.csv("test_data/brennan10000/costs_2d.csv"))
 testEffects <- as.matrix(read.csv("test_data/brennan10000/effects_2d.csv"))
 
 
-
-
 ###################
 # SERVER FUNCTION #
 ###################
@@ -64,12 +62,12 @@ shinyServer(
   function(input, output, session) {
 
     ##################################################################################################
-    
+
     #####################################
     # CREATE NEW ENVIRONMENT 'cache'    #
     # Initialise cached variable values #
     #####################################
-    
+
     # `cache' is the environment unique to each user visit
     # This is where we will save values that need to persist, 
     # and that can be picked up and included in the report
@@ -109,12 +107,11 @@ shinyServer(
     cache$unitBens <- NULL
     cache$jurisdiction <- NULL
 
-      
-    
     ########################
     # AUTOLOAD FOR TESTING #
     ########################
     
+    # print(lapply(as.list(ls()[sapply(ls(envir = serverEnv), function(x) is.environment(get(x)))]), get))
     
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########

@@ -3,6 +3,11 @@
 
 # this file holds the table generating functions
 
+###################
+# PSA Results tab #
+###################
+
+# Table of Key Cost-Effectiveness Statistics
 makeTableCePlane <- function(lambda, comparator, cache) {
   costs <- cache$costs
   effects <- cache$effects
@@ -29,6 +34,8 @@ makeTableCePlane <- function(lambda, comparator, cache) {
   tableCePlane
 }
 
+
+# Summary of Absolute Net Benefit Statistics
 makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
   
   tableNetBenefit <- matrix(NA, ncol= nInt, nrow = 8) 
@@ -45,6 +52,18 @@ makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
   colnames(tableNetBenefit) <- colnames(costs.int)
   tableNetBenefit
 }
+
+
+
+
+
+
+
+
+####################
+# EVPPI groups tab #
+####################
+
 
 # function for building up table of parameter sets for partial EVPI
 buildSetStoreTable <- function(store, groupPartialEvpi) {

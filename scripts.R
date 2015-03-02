@@ -2,7 +2,6 @@
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 ## calculator functions
-## more comments https://github.com/Sheffield-Accelerated-VoI/SAVI.git
 
 valuesImportedFLAG <- function(cache, input){  
   
@@ -38,36 +37,6 @@ calcEvpi <- function(costs.int, effects.int, lambda, cache, session) {
   return(evpi)
 }
 
-# this is for the m=1 case - not implemented yet
-# calcEvpiSingle <- function(costs.int, effects.int, lambda, cache, session) {
-#   ## this function creates the NB matrix
-#   nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
-#   params <- cache$params
-#   evpi <- gpFunc(nb, 1:NCOL(params), s=10, cache, session)$EVPI
-#   return(evpi)
-# }
-
-# calcSingleParamGAM <- function(inputParam, inb) {
-#   ## this function calculates EVPI for a single parameter using GAM
-#   if(var(inputParam) == 0) return(0) # screen out constants
-#   D <- ncol(inb)
-#   N <- nrow(inb)
-#   g.hat <- vector("list", D)
-#   g.hat[[1]] <- rep(0, N)   
-#     
-#   for(d in 2:D) {
-#     
-#     f <- formula(inb[, d] ~ te(inputParam))
-#     model <- gam(f) 
-#     g.hat[[d]] <- model$fitted
-#   }
-#   
-#   perfect.info <- mean(do.call(pmax, g.hat)) 
-#   baseline <- max(unlist(lapply(g.hat, mean)))
-#   
-#   partial.evpi <- perfect.info - baseline
-#   partial.evpi
-# }
 
 applyCalcSingleParamGam <- function(parameterDf, nb, session, cache) {
   ## this function applies singleParamGAM over the parameters
@@ -132,10 +101,10 @@ calSubsetEvpi <- function(sets, lambda, cache, session) {
 
 word_document_local <- function (fig_width = 5, fig_height = 4, fig_caption = FALSE, 
                                  highlight = "default", reference_docx = "default", pandoc_args = NULL) {
-
+  
   knitr <- knitr_options(opts_chunk = list(dev = "png", dpi = 96, fig.width = fig_width,
-fig.height = fig_height)
-)
+                                           fig.height = fig_height)
+  )
   args <- c()
   if (!is.null(highlight)) 
     highlight <- match.arg(highlight, rmarkdown:::highlighters())

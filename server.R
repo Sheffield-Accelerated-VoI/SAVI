@@ -6,7 +6,6 @@
 ######################
 
 print("server.R called") # this is called when we start the shiny server on SAVI via $ sudo start shiny-server
-print(serverEnv <- environment())
 
 ##################
 # SET OPTIONS    #

@@ -1,11 +1,15 @@
 # Copyright (c) 2014, the SAVI authors (see AUTHORS.txt).
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
-##############################################################################
-## This function estimates EVPI and SE via GAM
-## S is the simulation size for the Monte Carlo computation of SE
-##############################################################################
 
+###############################
+# EVPPI single parameters Tab # 
+# EVPPI groups Tab            #
+###############################
+
+
+# This function estimates EVPI and SE via GAM
+# S is the simulation size for the Monte Carlo computation of SE
 gamFunc <- function(NB, sets, s=1000, cache, session) {
   
   if(!is.null(dim(NB))) {
@@ -102,6 +106,22 @@ formulaGenerator <- function(namesList) {
   }
   form
 }
+
+
+
+
+
+
+
+
+
+
+###################
+# PSA Results Tab #
+# EVPI Tab        #
+###################
+
+
 
 # This function builds a GAM model of all the parameters and returns the fitted values - 
 # to get the CEAC and overall EVPI when the indiv sim box in tixed.

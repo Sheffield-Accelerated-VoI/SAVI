@@ -76,7 +76,6 @@ fluidPage(
           mainPanel(  
             h3("What SAVI does"),
             p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
-            # p(HTML("(For individual simulation models you can do PSA with each PSA run on just 1 individual)")),
             p(HTML("In a matter of seconds from the SAVI online application you can generate:")),
             tags$ol(
              tags$li("Standardised assessment of uncertainty (C-E planes and CEACs)"), 
@@ -89,8 +88,9 @@ fluidPage(
                    a single individual per PSA sample. See the \"About your model\" tab."),
             
             br(),
-            p(HTML("Disclaimer: This application is based on peer-reviewed statistical approximation methods.  
-              It comes with no warranty and should be utilised at the user’s own risk.
+            p(HTML("Disclaimer: This application is based on peer-reviewed 
+                statistical approximation methods.  
+              It comes with no warranty and should be utilised at the user\'s own risk.
               The <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI' 
                 target='_blank'>underlying code</a> is made available under the 
               <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/LICENSE.txt' 

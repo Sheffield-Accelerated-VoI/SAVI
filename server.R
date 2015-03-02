@@ -164,6 +164,7 @@ shinyServer(
       updateTextInput(session, "currency",  value = cache$currency)
       updateTextInput(session, "unitBens",  value = cache$unitBens)
       updateTextInput(session, "jurisdiction",  value = cache$jurisdiction)
+      updateTextInput(session, "indSim",  value = cache$indSim)
       
       # set the group EVPI objects to NULL / 0
       cache$counterAdd <- 0
@@ -179,6 +180,8 @@ shinyServer(
         cache$uploadedCosts <- cache$costs
         cache$uploadedEffects <- cache$effects
       }
+      
+
     })
     
     
@@ -281,7 +284,7 @@ shinyServer(
       inFile <- input$costsFile
       if (is.null(inFile)) return(NULL)
       dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2)
-      cache$uploadedCosts <- dat
+      cache$uploadedCosts <- cache$costs <- dat
       cache$namesDecisions <- paste(1:ncol(dat), ") ", colnames(dat), sep="") # defines the decision option names      
       cache$nInt <- NCOL(dat) # number of interventions
 
@@ -296,8 +299,10 @@ shinyServer(
       
       if (sum(is.na(costs)) > 0) return("There are missing values - please check data and reload")
       
-      if (NCOL(costs) == 1) return("There must be at least two decision options. If you have a single set of incremental 
-                                   costs for a two-decision option problem, either upload the absolute costs, or include a column of zeroes.")
+      if (NCOL(costs) == 1) return("There must be at least two decision options. 
+                                      If you have a single set of incremental 
+                                   costs for a two-decision option problem, 
+                                    either upload the absolute costs, or include a column of zeroes.")
 
       if (!prod(unlist(c(lapply(costs, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
         return("Not all columns are numeric - please check data and reload") 
@@ -315,7 +320,7 @@ shinyServer(
       if (is.null(inFile)) return(NULL)
       
       dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
-      cache$uploadedEffects <- dat
+      cache$uploadedEffects <- cache$effects <- dat
     })
   
     # Function that checks sanity of effects file
@@ -326,8 +331,9 @@ shinyServer(
       
       if (sum(is.na(effects)) > 0) return("There are missing values - please check data and reload")
       
-      if (NCOL(effects) == 1) return("There must be at least two decision options. If you have a single set of 
-                                  incremental effects for a two-decision option problem, 
+      if (NCOL(effects) == 1) return("There must be at least two decision options. 
+                                    If you have a single set of 
+                                      incremental effects for a two-decision option problem, 
                                      either upload the absolute effects, or include a column of zeroes.")
       
       if (!prod(unlist(c(lapply(effects, function(x) {class(x) == "numeric" | class(x) == "integer"}))))) {
@@ -483,29 +489,20 @@ shinyServer(
     }) 
     
     
-    # if the ind sim flag is set and the cache$modelledCosts is still null then get the modelled costs and effects
+    # if the ind sim flag is set and the cache$modelledCosts is still null 
+    # then get the modelled costs and effects
     observe({
       # cache$indSim <- input$indSim
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       if (input$indSim == "Yes") {
-        print("1")
-        print(input$indSim)
         if (is.null(cache$modelledCosts)) {
-          print("2")
-          print(is.null(cache$modelledCosts))
           getModelledCostsAndEffects(cache, session)
-          print("ends")
         }
         cache$costs <- cache$modelledCosts
         cache$effects <- cache$modelledEffects
-        print(head(cache$effects))
       } else {
-        print("3")
-        print(input$indSim)
         cache$costs <- cache$uploadedCosts
         cache$effects <- cache$uploadedEffects
-        print("4")
-        print(head(cache$effects))
       }
     })
     
@@ -513,14 +510,13 @@ shinyServer(
     # CE plane
     output$plots1 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      cache$indSim <- input$indSim # ensure update with ind sim box tick / untick
-      
+      cache$indSim <- input$indSim # ensure update with ind sim box tick / untick    
       cache$lambdaOverall <- input$lambdaOverall
       costs <- cache$costs
       effects <- cache$effects
-      print(head(effects))
       makeCEPlanePlot(costs, effects, 
-                      lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
+                      lambda=input$lambdaOverall, input$decisionOptionCE1, 
+                      input$decisionOptionCE0, cache)
     })
     
     
@@ -529,36 +525,59 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("The figure above shows the (standardised) cost-effectiveness plane based on the ", cache$nIterate, 
-            " model runs in the probabilistic sensitivity analysis. The willingness-to-pay threshold is shown as a 45 degree line. 
-            The mean incremental cost of ", input$decisionOptionCE1, " versus ",  input$decisionOptionCE0," is ",
-            input$currency, incValue(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), ". This suggests that ", input$decisionOptionCE1, " is ", 
-            moreLess(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), " costly. The incremental cost is uncertain because the model parameters are uncertain. 
-            The 97.5% credible interval for the incremental cost ranges from ", input$currency, confIntCE(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.025, cache)," to ", 
-            input$currency, confIntCE(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.975, cache),". The probability that ", input$decisionOptionCE1, " is cost 
-            saving compared to ", input$decisionOptionCE0," is ", pCostsaving(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
+      paste("The figure above shows the (standardised) cost-effectiveness plane based on the ", 
+            cache$nIterate, " model runs in the probabilistic sensitivity analysis. 
+              The willingness-to-pay threshold is shown as a 45 degree line. 
+            The mean incremental cost of ", input$decisionOptionCE1, " versus ",  
+              input$decisionOptionCE0," is ",
+            input$currency, incValue(cache$costs, input$decisionOptionCE1, 
+              input$decisionOptionCE0, cache), ". This suggests that ", 
+            input$decisionOptionCE1, " is ", 
+            moreLess(cache$costs, input$decisionOptionCE1, 
+              input$decisionOptionCE0, cache), " costly. 
+              The incremental cost is uncertain because the model parameters are uncertain. 
+            The 97.5% credible interval for the incremental cost ranges from ", 
+              input$currency, confIntCE(cache$costs, input$decisionOptionCE1, 
+            input$decisionOptionCE0, 0.025, cache)," to ", 
+             input$currency, confIntCE(cache$costs, input$decisionOptionCE1, 
+            input$decisionOptionCE0, 0.975, cache),". The probability that ", 
+             input$decisionOptionCE1, " is cost 
+            saving compared to ", input$decisionOptionCE0," is ", 
+             pCostsaving(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
     })                       
     
     output$textCEplane2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("The mean incremental benefit of ", input$decisionOptionCE1, " versus ", input$decisionOptionCE0, " is ", 
-            incValue(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
-            moreLess(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), " beneficial. Again, there is uncertainty in the incremental benefit 
+      paste("The mean incremental benefit of ", input$decisionOptionCE1, " versus ", 
+            input$decisionOptionCE0, " is ", 
+            incValue(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), 
+            " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
+            moreLess(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), 
+              " beneficial. Again, there is uncertainty in the incremental benefit 
             due to uncertainty in the model parameters. The 97.5% 
-            credible interval for the incremental benefit ranges from ", confIntCE(cache$effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.025, cache), " ", input$unitBens, "s to ", 
-            confIntCE(cache$effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.975, cache), " ", input$unitBens,"s. The probability that ", input$decisionOptionCE1, 
-            " is more beneficial than ", input$decisionOptionCE0, " is ", pMoreben(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
+            credible interval for the incremental benefit ranges from ", 
+            confIntCE(cache$effects, input$decisionOptionCE0, 
+                      input$decisionOptionCE1, 0.025, cache), " ", input$unitBens, "s to ", 
+            confIntCE(cache$effects, input$decisionOptionCE0, 
+                      input$decisionOptionCE1, 0.975, cache), " ", 
+            input$unitBens,"s. The probability that ", input$decisionOptionCE1, 
+            " is more beneficial than ", input$decisionOptionCE0, " is ", 
+            pMoreben(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
     })                        
     
     output$textCEplane3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", input$currency, iCER(cache$costs, 
-            cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), 
-            " that ", input$decisionOptionCE1, " is more cost-effective than ", input$decisionOptionCE0, ".", sep="")
+      paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", 
+            input$currency, iCER(cache$costs, 
+            cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), 
+            ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
+                                                input$lambdaOverall, cache), 
+            " that ", input$decisionOptionCE1, " is more cost-effective than ", 
+            input$decisionOptionCE0, ".", sep="")
     })                         
       
     output$textCEplane4 <- renderText({
@@ -570,8 +589,10 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("There is a ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), " probability that ", input$decisionOptionCE1, " is more cost-effective 
-      than ", input$decisionOptionCE0, " at a threshold of ",input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
+      paste("There is a ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
+        input$lambdaOverall, cache), " probability that ", input$decisionOptionCE1, 
+        " is more cost-effective than ", input$decisionOptionCE0, " at a threshold of ",
+        input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
     })                       
     
     # Table of Key Cost-Effectiveness Statistics
@@ -614,10 +635,14 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("This graph shows the cost-effectiveness acceptability curve for the comparison of strategies. The results show that at a threshold 
-            value for cost-effectiveness of ",input$currency, input$lambdaOverall," per ",input$unitBens," the strategy with the highest 
-            probability of being most cost-effective is ", bestCE(cache$costs, cache$effects, input$lambdaOverall, cache$nInt), 
-            ", with a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache),
+      paste("This graph shows the cost-effectiveness acceptability curve for the 
+            comparison of strategies. The results show that at a threshold 
+            value for cost-effectiveness of ",input$currency, input$lambdaOverall,
+            " per ",input$unitBens," the strategy with the highest 
+            probability of being most cost-effective is ", bestCE(cache$costs, cache$effects, 
+                                                                  input$lambdaOverall, cache$nInt), 
+            ", with a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
+                                            input$lambdaOverall, cache),
             ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
                  
@@ -640,25 +665,33 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("Net benefit is a calculation that puts ", input$costDef, " and ", input$effectDef, " onto the same scale.  This is done by calculating 
-           the monetary value of ", input$effectDef, " using a simple multiplication i.e. ", input$unitBens, "s * lambda, where:", sep="")
+      paste("Net benefit is a calculation that puts ", input$costDef, " and ", 
+        input$effectDef, " onto the same scale.  This is done by calculating 
+           the monetary value of ", input$effectDef, " using a simple multiplication i.e. ", 
+        input$unitBens, "s * lambda, where:", sep="")
     })  
 
     output$textNB2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      paste("Net benefit for a strategy = ", input$unitBens, "s * ", input$lambdaOverall, " - Cost (" ,input$currency, ").", sep="")
+      paste("Net benefit for a strategy = ", input$unitBens, "s * ", input$lambdaOverall, 
+            " - Cost (" ,input$currency, ").", sep="")
     }) 
     
     output$textNB3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("The plot below shows the expected net benefit of the ", cache$nInt, " strategies, together with the 97.5% credible 
-           interval for each one.  The strategy with highest expected net benefit is ", bestnetBen(cache$costs, 
+      paste("The plot below shows the expected net benefit of the ", cache$nInt, 
+            " strategies, together with the 97.5% credible 
+            interval for each one.  The strategy with highest expected net benefit is ", 
+            bestnetBen(cache$costs, 
            cache$effects, input$lambdaOverall, cache$nInt), ", with an expected net benefit of 
-           ", input$currency, netBencosts(cache$costs, cache$effects, input$lambdaOverall, cache$nInt),
-           " (equivalent to a net benefit on the effectiveness scale of ", netBeneffects(cache$costs, cache$effects, 
-           input$lambdaOverall, cache$nInt), " ", input$unitBens, "s). Net benefit and 97.5% credible intervals for all strategies 
+           ", input$currency, netBencosts(cache$costs, cache$effects, 
+            input$lambdaOverall, cache$nInt),
+           " (equivalent to a net benefit on the effectiveness scale of ", 
+            netBeneffects(cache$costs, cache$effects, 
+           input$lambdaOverall, cache$nInt), " ", input$unitBens, "s). 
+                Net benefit and 97.5% credible intervals for all strategies 
            are presented in the above table. ", sep="")
     }) 
     
@@ -667,12 +700,14 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      tableNetBenefit <- makeTableNetBenefit(cache$costs, cache$effects, lambda=input$lambdaOverall, cache$nInt)
+      tableNetBenefit <- makeTableNetBenefit(cache$costs, cache$effects, 
+                                             lambda=input$lambdaOverall, cache$nInt)
       cache$lambdaOverall <- input$lambdaOverall
       rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
                                     paste("Mean", input$costDef), 
                                     paste("Expected Net Benefit at", 
-                                          input$currency, input$lambdaOverall, "per", input$unitBens), 
+                                          input$currency, input$lambdaOverall, 
+                                          "per", input$unitBens), 
                                     "95% Lower CI (on Costs Scale)", 
                                     "95% Upper CI (on Costs Scale)", 
                                     "Expected Net Benefit on Effects Scale", 
@@ -734,9 +769,11 @@ shinyServer(
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      dummy <- input$indSim # ensure update with ind sim box tick
      
-     paste("The overall EVPI per person affected by the decision is estimated to be ", input$currency, format(calcEvpi(cache$costs, 
+     paste("The overall EVPI per person affected by the decision is estimated to be ", 
+           input$currency, format(calcEvpi(cache$costs, 
           cache$effects, input$lambdaOverall), digits = 4, nsmall=2), ".  This is equivalent to ", 
-          format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)/input$lambdaOverall, digits = 4, nsmall=1), " ", input$unitBens,
+          format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)/input$lambdaOverall, 
+                 digits = 4, nsmall=1), " ", input$unitBens,
           "s per person on the health effects scale.", sep="")
    })     
 
@@ -744,18 +781,23 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("If the number of people affected by the decision per year is " , input$annualPrev, ", then the overall EVPI per year is ", input$currency,
-            format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev, digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
+      paste("If the number of people affected by the decision per year is " , 
+            input$annualPrev, ", then the overall EVPI per year is ", input$currency,
+            format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev, 
+                   digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
     }) 
 
     output$textEVPI3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("When thinking about the overall expected value of removing decision uncertainty, one needs to consider how long the current comparison 
-            will remain relevant. If the decision relevance horizon is ", input$horizon, " years, then the overall expected value of removing 
+      paste("When thinking about the overall expected value of removing decision uncertainty, 
+            one needs to consider how long the current comparison 
+            will remain relevant. If the decision relevance horizon is ", input$horizon, 
+            " years, then the overall expected value of removing 
             decision uncertainty for ", 
-            input$jurisdiction, " would be ", input$currency, format(calcEvpi(cache$costs, cache$effects, 
+            input$jurisdiction, " would be ", input$currency, 
+            format(calcEvpi(cache$costs, cache$effects, 
             input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")
     }) 
 
@@ -763,19 +805,27 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("Research or data collection exercises costing more than this amount would not be considered an efficient use of resources. This is because 
-            the return on investment from the research – as measured by the health gain and cost savings resulting from enabling the decision maker to better 
-            identify the best decision  option – is expected to be no higher than ", input$currency, 
-            format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")  
+      paste("Research or data collection exercises costing more than this amount 
+            would not be considered an efficient use of resources. This is because 
+            the return on investment from the research – as measured by the 
+            health gain and cost savings resulting from enabling the decision maker to better 
+            identify the best decision  option – is expected to be no higher than ",
+            input$currency, 
+            format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev*input$horizon, 
+                   digits = 4, nsmall=2),".", sep="")  
       }) 
 
     output$textEVPI5 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       
-      paste("The EVPI estimates in the table below quantify the expected value to decision makers within ", input$jurisdiction, " of removing all current 
-            decision uncertainty at a threshold of ", input$currency, input$lambdaOverall, " per ", input$unitBens, ".  This will enable comparison against 
-            previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate 
-            for a range of willingness-to-pay thresholds are illustrated in the figures below the table.", sep="")
+      paste("The EVPI estimates in the table below quantify the expected value to 
+            decision makers within ", input$jurisdiction, " of removing all current 
+            decision uncertainty at a threshold of ", input$currency, input$lambdaOverall, 
+            " per ", input$unitBens, ".  This will enable comparison against 
+            previous analyses to provide an idea of the scale of decision uncertainty 
+            in this topic compared with other previous decisions. The EVPI estimate 
+            for a range of willingness-to-pay thresholds are illustrated in 
+            the figures below the table.", sep="")
     })
 
 
@@ -786,14 +836,18 @@ shinyServer(
       dummy2 <- input$lambdaOverall#
       
       tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
-      colnames(tableEVPI) <- c(paste("Overall EVPI monetary scale (", input$currency, ")", sep=""), paste("Overall EVPI", input$unitBens, "scale"))
+      colnames(tableEVPI) <- c(paste("Overall EVPI monetary scale (", 
+                                     input$currency, ")", sep=""), 
+                               paste("Overall EVPI", input$unitBens, "scale"))
       rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
-                              paste("Per Year in", input$jurisdiction, "Assuming", input$annualPrev, "Persons Affected per Year"), 
+                              paste("Per Year in", input$jurisdiction, "Assuming", 
+                                    input$annualPrev, "Persons Affected per Year"), 
                               "Over 5 Years", 
                               "Over 10 Years", 
                               "Over 15 Years", 
                               "Over 20 years", 
-                              paste("Over Specified Decision Relevance Horizon (", input$horizon, "years)"))
+                              paste("Over Specified Decision Relevance Horizon (", 
+                                    input$horizon, "years)"))
       
       #      overallEvpi <- ifelse(input$indSim, calcEvpiSingle(cache$costs, cache$effects, 
       #                                                   lambda=input$lambdaOverall, cache, session),
@@ -842,7 +896,8 @@ shinyServer(
       
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       make4wayEvpiPlot(cache$costs, cache$effects, lambda=input$lambdaOverall, 
-                       prevalence=input$annualPrev, horizon=input$horizon, measure1 = input$currency, 
+                       prevalence=input$annualPrev, horizon=input$horizon, 
+                       measure1 = input$currency, 
                        measure2 = input$unitBens, session)
     })
    
@@ -899,9 +954,12 @@ shinyServer(
       tableEVPPI[, 3] <- round(pEVPI[, 1] / overallEvpi , 2)
       tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
       tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
-      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
-                                paste("EVPPI for ", input$jurisdiction, " Per Year (", input$currency, ")", sep=""), 
-                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years (", input$currency, ")", sep=""))
+      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), 
+                                "Standard Error","Indexed to Overall EVPI = 1.00", 
+                                paste("EVPPI for ", input$jurisdiction, 
+                                      " Per Year (", input$currency, ")", sep=""), 
+                                paste("EVPPI for ", input$jurisdiction, " over ", 
+                                      input$horizon, " years (", input$currency, ")", sep=""))
       rownames(tableEVPPI) <- colnames(cache$params)
       tableEVPPI
     }) 
@@ -998,9 +1056,11 @@ shinyServer(
       #first pull down the existing values
       subsetEvpiValues <- cache$subsetEvpiValues
       if (is.null(subsetEvpiValues)) {
-        subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, input$lambdaOverall, cache, session))
+        subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, 
+                                input$lambdaOverall, cache, session))
       } else {
-        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], calc, input$lambdaOverall, cache, session))
+        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], 
+                                 calc, input$lambdaOverall, cache, session))
         subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
       }
       
@@ -1090,7 +1150,8 @@ shinyServer(
         out <- render(input = 'report.Rmd', #pdf_document()
                       output_format = switch(
                         input$format,
-                        PDF = pdf_document(), HTML = html_document(), Word = word_document()),
+                        PDF = pdf_document(), HTML = html_document(), 
+                        Word = word_document()),
                       envir = cache
         )
         file.copy(out, file)

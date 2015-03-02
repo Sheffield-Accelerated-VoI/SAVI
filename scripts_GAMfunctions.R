@@ -103,19 +103,13 @@ formulaGenerator <- function(namesList) {
   form
 }
 
-# This function builds a GAM model of all the parameters and returns the fitted values - to get the CEAC and overall
-# EVPI when the indiv sim box in tixed.
+# This function builds a GAM model of all the parameters and returns the fitted values - 
+# to get the CEAC and overall EVPI when the indiv sim box in tixed.
 
 getModelledCostsAndEffects <- function(cache, session) {
-  print("THIS FUNCTION WILL COMPUTE MODELLED COSTS AND EFFECTS")
-  #cache$modelledCosts <- cache$uploadedCosts * 100
-  #cache$modelledEffects <- cache$uploadedEffects
-  #return(NULL)
-
+  print("Computing modelled costs and effects")
   cache$modelledCosts <- fitFullModel(cache$uploadedCosts, cache, session)
-  print(dim(cache$modelledCosts))
   cache$modelledEffects <- fitFullModel(cache$uploadedEffects, cache, session)
-  print(dim(cache$modelledEffects))
 }
 
 fitFullModel <- function(outcomeVar, cache, session) {
@@ -141,12 +135,11 @@ fitFullModel <- function(outcomeVar, cache, session) {
   paramSet <- cbind(cbind(input.parameters)[, sets, drop=FALSE]) # now with constants removed
   rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   while(length(unique(rankifremoved)) > 1) {
-    print("HERE 1")
     linearCombs <- which(rankifremoved == max(rankifremoved))
     print(linearCombs)
     print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
     paramSet <- cbind(paramSet[, -max(linearCombs), drop=FALSE])
-    # sets <- sets[-max(linearCombs)]
+    # sets <- sets[-max(linearCombs)] # don't need this
     rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   }
   
@@ -173,8 +166,6 @@ fitFullModel <- function(outcomeVar, cache, session) {
     model <- gam(f, data=data.frame(input.parameters)) 
     modelFitted[, d] <- model$fitted
   }  
-  print("here")
-  print(head(  modelFitted))
   colnames(modelFitted) <- colnames(outcomeVar)
   modelFitted 
 

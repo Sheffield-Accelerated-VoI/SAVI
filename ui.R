@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 1.015 (2015-02-24)"),    
+    h4("Release version 2.0.0 (2015-03-02)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -59,12 +59,16 @@ fluidPage(
             p("We won't share your email address with anyone."),
             br(),br(),
             h3("New features and bug fixes"),
-            h5("New in version 1.013"),
+            strong("New in version 2.0.0"),
+            p("SAVI now calculates value of information for individual level simulation 
+              models where only a single individual is simulated per PSA sample. See 
+              the \"About your model\" tab."), 
+            strong("New in version 1.013"),
             p("You can now download some test files to try out on SAVI. See the Import Files tab."),           
-            h5("New in version 1.009"),
+            strong("New in version 1.009"),
             p("SAVI now accepts text files with the tab or the semicolon separator, 
               and with the comma as the decimal mark."),              
-            h5("New in version 1.005"),
+            strong("New in version 1.005"),
             p("You can now download a report containing all the results from the 
               SAVI analysis. Click on the Downloads tab."), 
             p("Different interventions and comparators can now be specified for the CE plane."), 
@@ -105,7 +109,7 @@ fluidPage(
             br(),
             br(),
             p(HTML("Step 2: Input details about your model, import data, and check data")),
-              img(src = "step2_modelsetup.png", height = 300, width = 900),
+              img(src = "step2_modelsetup.png", height = 267, width = 800),
             br(),
             br(),
             p(HTML("Step 3: View your uncertainty analysis")),

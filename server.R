@@ -63,7 +63,7 @@ shinyServer(
   
   function(input, output, session) {
 
-    
+    ##################################################################################################
     
     #####################################
     # CREATE NEW ENVIRONMENT 'cache'    #
@@ -126,7 +126,7 @@ shinyServer(
     # load("adenoma.Rdata", envir=cache) # auto load for testing purposes
 
     
-    
+    ######################################################################################
         
     
     
@@ -138,14 +138,14 @@ shinyServer(
     
     
     
-    
+    ################################## TABS BELOW #########################################
     
     
     ############
     # HOME TAB #
     ############
     
-    # Function that loads saved session
+    # Function that LOADS SAVED SESSION
     # is evaluated if a new session is loaded 
     observe({
       inFile = input$loadSession
@@ -174,6 +174,11 @@ shinyServer(
       
       cache$namesDecisions <- paste(1:ncol(cache$costs), ") ", 
                                     colnames(cache$costs), sep="") # defines the decision option names   
+      
+      if(is.null(cache$uploadedCosts)) {
+        cache$uploadedCosts <- cache$costs
+        cache$uploadedEffects <- cache$effects
+      }
     })
     
     

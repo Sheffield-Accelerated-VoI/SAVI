@@ -90,6 +90,7 @@ shinyServer(
     cache$counterAdd <- 0
     cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
     cache$subsetEvpiValues <- NULL
+    cache$groupTable <- NULL
     cache$setStoreMatchEvpiValues <- NULL
     cache$currentSelection <- NULL
     cache$ceac.obj <- NULL
@@ -111,13 +112,11 @@ shinyServer(
     # AUTOLOAD FOR TESTING #
     ########################
     
-    # print(lapply(as.list(ls()[sapply(ls(envir = serverEnv), function(x) is.environment(get(x)))]), get))
-    
     # these three rows autoload values for testing purposes - to avoid having to load them manually. MS
     # ###########
-    #   load.parameters <- function() read.csv("../test/parameters.csv")                                   
-    #   load.costs <- function() read.csv("../test/costs.csv")
-    #   load.effects <- function() read.csv("../test/effects.csv")
+    #     load.parameters <- function() read.csv("../test/parameters.csv")                                   
+    #     load.costs <- function() read.csv("../test/costs.csv")
+    #     load.effects <- function() read.csv("../test/effects.csv")
     # ########### 
     # Or load an Rdata file
     # load("adenoma.Rdata", envir=cache) # auto load for testing purposes
@@ -144,42 +143,45 @@ shinyServer(
     
     # Function that LOADS SAVED SESSION
     # is evaluated if a new session is loaded 
-    observe({
-      inFile = input$loadSession
-      if (is.null(inFile)) return(NULL)
-      load(inFile$datapath, envir=cache)
-      
-      # update "about the model" variables  
-      updateTextInput(session, "modelName", value = cache$modelName)
-      updateTextInput(session, "current",  value = cache$current)
-      updateTextInput(session, "t3",  value = cache$t3)
-      updateNumericInput(session, "lambdaOverall",  value = cache$lambdaOverall)
-      updateTextInput(session, "effectDef",  value = cache$effectDef)
-      updateTextInput(session, "costDef",  value = cache$costDef)
-      updateNumericInput(session, "annualPrev",  value = cache$annualPrev)
-      updateNumericInput(session, "horizon",  value = cache$horizon)
-      updateTextInput(session, "currency",  value = cache$currency)
-      updateTextInput(session, "unitBens",  value = cache$unitBens)
-      updateTextInput(session, "jurisdiction",  value = cache$jurisdiction)
-      updateTextInput(session, "indSim",  value = cache$indSim)
-      
-      # set the group EVPI objects to NULL / 0
-      cache$counterAdd <- 0
-      cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
-      cache$subsetEvpiValues <- NULL
-      cache$setStoreMatchEvpiValues <- NULL
-      cache$currentSelection <- NULL
-      
-      cache$namesDecisions <- paste(1:ncol(cache$costs), ") ", 
-                                    colnames(cache$costs), sep="") # defines the decision option names   
-      
-      if(is.null(cache$uploadedCosts)) {
-        cache$uploadedCosts <- cache$costs
-        cache$uploadedEffects <- cache$effects
-      }
-      
-
-    })
+    
+    # CURRENTLY OUT OF ACTION
+    
+#     observe({
+#       inFile = input$loadSession
+#       if (is.null(inFile)) return(NULL)
+#       load(inFile$datapath, envir=cache)
+#       
+#       # update "about the model" variables  
+#       updateTextInput(session, "modelName", value = cache$modelName)
+#       updateTextInput(session, "current",  value = cache$current)
+#       updateTextInput(session, "t3",  value = cache$t3)
+#       updateNumericInput(session, "lambdaOverall",  value = cache$lambdaOverall)
+#       updateTextInput(session, "effectDef",  value = cache$effectDef)
+#       updateTextInput(session, "costDef",  value = cache$costDef)
+#       updateNumericInput(session, "annualPrev",  value = cache$annualPrev)
+#       updateNumericInput(session, "horizon",  value = cache$horizon)
+#       updateTextInput(session, "currency",  value = cache$currency)
+#       updateTextInput(session, "unitBens",  value = cache$unitBens)
+#       updateTextInput(session, "jurisdiction",  value = cache$jurisdiction)
+#       updateTextInput(session, "indSim",  value = cache$indSim)
+#       
+#       # set the group EVPI objects to NULL / 0
+#       cache$counterAdd <- 0
+#       cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
+#       cache$subsetEvpiValues <- NULL
+#       cache$setStoreMatchEvpiValues <- NULL
+#       cache$currentSelection <- NULL
+#       
+#       cache$namesDecisions <- paste(1:ncol(cache$costs), ") ", 
+#                                     colnames(cache$costs), sep="") # defines the decision option names   
+#       
+#       if(is.null(cache$uploadedCosts)) {
+#         cache$uploadedCosts <- cache$costs
+#         cache$uploadedEffects <- cache$effects
+#       }
+#       
+# 
+#     })
     
     
     
@@ -432,7 +434,6 @@ shinyServer(
       y <- input$loadSession
       tableValues <- cache$effects
       if (is.null(tableValues)) return(NULL)
-      # colnames(tableValues) <- cache$namesEffects
       head(tableValues, n=5)
     })
     
@@ -484,6 +485,7 @@ shinyServer(
       updateRadioButtons(session, "decisionOptionCE0", 
                          choices = namesOptions, selected = namesOptions[1])
     }) 
+    
     
     
     # if the ind sim flag is set and the cache$modelledCosts is still null 
@@ -1056,7 +1058,7 @@ shinyServer(
         subsetEvpiValues <- t(sapply(setStore[1:counterAdd], calc, 
                                 input$lambdaOverall, cache, session))
       } else {
-        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues)+1):counterAdd], 
+        newEvpiValue <- t(sapply(setStore[(NROW(subsetEvpiValues) + 1):counterAdd], 
                                  calc, input$lambdaOverall, cache, session))
         subsetEvpiValues <- rbind(subsetEvpiValues, newEvpiValue)
       }
@@ -1064,7 +1066,8 @@ shinyServer(
       cache$subsetEvpiValues <- subsetEvpiValues
       cache$setStoreMatchEvpiValues <- setStore # cache these for the report in case they change
 
-      buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
+      cache$groupTable <- buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
+      cache$groupTable
     }, sanitize.rownames.function = bold.allrows)
 
      # This clears everything, either on pressing the clear all button, or on loading new data.
@@ -1112,19 +1115,38 @@ shinyServer(
     #################
     # DOWNLOADS TAB #
     #################
-   
-   
-    # Functions that download things
     
-    # Download csv file
-    output$downloadSummary <- downloadHandler(
-      filename = "evppi\ values.csv",
+    ## Functions that download things
+
+    ## DOWNLOAD RESULTS
+
+    # Download single parameter EVPPI values as csv file
+    output$downloadSingleEVPPI <- downloadHandler(
+      filename = "single\ parameter\ evppi\ values.csv",
       content = function(file) {
-        write.csv(cache$pEVPI, file)
+        print(contents <- cache$pEVPI)
+        rownames(contents) <- names(cache$params)
+        colnames(contents) <- c("EVPPI", "Standard error")
+        write.csv(contents, file)
+      },
+      contentType = "text/plain"
+    )
+#
+    # Download single parameter EVPPI values as csv file
+    output$downloadGroupEVPPI <- downloadHandler(
+      filename = "parameter\ group\ evppi\ values.csv",
+      content = function(file) {
+        contents <- cache$groupTable
+        contents[, 1] <- as.character(contents[, 1])
+        print(contents <- as.matrix(contents))
+        colnames(contents) <- c("Group", "EVPPI", "Standard error")
+        write.csv(contents, file)
       },
       contentType = "text/plain"
     )
 
+    ## DOWNLOAD REPORT
+    
     # thanks to yijui for this code
     # https://github.com/rstudio/shiny-examples/blob/master/016-knitr-pdf/server.R
     # Download pdf / html / docx report - NEED TO FIX THE HTML AND DOCX 
@@ -1175,22 +1197,26 @@ shinyServer(
     # SAVE SESSION TAB #
     ####################
    
+    # CURRENTLY OUT OF ACTIONS
    
     # Download .Rdata file
-    output$saveSession <- downloadHandler(
-      filename =  function() paste(input$RdataFileName),
-      content = function(file) {
-        save(list = ls(envir=cache), file = file, envir=cache)
-      },
-      contentType = "text/plain")
+#     output$saveSession <- downloadHandler(
+#       filename =  function() paste(input$RdataFileName),
+#       content = function(file) {
+#         save(list = ls(envir=cache), file = file, envir=cache)
+#       },
+#       contentType = "text/plain")
     
-    
-    })
 
 
 
 
-    ######################################################## ENDS #############################################
+
+
+}) # END OF SHINYSERVER FUNCTION
+
+
+######################################################## ENDS #############################################
 
 
 

@@ -50,19 +50,29 @@ fluidPage(
       tabPanel("Home",
         sidebarLayout(position = "right",
           sidebarPanel(
-            h3("Returning Users"),
-            fileInput('loadSession', label = h4('Load previously saved session')),
-            br(),br(),
+            #h3("Returning Users"),
+            #h3('Load previously saved session'),
+            #p("The \"Load previously saved session\" facility is temporarily out 
+            #  of action due to problems of backward compatibility 
+            #  with SAVI version 1."),
+            #fileInput('loadSession', label = h4('Load previously saved session')),
+            #br(),br(),
             h3("Sign up for SAVI news and updates"),
             p(HTML("Send a blank email to"), 
              a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=Register')),               
             p("We won't share your email address with anyone."),
-            br(),br(),
+            br(),
+            h3("Known issues"),            
+            p("The \"Save session\" and \"Load previously saved session\" 
+              facilities are temporarily out of action due to problems of backward compatibility 
+              with SAVI version 1."),
+            br(),
             h3("New features and bug fixes"),
             strong("New in version 2.0.0"),
             p("SAVI now calculates value of information for individual level simulation 
               models where only a single individual is simulated per PSA sample. See 
               the \"About your model\" tab."), 
+
             strong("New in version 1.013"),
             p("You can now download some test files to try out on SAVI. See the Import Files tab."),           
             strong("New in version 1.009"),
@@ -154,7 +164,7 @@ fluidPage(
             This will lead to the most efficient (lowest variance) estimators for the
             mean costs, mean effects and mean net benefits." )),
            p("However, by simulating only a single patient per PSA sample we cannot 
-             calculate overall EVPI, or construct the Cost-Effectiveness Plane
+             calculate the overall EVPI, or construct the Cost-Effectiveness Plane
              or CEAC using standard methods."),
            p("We first need to partition the variation in the costs and effects
              into variation caused by individual level variation, and variation 
@@ -671,9 +681,12 @@ fluidPage(
          br(), br(), 
          p("NB generating the document can take some time."),
          br(),           br(),  
-         h3("Download results as a csv file"),
-         p("At present this file contains only the partial EVPI values for single parameters."),
-         downloadButton('downloadSummary', 'Download EVPI values')
+         h3("Download results as csv files"),
+         #p("At present this file contains only the partial EVPI values for single parameters."),
+         downloadButton('downloadSingleEVPPI', 'Download Single Parameter EVPPI values'),
+         #p("At present this file contains only the partial EVPI values for single parameters."),
+         br(),
+         downloadButton('downloadGroupEVPPI', 'Download Parameter Group EVPPI values')
       ),
       
       
@@ -685,14 +698,16 @@ fluidPage(
       
       
       ####################
-      # SAVE SESSION TAB #
+      # SAVE SESSION TAB # 
       ####################
       
-      tabPanel("Save session", 
-         textInput("RdataFileName", strong("Filename"), value="SAVISession.Rdata"),
-         br(), br(),
-         downloadButton('saveSession', 'Save SAVI session')
-      ),
+#      CURRENTLY OUT OF ACTION
+      
+#       tabPanel("Save session", 
+#          textInput("RdataFileName", strong("Filename"), value="SAVISession.Rdata"),
+#          br(), br(),
+#          downloadButton('saveSession', 'Save SAVI session')
+#       ),
       
       
       

@@ -70,7 +70,7 @@ buildSetStoreTable <- function(store, groupPartialEvpi) {
   # maxRows <- max(unlist(lapply(store, length)))
   # tableRows <- lapply(store, function(x) c(x, rep("", maxRows - length(x))))
   groups <- sapply(store, function(x) {
-    output <- paste(x, ", ", sep="", collapse="")
+    output <- paste(x, " + ", sep="", collapse="")
     output <- substr(output, 1, nchar(output) - 2)
     output})
   print(groups)

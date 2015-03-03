@@ -960,9 +960,20 @@ shinyServer(
                                 paste("EVPPI for ", input$jurisdiction, " over ", 
                                       input$horizon, " years (", input$currency, ")", sep=""))
       rownames(tableEVPPI) <- colnames(cache$params)
+      cache$tableEVPPI <- tableEVPPI
       tableEVPPI
     }) 
    
+    # Download single parameter EVPPI values as csv file
+    output$downloadSingleEVPPI <- downloadHandler(
+    filename = "EVPPI\ for\ individual\ parameters.csv",
+      content = function(file) {
+        write.csv(cache$tableEVPPI, file)
+      },
+    contentType = "text/plain"
+    )
+
+
     # EVPPi horizontal bar chart
     output$plot7 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -1070,71 +1081,9 @@ shinyServer(
       cache$groupTable
     }, sanitize.rownames.function = bold.allrows)
 
-     # This clears everything, either on pressing the clear all button, or on loading new data.
-    observe({ # clear the selections
-      dummy <- input$clearSubsetsEvpi
-      dummy1 <- valuesImportedFLAG(cache, input)
-      setStore <- vector("list", 100)
-      cache$setStore <- setStore
-      cache$counterAdd <- 0
-      cache$subsetEvpiValues <- NULL
-      cache$setStoreMatchEvpiValues <- NULL # cache these for the report in case they change
-    })
-
-    
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-    #################
-    # DOWNLOADS TAB #
-    #################
-    
-    ## Functions that download things
-
-    ## DOWNLOAD RESULTS
-
-    # Download single parameter EVPPI values as csv file
-    output$downloadSingleEVPPI <- downloadHandler(
-      filename = "single\ parameter\ evppi\ values.csv",
-      content = function(file) {
-        print(contents <- cache$pEVPI)
-        rownames(contents) <- names(cache$params)
-        colnames(contents) <- c("EVPPI", "Standard error")
-        write.csv(contents, file)
-      },
-      contentType = "text/plain"
-    )
-#
-    # Download single parameter EVPPI values as csv file
+    # Download group EVPPI values as csv file
     output$downloadGroupEVPPI <- downloadHandler(
-      filename = "parameter\ group\ evppi\ values.csv",
+      filename = "EVPPI\ for\ parameter\ groups.csv",
       content = function(file) {
         contents <- cache$groupTable
         contents[, 1] <- as.character(contents[, 1])
@@ -1144,6 +1093,56 @@ shinyServer(
       },
       contentType = "text/plain"
     )
+
+
+     # This clears everything on loading new data.
+    observe({ # clear the selections
+      # dummy <- input$clearSubsetsEvpi
+      dummy1 <- valuesImportedFLAG(cache, input)
+      setStore <- vector("list", 100)
+      cache$setStore <- setStore
+      cache$counterAdd <- 0
+      cache$subsetEvpiValues <- NULL
+      cache$setStoreMatchEvpiValues <- NULL # cache these for the report in case they change
+    })
+
+
+
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+    #################
+    # REPORT TAB #
+    #################
+    
+    ## Functions that download things
 
     ## DOWNLOAD REPORT
     

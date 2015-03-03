@@ -576,6 +576,9 @@ fluidPage(
          h4("EVPPI for individual parameters"),
          tableOutput("tableEVPPI"),
          
+         h4("Download table as a csv file"),
+         downloadButton('downloadSingleEVPPI', 'Download table'),
+         
          #h3("Partial EVPI for single parameters"),
          #tableOutput("summary"),
          
@@ -647,6 +650,8 @@ fluidPage(
              br(),
              h4("EVPPI for parameter groups"),
              tableOutput("selectedTable"),
+             h4("Download table as a csv file"),
+             downloadButton('downloadGroupEVPPI', 'Download table'),
              # br(),
              #h4("Partial EVPI values"),
              #tableOutput("selectedEvpiTable"),
@@ -667,23 +672,10 @@ fluidPage(
       
       
       #################
-      # DOWNLOADS TAB #
+      # REPORT TAB #
       #################
       
-      tabPanel("Downloads", 
-         
-         h3("Download results as csv files"),
-         #strong("EVPPI for single parameters."),
-         #br(),br(),
-         downloadButton('downloadSingleEVPPI', 'Download single parameter EVPPI values'),
-         #p("At present this file contains only the partial EVPI values for single parameters."),
-         br(),br(),#br(),
-         #strong("EVPPI for groups of parameters."),
-         #br(),br(),
-         downloadButton('downloadGroupEVPPI', 'Download parameter group EVPPI values'),
-         
-         br(),           br(),  
-         
+      tabPanel("Report", 
          h3("Download summary report"),
          p("This document contains all the tables and figures generated from the 
            SAVI analysis of your PSA."),

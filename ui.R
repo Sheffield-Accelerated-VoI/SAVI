@@ -66,13 +66,14 @@ fluidPage(
             p("The \"Save session\" and \"Load previously saved session\" 
               facilities are temporarily out of action due to problems of backward compatibility 
               with SAVI version 1."),
+            p("The Report that SAVI generates is not quite as polished as we would like. We are working on this."),
             br(),
             h3("New features and bug fixes"),
             strong("New in version 2.0.0"),
             p("SAVI now calculates value of information for individual level simulation 
               models where only a single individual is simulated per PSA sample. See 
               the \"About your model\" tab."), 
-
+            p("All tables can now be downloaded as csv files."), 
             strong("New in version 1.013"),
             p("You can now download some test files to try out on SAVI. See the Import Files tab."),           
             strong("New in version 1.009"),
@@ -401,6 +402,9 @@ fluidPage(
                
                h3("Table of Key Cost-Effectiveness Statistics"),
                tableOutput("tableCEplane"),
+
+               h4("Download table as a csv file"),
+               downloadButton('downloadTableCEplane', 'Download table'),
                br(),
                br(),
                
@@ -434,6 +438,9 @@ fluidPage(
                
                h3("Summary of Absolute Net Benefit Statistics"),
                tableOutput("tableNetBenefit"),
+               h4("Download table as a csv file"),
+               downloadButton('downloadTableNetBenefit', 'Download table'),               
+               br(),
                br(),
                
                textOutput("textNB3"),
@@ -505,7 +512,10 @@ fluidPage(
                
                h4("Overall EVPI"),
                h6("The Expected Value of Removing all Current Decision Uncertainty"),
-               tableOutput("tableEVPI"),               
+               tableOutput("tableEVPI"), 
+               h4("Download table as a csv file"),
+               downloadButton('downloadTableEVPI', 'Download table'),
+               br(),
                br(),
                
                h4("Overall EVPI (on costs scale) versus lambda"),               

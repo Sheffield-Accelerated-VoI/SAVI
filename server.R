@@ -87,10 +87,15 @@ shinyServer(
     cache$costs <- NULL
     cache$effects <- NULL
     
+    cache$tableCEplane <- NULL
+    cache$tableNetBenefit <- NULL
+    cache$groupTable <- NULL
+    cache$tableEVPI <- NULL
+    cache$tableEVPPI <- NULL
+    
     cache$counterAdd <- 0
     cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
     cache$subsetEvpiValues <- NULL
-    cache$groupTable <- NULL
     cache$setStoreMatchEvpiValues <- NULL
     cache$currentSelection <- NULL
     cache$ceac.obj <- NULL
@@ -614,10 +619,24 @@ shinyServer(
                                   "Probability intervention is cost saving", 
                                   "Probability intervention provides more benefit", 
                                   "Probability that intervention is cost-effective against comparator")
+      cache$tableCEplane <- tableCEplane
       tableCEplane
     })  
     
-    
+    # Download table as a csv file
+    output$downloadTableCEplane <- downloadHandler(
+      
+      filename = "Cost-Effectiveness\ Statistics.csv",
+      content = function(file) {
+        tableOut <- cache$tableCEplane
+        if(!is.null(cache$tableCEplane)) {
+          tableOut <- cbind(rownames(tableOut), tableOut)
+          colnames(tableOut) <- c("Intervention", colnames(tableOut)[-1])
+        }
+        write.csv(tableOut, file, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
     
     
 
@@ -712,9 +731,24 @@ shinyServer(
                                     "Expected Net Benefit on Effects Scale", 
                                     "95% Lower CI (on Effects Scale)", 
                                     "95% Upper CI (on Effects Scale)")
-      tableNetBenefit 
+      cache$tableNetBenefit <- tableNetBenefit
+      tableNetBenefit
     })  
     
+    # Download table as a csv file
+    output$downloadTableNetBenefit <- downloadHandler(
+      filename = "Net\ benefit\ statistics.csv",
+      content = function(file) {
+        tableOut <- cache$tableNetBenefit
+        if(!is.null(tableOut)) {
+          tableOut <- cbind(rownames(tableOut), tableOut)
+          colnames(tableOut) <- c("Intervention", colnames(tableOut)[-1])
+        }
+        write.csv(tableOut, file, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
+
     # EVPI INB bar plot
     output$plots5a <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -846,12 +880,7 @@ shinyServer(
                               "Over 15 Years", 
                               "Over 20 years", 
                               paste("Over Specified Decision Relevance Horizon (", 
-                                    input$horizon, "years)"))
-      
-      #      overallEvpi <- ifelse(input$indSim, calcEvpiSingle(cache$costs, cache$effects, 
-      #                                                   lambda=input$lambdaOverall, cache, session),
-      #                            calcEvpi(cache$costs, cache$effects, 
-      #              lambda=input$lambdaOverall, cache, session))
+                                    input$horizon, " years)", sep=""))
       overallEvpi <- calcEvpi(cache$costs, cache$effects, 
                                            lambda=input$lambdaOverall, cache, session)
       cache$overallEvpi <- overallEvpi
@@ -862,9 +891,21 @@ shinyServer(
                      overallEvpi * input$annualPrev * input$horizon)     
       tableEVPI[, 1] <- signif(evpiVector, 4)          
       tableEVPI[, 2] <- signif(evpiVector / input$lambdaOverall, 4)   
+      cache$tableEVPI <- tableEVPI
       tableEVPI
     }, digits=cbind(rep(0, 7), rep(0, 7), rep(2, 7))) 
    
+    output$downloadTableEVPI <- downloadHandler(
+      filename = "Overall\ EVPI.csv",
+      content = function(file) {
+        tableOut <- cache$tableEVPI
+        write.csv(tableOut, file)#, row.names = FALSE)
+      },
+      contentType = "text/plain"
+    )
+
+
+
     # EVPI versus lambda (costs)
     output$plots3 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
@@ -1086,9 +1127,11 @@ shinyServer(
       filename = "EVPPI\ for\ parameter\ groups.csv",
       content = function(file) {
         contents <- cache$groupTable
-        contents[, 1] <- as.character(contents[, 1])
-        print(contents <- as.matrix(contents))
-        colnames(contents) <- c("Group", "EVPPI", "Standard error")
+        if(!is.null(contents)) {
+          contents[, 1] <- as.character(contents[, 1])
+          print(contents <- as.matrix(contents))
+          colnames(contents) <- c("Group", "EVPPI", "Standard error")
+        }
         write.csv(contents, file)
       },
       contentType = "text/plain"

@@ -20,7 +20,7 @@ makeTableCePlane <- function(lambda, comparator, cache) {
   
   tableCePlane <- matrix(NA, ncol=ncol(costs) - 1, nrow = 13) # incremental, no zero column
   tableCePlane[1, ]  <- format(lambda, digits=4, nsmall = 0)
-  tableCePlane[2, ]  <- cache$namesDecisions[comp]
+  tableCePlane[2, ]  <- colnames(cache$uploadedCosts)[comp]
   tableCePlane[3, ]  <- format(npsa)
   tableCePlane[4, ]  <- format(colMeans(incBen), digits=2, nsmall=2)
   tableCePlane[5, ]  <- format(colMeans(incCost), digits=2, nsmall=2)
@@ -33,7 +33,7 @@ makeTableCePlane <- function(lambda, comparator, cache) {
   tableCePlane[12, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
   tableCePlane[13, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
   
-  colnames(tableCePlane) <- cache$namesDecisions[-comp]
+  colnames(tableCePlane) <- colnames(cache$uploadedCosts)[-comp]
   tableCePlane
 }
 

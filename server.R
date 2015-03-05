@@ -7,6 +7,7 @@
 
 print("server.R called") # this is called when we start the shiny server on SAVI via $ sudo start shiny-server
 
+rm(list=ls())
 
 ##################
 # SET OPTIONS    #
@@ -92,6 +93,8 @@ shinyServer(
     cache$groupTable <- NULL
     cache$tableEVPI <- NULL
     cache$tableEVPPI <- NULL
+    
+    cache$textCEplane1 <- NULL
     
     cache$counterAdd <- 0
     cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
@@ -529,7 +532,8 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      paste("The figure above shows the (standardised) cost-effectiveness plane based on the ", 
+      cache$textCEplane1 <- paste("The figure above shows the (standardised) 
+                                  cost-effectiveness plane based on the ", 
             cache$nIterate, " model runs in the probabilistic sensitivity analysis. 
               The willingness-to-pay threshold is shown as a 45 degree line. 
             The mean incremental cost of ", input$decisionOptionCE1, " versus ",  
@@ -548,6 +552,7 @@ shinyServer(
              input$decisionOptionCE1, " is cost 
             saving compared to ", input$decisionOptionCE0," is ", 
              pCostsaving(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
+      cache$textCEplane1
     })                       
     
     output$textCEplane2 <- renderText({

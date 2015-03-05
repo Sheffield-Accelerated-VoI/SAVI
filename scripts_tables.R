@@ -18,44 +18,44 @@ makeTableCePlane <- function(lambda, comparator, cache) {
   inb <- incBen * lambda - incCost
   npsa <- NROW(costs)
   
-  tableCePlane <- matrix(NA, ncol=ncol(costs) - 1, nrow = 13) # incremental, no zero column
-  tableCePlane[1, ]  <- format(lambda, digits=4, nsmall = 0)
-  tableCePlane[2, ]  <- colnames(cache$uploadedCosts)[comp]
-  tableCePlane[3, ]  <- format(npsa)
-  tableCePlane[4, ]  <- format(colMeans(incBen), digits=2, nsmall=2)
-  tableCePlane[5, ]  <- format(colMeans(incCost), digits=2, nsmall=2)
-  tableCePlane[6, ]  <- format(colMeans(incCost) /  colMeans(incBen), digits=2, nsmall=2)
-  tableCePlane[7, ]  <- format(apply(incBen, 2, quantile, 0.025), digits=2, nsmall=2)
-  tableCePlane[8, ]  <- format(apply(incBen, 2, quantile, 0.975), digits=2, nsmall=2)
-  tableCePlane[9, ]  <- format(apply(incCost, 2, quantile, 0.025), digits=2,  nsmall=2)
-  tableCePlane[10, ] <- format(apply(incCost, 2, quantile, 0.975), digits=2, nsmall=2)
-  tableCePlane[11, ] <- format(apply(incCost, 2, function(x) sum(x < 0)) / npsa, digits=2, nsmall=2)
-  tableCePlane[12, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
-  tableCePlane[13, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
+  tabCePlane <- matrix(NA, ncol=ncol(costs) - 1, nrow = 13) # incremental, no zero column
+  tabCePlane[1, ]  <- format(lambda, digits=4, nsmall = 0)
+  tabCePlane[2, ]  <- colnames(cache$uploadedCosts)[comp]
+  tabCePlane[3, ]  <- format(npsa)
+  tabCePlane[4, ]  <- format(colMeans(incBen), digits=2, nsmall=2)
+  tabCePlane[5, ]  <- format(colMeans(incCost), digits=2, nsmall=2)
+  tabCePlane[6, ]  <- format(colMeans(incCost) /  colMeans(incBen), digits=2, nsmall=2)
+  tabCePlane[7, ]  <- format(apply(incBen, 2, quantile, 0.025), digits=2, nsmall=2)
+  tabCePlane[8, ]  <- format(apply(incBen, 2, quantile, 0.975), digits=2, nsmall=2)
+  tabCePlane[9, ]  <- format(apply(incCost, 2, quantile, 0.025), digits=2,  nsmall=2)
+  tabCePlane[10, ] <- format(apply(incCost, 2, quantile, 0.975), digits=2, nsmall=2)
+  tabCePlane[11, ] <- format(apply(incCost, 2, function(x) sum(x < 0)) / npsa, digits=2, nsmall=2)
+  tabCePlane[12, ] <- format(apply(incBen, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
+  tabCePlane[13, ] <- format(apply(inb, 2, function(x) sum(x > 0)) / npsa, digits=2, nsmall=2)
   
-  colnames(tableCePlane) <- colnames(cache$uploadedCosts)[-comp]
-  tableCePlane
+  colnames(tabCePlane) <- colnames(cache$uploadedCosts)[-comp]
+  tabCePlane
 }
 
 
 # Summary of Absolute Net Benefit Statistics
 makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
   
-  tableNetBenefit <- matrix(NA, ncol= nInt, nrow = 8) 
+  tabNetBenefit <- matrix(NA, ncol= nInt, nrow = 8) 
   
   for (i in 1:nInt) {
-    tableNetBenefit[1,i] <- format(mean(effects.int[,i]), digits=2, nsmall=4)
-    tableNetBenefit[2,i] <- format(mean(costs.int[,i]), digits=2, nsmall=2)
-    tableNetBenefit[3,i] <- format(mean(effects.int[,i] * lambda - costs.int[,i]), digits=2, nsmall=2)
-    tableNetBenefit[4,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.025), digits=2, nsmall=2)
-    tableNetBenefit[5,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.975), digits=2, nsmall=2) 
-    tableNetBenefit[6,i] <- format(mean(effects.int[,i] - (costs.int[,i] / lambda)), digits=2, nsmall=4)
-    tableNetBenefit[7,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.025), digits=2, nsmall=4)
-    tableNetBenefit[8,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.975), digits=2, nsmall=4)
+    tabNetBenefit[1,i] <- format(mean(effects.int[,i]), digits=2, nsmall=4)
+    tabNetBenefit[2,i] <- format(mean(costs.int[,i]), digits=2, nsmall=2)
+    tabNetBenefit[3,i] <- format(mean(effects.int[,i] * lambda - costs.int[,i]), digits=2, nsmall=2)
+    tabNetBenefit[4,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.025), digits=2, nsmall=2)
+    tabNetBenefit[5,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.975), digits=2, nsmall=2) 
+    tabNetBenefit[6,i] <- format(mean(effects.int[,i] - (costs.int[,i] / lambda)), digits=2, nsmall=4)
+    tabNetBenefit[7,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.025), digits=2, nsmall=4)
+    tabNetBenefit[8,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.975), digits=2, nsmall=4)
   }
   
-  colnames(tableNetBenefit) <- colnames(costs.int)
-  tableNetBenefit
+  colnames(tabNetBenefit) <- colnames(costs.int)
+  tabNetBenefit
 }
 
 
@@ -80,7 +80,7 @@ buildSetStoreTable <- function(store, groupPartialEvpi) {
   print(df <- data.frame(groups, groupPartialEvpi))
   rownames(df) <- c(paste("Set", 1:(length(store))))
   colnames(df) <- c("Parameters", "Per Person EVPPI", "Approx Standard Error")
-  df
+  as.matrix(df)
 }
 
 bold.allrows <- function(x) {

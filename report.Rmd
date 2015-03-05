@@ -22,7 +22,6 @@ In section 3 the results of the Expected Value of Perfect Information (EVPI) ana
 In section 4 the results of single parameter Partial Expected Value of Perfect Information (EVPPI) are reported. The results of the analysis of multiple parameter EVPPI, selected in the application are provided. 
 
 ```{r, echo=FALSE, results='hide'}
-print(environment())
 lambda <- lambdaOverall
 npsa <- nIterate
 if(!is.null(costs) | !is.null(effects)) {
@@ -34,67 +33,74 @@ nb <- effects * lambda - costs
 ## 2.1 Probabilistic Sensitivity Analysis Summary
 
 
-```{r set-options, echo=FALSE, cache=FALSE}
+```{r set-options, echo=FALSE}
 options(width = 80)
 ```
 ```{r, echo=FALSE, results='asis'}
-if(!is.null(costs) | !is.null(effects)) {
-      tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
-      cache$lambdaOverall <- input$lambdaOverall
-      rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
-                            "Comparator", 
-                            "Number of PSA runs", 
-                            paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
-                            paste("Mean inc. Cost per Person (", input$currency, ")", sep=""),
-                            paste("ICER Estimate (", input$currency, " per ", input$unitBens, ")", sep=""),
-                            paste("2.5th CI for inc. Effects (", input$unitBens, ")", sep=""), 
-                            paste("97.5th CI for inc. Effects (", input$unitBens, ")", sep=""),
-                            paste("2.5th CI for inc. Costs (", input$currency, ")", sep=""),
-                            paste("97.5th CI for inc. Costs (", input$currency, ")", sep=""),
-                            "Probability intervention is cost saving", 
-                            "Probability intervention provides more benefit", 
-                            "Probability that intervention is cost-effective against comparator")
-  kable(tableCEplane)
-
-}
+# if(!is.null(costs) | !is.null(effects)) {
+#       tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
+#       cache$lambdaOverall <- input$lambdaOverall
+#       rownames(tableCEplane) <- c(paste("Threshold (", input$currency, " per ", input$unitBens, ")", sep=""), 
+#                             "Comparator", 
+#                             "Number of PSA runs", 
+#                             paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
+#                             paste("Mean inc. Cost per Person (", input$currency, ")", sep=""),
+#                             paste("ICER Estimate (", input$currency, " per ", input$unitBens, ")", sep=""),
+#                             paste("2.5th CI for inc. Effects (", input$unitBens, ")", sep=""), 
+#                             paste("97.5th CI for inc. Effects (", input$unitBens, ")", sep=""),
+#                             paste("2.5th CI for inc. Costs (", input$currency, ")", sep=""),
+#                             paste("97.5th CI for inc. Costs (", input$currency, ")", sep=""),
+#                             "Probability intervention is cost saving", 
+#                             "Probability intervention provides more benefit", 
+#                             "Probability that intervention is cost-effective against comparator")
+if(!is.null(tableCEplane)) kable(tableCEplane)
+#}
 ```
 
 ## 2.2 Cost-Effectiveness Plane
 
-The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r nIterate` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r input$decisionOptionCE1` versus `r input$decisionOptionCE0` is `r input$currency` `r if(!is.null(costs)) {format(incValue(costs, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=2)}`.  This suggests that `r input$decisionOptionCE1` is `r moreLess(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0)` costly. The incremental cost is uncertain because the model parameters are uncertain. The 97.5% credible interval for the incremental cost ranges from (`r input$currency` `r if(!is.null(costs)) {format(confIntCE(costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.025), digits=4,  nsmall=2)}` , `r input$currency` `r if(!is.null(costs)) {format(confIntCE(costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.975), digits=4,  nsmall=2)}`).  The probability that `r input$decisionOptionCE1` is cost saving compared to `r input$decisionOptionCE0` is `r if(!is.null(costs)) {format(pCostsaving(costs, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=3)}`. 
 
-The mean incremental benefit of `r input$decisionOptionCE1` versus `r input$decisionOptionCE0` is `r if(!is.null(effects)) {format(incValue(effects, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=4)}` `r input$unitBens` .  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r if(!is.null(effects)) {format(confIntCE(effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.025), digits=4, nsmall=4)}` `r input$unitBens` , `r if(!is.null(effects)) {format(confIntCE(effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.975), digits=4, nsmall=4)}` `r input$unitBens`).  The probability that `r input$decisionOptionCE1` is more beneficial compared to `r input$decisionOptionCE0` is `r if(!is.null(effects)) {format(pMoreben(effects, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=3)}`. 
 
-The incremental expected cost per unit of benefit is estimated at `r input$currency` `r if(!is.null(costs)) {format(iCER(costs, effects, input$decisionOptionCE1, input$decisionOptionCE0), digits=2, nsmall=2)}` per `r input$unitBens`.  There is uncertainty with a `r if(!is.null(costs)) {format(pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), digits=2, nsmall=3)}` probability that `r input$decisionOptionCE1` is more cost-effective than `r input$decisionOptionCE0`.  
+The cost-effectiveness plane shows the standardised cost-effectiveness plane per person based on `r nIterate` model runs in which uncertain model parameters are varied simultaneously in a probabilistic sensitivity analysis.  The mean incremental cost of `r input$decisionOptionCE1` versus `r input$decisionOptionCE0` is `r input$currency` `r if(!is.null(costs)) {format(incValue(costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), digits=2, nsmall=2)}`.  This suggests that `r input$decisionOptionCE1` is `r if(!is.null(costs)) {moreLess(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache)}` costly. The incremental cost is uncertain because the model parameters are uncertain. The 97.5% credible interval for the incremental cost ranges from (`r input$currency` `r if(!is.null(costs)) {format(confIntCE(costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.025, cache), digits=4,  nsmall=2)}` , `r input$currency` `r if(!is.null(costs)) {format(confIntCE(costs, input$decisionOptionCE1, input$decisionOptionCE0, 0.975, cache), digits=4,  nsmall=2)}`).  The probability that `r input$decisionOptionCE1` is cost saving compared to `r input$decisionOptionCE0` is `r if(!is.null(costs)) {format(pCostsaving(costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), digits=2, nsmall=3)}`. 
+
+The mean incremental benefit of `r input$decisionOptionCE1` versus `r input$decisionOptionCE0` is `r if(!is.null(effects)) {format(incValue(effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), digits=2, nsmall=4)}` `r input$unitBens` .  Again, there is some uncertainty due to model parameters, with the 95% credible interval for the incremental benefit ranging from (`r if(!is.null(effects)) {format(confIntCE(effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.025, cache), digits=4, nsmall=4)}` `r input$unitBens` , `r if(!is.null(effects)) {format(confIntCE(effects, input$decisionOptionCE0, input$decisionOptionCE1, 0.975, cache), digits=4, nsmall=4)}` `r input$unitBens`).  The probability that `r input$decisionOptionCE1` is more beneficial compared to `r input$decisionOptionCE0` is `r if(!is.null(effects)) {format(pMoreben(effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), digits=2, nsmall=3)}`. 
+
+The incremental expected cost per unit of benefit is estimated at `r input$currency` `r if(!is.null(costs)) {format(iCER(costs, effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), digits=2, nsmall=2)}` per `r input$unitBens`.  There is uncertainty with a `r if(!is.null(costs)) {format(pCE(input$decisionOptionCE1, input$decisionOptionCE0, input$lambdaOverall, cache), digits=2, nsmall=3)}` probability that `r input$decisionOptionCE1` is more cost-effective than `r input$decisionOptionCE0`.  
+
+
 
 ```{r, echo=FALSE}
-if (valuesImportedFLAG(cache, input)) {
-makeCEPlanePlot <- function(costs.int, effects.int, lambda, intervention, comparator, cache, ...) {
-  ## makes the CE plane
-  int <- which(colnames(costs.int)%in%intervention)
-  com <- which(colnames(costs.int)%in%comparator)
-  inc_costs <- costs.int[, int] - costs.int[, com]
-  inc_effects <- effects.int[, int] - effects.int[, com]
-  
-  m.costs <- max(abs(inc_costs))
-  m.effects <- max(abs(inc_effects))
-  m2.effects <- m.costs / lambda
-  m2.costs <- m.effects * lambda
-  m3.costs <- max(m.costs, m2.costs)
-  m3.effects <- max(m.effects, m2.effects)
-  
-  main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
-  plot(inc_effects, inc_costs, pty="s", cex=0.4, xlab = "Incremental effects", ylab= "Incremental costs",
-       ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue", ...)
-  abline(1, lambda, lty=2)
-  abline(h=0)
-  abline(v=0)
-  points(mean(inc_effects), mean(inc_costs), pch=20, col="blue", cex=1)
-  #text(mean(inc_effects), mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
-}
-      makeCEPlanePlot(costs, effects, 
-                      lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
-}
+# if (valuesImportedFLAG(cache, input)) {
+#   makeCEPlanePlot <- function(costs.int, effects.int, lambda, intervention, comparator, cache, ...) {
+#     ## makes the CE plane
+#     print(int <- which(cache$namesDecisions%in%intervention))
+#     com <- which(cache$namesDecisions%in%comparator)
+#     print(inc_costs <- costs.int[, int] - costs.int[, com])
+#     inc_effects <- effects.int[, int] - effects.int[, com]
+#     
+#     m.costs <- max(abs(inc_costs))
+#     m.effects <- max(abs(inc_effects))
+#     m2.effects <- m.costs / lambda
+#     m2.costs <- m.effects * lambda
+#     m3.costs <- max(m.costs, m2.costs)
+#     print(m3.effects <- max(m.effects, m2.effects))
+#     
+#     main <- paste("Standardised Cost-effectiveness Plane per Person\nlambda =", lambda)
+#     plot(inc_effects, inc_costs, pty="s", cex=0.4, xlab = "Incremental effects", ylab= "Incremental costs",
+#          ylim=c(-m3.costs, m3.costs), xlim=c(-m3.effects, m3.effects), col="lightblue", ...)
+#     abline(1, lambda, lty=2)
+#     abline(h=0)
+#     abline(v=0)
+#     points(mean(inc_effects), mean(inc_costs), pch=20, col="blue", cex=1)
+#     #text(mean(inc_effects), mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
+#    }
+
+makeCEPlanePlot(costs, effects, 
+    lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
+#}
+
+
+
 ```
 
 
@@ -126,34 +132,33 @@ This is particularly useful when comparing several strategies because the analys
 
 ```{r, echo=FALSE, results='asis'}
 
-makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
-  
-  tableNetBenefit <- matrix(NA, ncol= nInt, nrow = 8) 
-  for (i in 1:nInt) {
-    tableNetBenefit[1,i] <- format(mean(effects.int[,i]), digits=2, nsmall=4)
-    tableNetBenefit[2,i] <- format(mean(costs.int[,i]), digits=2, nsmall=2)
-    tableNetBenefit[3,i] <- format(mean(effects.int[,i] * lambda - costs.int[,i]), digits=2, nsmall=2)
-    tableNetBenefit[4,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.025), digits=2, nsmall=2)
-    tableNetBenefit[5,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.975), digits=2, nsmall=2) 
-    tableNetBenefit[6,i] <- format(mean(effects.int[,i] - (costs.int[,i] / lambda)), digits=2, nsmall=4)
-    tableNetBenefit[7,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.025), digits=2, nsmall=4)
-    tableNetBenefit[8,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.975), digits=2, nsmall=4)
-  }
-  colnames(tableNetBenefit) <- colnames(costs.int)
-  rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
-                               paste("Mean", input$costDef), 
-                               paste("Expected Net Benefit at", 
-                                          input$currency, lambda, "per", input$unitBens), 
-                               "95% Lower CI (on Costs Scale)", 
-                               "95% Upper CI (on Costs Scale)", 
-                               "Expected Net Benefit on Effects Scale", 
-                               "95% Lower CI (on Effects Scale)", 
-                               "95% Upper CI (on Effects Scale)")
-  tableNetBenefit
-}
-if(!is.null(costs) | !is.null(effects)) {
-print(kable(makeTableNetBenefit(costs, effects, lambda , nInt)))
-}
+# makeTableNetBenefit <- function(costs.int, effects.int, lambda, nInt) {
+#   
+#   tableNetBenefit <- matrix(NA, ncol= nInt, nrow = 8) 
+#   for (i in 1:nInt) {
+#     tableNetBenefit[1,i] <- format(mean(effects.int[,i]), digits=2, nsmall=4)
+#     tableNetBenefit[2,i] <- format(mean(costs.int[,i]), digits=2, nsmall=2)
+#     tableNetBenefit[3,i] <- format(mean(effects.int[,i] * lambda - costs.int[,i]), digits=2, nsmall=2)
+#     tableNetBenefit[4,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.025), digits=2, nsmall=2)
+#     tableNetBenefit[5,i] <- format(quantile(effects.int[,i] * lambda - costs.int[,i], 0.975), digits=2, nsmall=2) 
+#     tableNetBenefit[6,i] <- format(mean(effects.int[,i] - (costs.int[,i] / lambda)), digits=2, nsmall=4)
+#     tableNetBenefit[7,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.025), digits=2, nsmall=4)
+#     tableNetBenefit[8,i] <- format(quantile(effects.int[,i] - (costs.int[,i] / lambda), 0.975), digits=2, nsmall=4)
+#   }
+#   colnames(tableNetBenefit) <- colnames(costs.int)
+#   rownames(tableNetBenefit) <- c(paste("Mean", input$effectDef), 
+#                                paste("Mean", input$costDef), 
+#                                paste("Expected Net Benefit at", 
+#                                           input$currency, lambda, "per", input$unitBens), 
+#                                "95% Lower CI (on Costs Scale)", 
+#                                "95% Upper CI (on Costs Scale)", 
+#                                "Expected Net Benefit on Effects Scale", 
+#                                "95% Lower CI (on Effects Scale)", 
+#                                "95% Upper CI (on Effects Scale)")
+#   tableNetBenefit
+# }
+if(!is.null(tableNetBenefit)) kable(tableNetBenefit)
+#}
 ```
 
 ## 2.4.2 Incremental Net Benefit of compared with the optimal comparator
@@ -263,29 +268,31 @@ Research or data collection exercises costing more than this amount would not be
 The EVPI estimates in the table below quantifies the expected value to decision makers within the jurisdiction of removing all current decision uncertainty at a threshold of `r input$currency` `r format(lambda,digits=4)` per `r input$unitBens`.  This will enable comparison against previous analyses to provide an idea of the scale of decision uncertainty in this topic compared with other previous decisions. The EVPI estimate for varying willingness to pay thresholds are illustrated in the figures below. 
 
 ```{r, echo=FALSE, results='asis'}
-if(!is.null(costs) | !is.null(effects)) {
-     tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
-     colnames(tableEVPI) <- c(paste("EVPI Financial Valuation (",input$currency,")"), paste("EVPI", input$unitBens, "Valuation"))
-     rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
-                              paste("Assuming", input$annualPrev, "Persons Affected per Year"), 
-                              "Over 5 Years", 
-                              "Over 10 Years", 
-                              "Over 15 Years", 
-                              "Over 20 years", 
-                              paste("Over Decision Relevance Horizon (",input$horizon, "years)"))
-     
-     overallEvpi <- calcEvpi(costs, effects, 
-              lambda=lambda)
-     assign("overallEvpi", overallEvpi, envir = cache)
-     assign("lambdaOverall", lambda, envir = cache)
-     evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 
-                     overallEvpi * input$annualPrev * 10, overallEvpi * input$annualPrev * 15,
-                     overallEvpi * input$annualPrev * 20,
-                     overallEvpi * input$annualPrev * input$horizon)     
-     tableEVPI[, 1] <- signif(evpiVector, 4)          
-     tableEVPI[, 2] <- signif(evpiVector / lambda, 4)   
-     print(kable(tableEVPI))
-}
+# if(!is.null(costs) | !is.null(effects)) {
+#      tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
+#      colnames(tableEVPI) <- c(paste("EVPI Financial Valuation (",input$currency,")"), paste("EVPI", input$unitBens, "Valuation"))
+#      rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
+#                               paste("Assuming", input$annualPrev, "Persons Affected per Year"), 
+#                               "Over 5 Years", 
+#                               "Over 10 Years", 
+#                               "Over 15 Years", 
+#                               "Over 20 years", 
+#                               paste("Over Decision Relevance Horizon (",input$horizon, "years)"))
+#      
+#      overallEvpi <- calcEvpi(costs, effects, 
+#               lambda=lambda)
+#      assign("overallEvpi", overallEvpi, envir = cache)
+#      assign("lambdaOverall", lambda, envir = cache)
+#      evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 
+#                      overallEvpi * input$annualPrev * 10, overallEvpi * input$annualPrev * 15,
+#                      overallEvpi * input$annualPrev * 20,
+#                      overallEvpi * input$annualPrev * input$horizon)     
+#      tableEVPI[, 1] <- signif(evpiVector, 4)          
+#      tableEVPI[, 2] <- signif(evpiVector / lambda, 4)   
+#      print(kable(tableEVPI))
+# }
+
+if(!is.null(tableEVPI)) kable(tableEVPI)
 ```
 
 ```{r, echo=FALSE}
@@ -370,19 +377,20 @@ if(!is.null(costs) | !is.null(effects)) {
 ## 4.1 Single parameter EVPPI
 
 ```{r, echo=FALSE, results='asis'}
-if(!is.null(pEVPI)) {
-     tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 5)
-     tableEVPPI[, 1] <- round(pEVPI[, 1], 2)
-     tableEVPPI[, 2] <- round(pEVPI[, 2], 2)
-     tableEVPPI[, 3] <- round(pEVPI[, 1] / overallEvpi , 2)
-     tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
-     tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
-     colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
-                               paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
-                               paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
-     rownames(tableEVPPI) <- colnames(params)
-     print(kable(tableEVPPI))
-     }
+# if(!is.null(pEVPI)) {
+#      tableEVPPI <- matrix(NA, nrow = ncol(params), ncol = 5)
+#      tableEVPPI[, 1] <- round(pEVPI[, 1], 2)
+#      tableEVPPI[, 2] <- round(pEVPI[, 2], 2)
+#      tableEVPPI[, 3] <- round(pEVPI[, 1] / overallEvpi , 2)
+#      tableEVPPI[, 4] <- signif(pEVPI[, 1] * input$annualPrev, 4)
+#      tableEVPPI[, 5] <- signif(pEVPI[, 1] * input$annualPrev * input$horizon, 4)
+#      colnames(tableEVPPI) <- c(paste("Per Person EVPPI (", input$currency, ")", sep=""), "Standard Error","Indexed to Overall EVPI = 1.00", 
+#                                paste("EVPPI for ", input$jurisdiction, " Per Year", sep=""), 
+#                                paste("EVPPI for ", input$jurisdiction, " over ", input$horizon, " years", sep=""))
+#      rownames(tableEVPPI) <- colnames(params)
+#      print(kable(tableEVPPI))
+#      }
+if(!is.null(tableEVPPI)) kable(tableEVPPI)
 ```
 
 ```{r, echo=FALSE}
@@ -397,11 +405,19 @@ if(!is.null(pEVPI)) {
 ## 4.1 Group parameter EVPPI
 
 # Work in progress - to be added soon ...
-```{r, echo=FALSE, results='asis'}
-#if(!is.null(setStoreMatchEvpiValues)) {
-#tableEvpiValues <- cbind(setStoreMatchEvpiValues, subsetEvpiValues)
-#print(kable(tableEvpiValues))
-#}
+```{r, echo=TRUE, results='asis'}
+print(groupTable)
+print(dim(groupTable))
+print(class(groupTable))
+print(lapply(groupTable, function(x) class(x)))
+#kable(as.data.frame(groupTable))
+# if(!is.null(groupTable)) {
+#   contents <- groupTable
+#   contents[, 1] <- as.character(contents[, 1])
+#   print(contents <- as.matrix(contents))
+#   colnames(contents) <- c("Group", "EVPPI", "Standard error")
+#   kable(contents)
+# }
 ```
 
 

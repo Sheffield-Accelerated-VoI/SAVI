@@ -381,8 +381,6 @@ fluidPage(
                    plotOutput("plots1", width="500px", height="500px"),
                    br(),
                    p(strong("Strategies Compared"), textOutput("textCEplane4"))
-                   #p(strong("Summary")),
-                   #textOutput("textCEplane5")
                    , width = 7)
                ),
                
@@ -432,8 +430,7 @@ fluidPage(
                 rather than looking at many comparisons of 
                 incremental cost-effectiveness ratios between different options.  
                 Under the rules of decision theory, the strategy 
-                with the highest expected net benefit is the one which a decision 
-                maker would choose as the optimal strategy."),
+                with the greatest expected net benefit is optimal."),
                br(),
                
                h3("Summary of Absolute Net Benefit Statistics"),
@@ -461,7 +458,7 @@ fluidPage(
                 credible intervals for incremental net benefit that include zero, 
                 then there is decision uncertainty. 
                 Whether it is valuable to consider further research to reduce 
-                uncertainty is the subject of the analyses using expected value 
+                uncertainty is the motivation for the value 
                 of information calculations. These calculations can consider decision 
                 uncertainty arising from all uncertain parameters together 
                 (the overall expected value of perfect 
@@ -543,16 +540,16 @@ fluidPage(
                 of seeing the cloud of dots on the cost-effectiveness plane 
                  (representing current uncertainty in costs and benefits) and 
                 having to choose, the decision maker now knows exactly which 
-                 ‘dot’ is the true value (because all of the uncertainty is removed) 
+                 "'"dot"'" is the true value (because all of the uncertainty is removed) 
                 and so can be certain to choose the strategy which 
-                 gives the best net benefit. In a two strategy comparison of new 
-                versus current care, if the ‘true dot’ turns out to be 
+                 gives the greatest net benefit. In a two strategy comparison of new 
+                versus current care, if the "'"true dot"'" turns out to be 
                  below and to the right of the threshold lambda line, then the 
-                decision maker would select the new strategy.  If the ‘true dot’ 
+                decision maker would select the new strategy.  If the "'"true dot"'" 
                  is above and to the left, then current care would be selected.  
                 Under the current uncertainty, the decision maker will 
                  choose the strategy based on the expected costs and benefits 
-                (essentially on whether the ‘centre of gravity’ of the cloud 
+                (essentially on whether the "'"centre of gravity"'" of the cloud 
                  is above or below the threshold line)."),
                br()
                
@@ -618,13 +615,10 @@ fluidPage(
          h3("Partial EVPI for groups of parameters"),
          p(HTML("Although EVPPI information about individual parameters is 
           useful, often it is more informative if EVPPI can
-           be performed on groups of associated parameters e.g. all 
-          parameters associated with efficacy data. This will
-           enable a maximum value to be put on further research to jointly 
-          inform this set of parameters. Previously, such
-           calculations have been very computationally intensive. 
-          Our method will allow you to calculate EVPPI for different
-           parameter groups in a matter of seconds.")),
+           be computed for groups of associated parameters e.g. all 
+          parameters associated with efficacy data. This is the
+           maximum expected value of further research that will jointly 
+          inform this set of parameters.")),
          p(HTML("First, define groups of parameters for which to calculate 
           EVPPI. Choose a subset of parameters
           using the tick boxes and press the Calculate EVPPI button.")),
@@ -638,9 +632,8 @@ fluidPage(
           See <a href='http://mdm.sagepub.com/content/34/3/311' 
                 target='_blank'>this paper</a> for details.")),
          p(HTML("NOTE - Currently this table does not automatically 
-          update when model settings are changed - if you alter 
-          settings, simply press the Calculate EVPPI button once 
-          more to obtain updated values")), 
+          update previously calculated EVPPI values
+          when model settings (e.g. lambda) are changed.")), 
          br(),
          sidebarLayout(
            sidebarPanel(

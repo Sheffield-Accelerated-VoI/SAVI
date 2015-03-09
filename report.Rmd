@@ -271,6 +271,10 @@ if(!is.null(costs) | !is.null(effects)) {
 ## 4.1 Single parameter EVPPI
 
 ```{r, echo=FALSE, results='asis'}
+print(tableEVPPI)
+print(dim(tableEVPPI))
+print(class(tableEVPPI))
+#print(lapply(tableEVPPI, function(x) class(x)))
 if(!is.null(tableEVPPI)) kable(tableEVPPI)
 ```
 
@@ -285,21 +289,20 @@ if(!is.null(pEVPI)) {
 
 ## 4.1 Group parameter EVPPI
 
-# Work in progress - to be added soon ...
-```{r, echo=TRUE, results='asis'}
-print(groupTable)
-print(dim(groupTable))
-print(class(groupTable))
-print(lapply(groupTable, function(x) class(x)))
-#kable(as.data.frame(groupTable))
-# if(!is.null(groupTable)) {
-#   contents <- groupTable
-#   contents[, 1] <- as.character(contents[, 1])
-#   print(contents <- as.matrix(contents))
-#   colnames(contents) <- c("Group", "EVPPI", "Standard error")
-#   kable(contents)
-# }
+Although EVPPI information about individual parameters is useful, often it is more informative if EVPPI can be performed on groups of associated parameters e.g. all parameters associated with efficacy data. This will enable a maximum value to be put on further research to jointly inform this set of parameters. 
+
+```{r, echo=FALSE, results='asis'}
+if(!is.null(groupTable)) {
+  numericContent <- unlist(groupTable[, -1])
+  numericContent <- matrix(numericContent, ncol=2)
+  rownames(numericContent) <- paste("Set", 1:NROW(numericContent))
+  df <- data.frame(Parameters = unname(unlist(groupTable[, 1])), numericContent)
+  kable(df, col.names = c("Parameters", "Per person EVPPI", "Standard error"))
+}
 ```
 
+The table above reports the group EVPPI for the parameter groups selected. For subsets with up to five parameters, the GAM regression method was used. For subsets with five or more parameters the GP regression method was used. See Strong, M *et al* (2014) for details.
 
+## References
 
+Strong M, Oakley JE, Brennan A. Estimating multi-parameter partial Expected Value of Perfect Information from a probabilistic sensitivity analysis sample: a non-parametric regression approach. *Medical Decision Making*. 2014;**34(3)**:311-26. Available open access [here](http://mdm.sagepub.com/content/34/3/311).

@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("PRE - Release version 2.0.0 (2015-03-02)"),    #REMOVE BEFORE UPLOAD TO SERVER!
+    h4("Release version 2.0.0 (2015-03-09)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -171,7 +171,7 @@ fluidPage(
              into variation caused by individual level variation, and variation 
              caused by PSA level variation."), 
            p("We can do this using non-parametric regression."),
-           p("In SAVI, if \"Yes\" is selected below, a GAM 
+           p("In SAVI, if \"Yes\" is selected below, an additive GAM 
               model is used to separate the sources of variation. The 
               GAM model fitted values are approximately equal to the values that would 
               have been obtained had a large number of individuals been sampled per PSA run."),

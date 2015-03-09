@@ -1,4 +1,4 @@
-# Copyright (c) 2014, the SAVI authors (see AUTHORS.txt).
+# Copyright (c) 2014, 2015 the SAVI authors (see AUTHORS.txt).
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 # this file holds the functions to calculate the GP
@@ -217,3 +217,4 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   return(list(EVPI=partial.evpi, SE=SE))
 
 }
+

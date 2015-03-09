@@ -1,4 +1,4 @@
-# Copyright (c) 2014, the SAVI authors (see AUTHORS.txt).
+# Copyright (c) 2014, 2015 the SAVI authors (see AUTHORS.txt).
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 ######################
@@ -93,6 +93,7 @@ shinyServer(
     cache$groupTable <- NULL
     cache$tableEVPI <- NULL
     cache$tableEVPPI <- NULL
+    cache$ceac.obj <- NULL
     
     cache$textCEplane1 <- NULL
     
@@ -648,10 +649,10 @@ shinyServer(
     ### CEAC
 
     # function that calculates ceac
-    ceac <- reactive({ 
+    observe({ 
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
-      makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
+      cache$ceac.obj <- makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
     })
 
     output$textCEAC1 <- renderText({
@@ -674,7 +675,7 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      ceac.obj <- cache$ceac.obj <- ceac()
+      # ceac.obj <- cache$ceac.obj <- ceac()
       cache$lambdaOverall <- input$lambdaOverall
       makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
                    names=colnames(cache$costs))

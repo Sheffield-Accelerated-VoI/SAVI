@@ -99,10 +99,10 @@ Error in plot.window(...) : need finite 'xlim' values
 #     points(mean(inc_effects), mean(inc_costs), pch=20, col="blue", cex=1)
 #     #text(mean(inc_effects), mean(inc_costs),"mean", pos=1, offset=0.1, cex=0.7)
 #    }
-
+if (valuesImportedFLAG(cache, input)) {
 makeCEPlanePlot(costs, effects, 
     lambda=input$lambdaOverall, input$decisionOptionCE1, input$decisionOptionCE0, cache)
-#}
+}
 
 
 

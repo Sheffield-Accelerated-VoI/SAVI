@@ -378,11 +378,11 @@ fluidPage(
                    , width=5),
                  
                  mainPanel(
-                   p(strong("Strategies Compared"), textOutput("textCEplane4")),
-                   br(),
                    plotOutput("plots1", width="500px", height="500px"),
-                   p(strong("Summary")),
-                   textOutput("textCEplane5")
+                   br(),
+                   p(strong("Strategies Compared"), textOutput("textCEplane4"))
+                   #p(strong("Summary")),
+                   #textOutput("textCEplane5")
                    , width = 7)
                ),
                
@@ -393,7 +393,7 @@ fluidPage(
                br(),
                
                textOutput("textCEplane3"),
-               h6("Reference"),
+               h6(strong("Reference")),
                p("Section 5.1 in Briggs, Claxton & Sculpher. 
                 Decision Modelling for Health Economic Evaluation 
                 (Handbooks for Health Economic Evaluation). OUP Oxford; 
@@ -410,7 +410,7 @@ fluidPage(
                
                h3("Cost-Effectiveness Acceptability Curve (CEAC)"),
                textOutput("textCEAC1"),
-               h6("Reference"),
+               h6(strong("Reference")),
                p("A guide to cost-effectiveness acceptability curves. 
                 Fenwick & Byford. The British Journal of 
                 Psychiatry (2005) 187: 106-108 doi: 10.1192/bjp.187.2.106"),

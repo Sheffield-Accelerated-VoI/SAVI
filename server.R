@@ -527,11 +527,25 @@ shinyServer(
                       input$decisionOptionCE0, cache)
     })
     
-    
+
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
+      
+      cache$pCostsavingVal <- pCostsaving(cache$costs, input$decisionOptionCE1, 
+                input$decisionOptionCE0, cache)
+      cache$incValueCosts <- incValue(cache$costs, input$decisionOptionCE1, 
+               input$decisionOptionCE0, cache)
+      
+      cache$confIntCE025costs <- confIntCE(cache$costs, input$decisionOptionCE0, 
+                                             input$decisionOptionCE1, 0.025, cache)
+      
+      cache$confIntCE975costs <- confIntCE(cache$costs, input$decisionOptionCE0, 
+                                             input$decisionOptionCE1, 0.975, cache)
+      
+      cache$moreLessCosts <- moreLess(cache$costs, input$decisionOptionCE1, 
+               input$decisionOptionCE0, cache)
       
       cache$textCEplane1 <- paste("The figure above shows the (standardised) 
                                   cost-effectiveness plane based on the ", 
@@ -539,20 +553,17 @@ shinyServer(
               The willingness-to-pay threshold is shown as a 45 degree line. 
             The mean incremental cost of ", input$decisionOptionCE1, " versus ",  
               input$decisionOptionCE0," is ",
-            input$currency, incValue(cache$costs, input$decisionOptionCE1, 
-              input$decisionOptionCE0, cache), ". This suggests that ", 
+            input$currency, cache$incValueCosts, ". This suggests that ", 
             input$decisionOptionCE1, " is ", 
-            moreLess(cache$costs, input$decisionOptionCE1, 
-              input$decisionOptionCE0, cache), " costly. 
+            cache$moreLessCosts, " costly. 
               The incremental cost is uncertain because the model parameters are uncertain. 
             The 97.5% credible interval for the incremental cost ranges from ", 
-              input$currency, confIntCE(cache$costs, input$decisionOptionCE1, 
-            input$decisionOptionCE0, 0.025, cache)," to ", 
-             input$currency, confIntCE(cache$costs, input$decisionOptionCE1, 
-            input$decisionOptionCE0, 0.975, cache),". The probability that ", 
+              input$currency, cache$confIntCE025costs," to ", 
+             input$currency, cache$confIntCE975costs,". The probability that ", 
              input$decisionOptionCE1, " is cost 
             saving compared to ", input$decisionOptionCE0," is ", 
-             pCostsaving(cache$costs, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
+            cache$pCostsavingVal, ".", sep="")
+      
       cache$textCEplane1
     })                       
     
@@ -560,34 +571,52 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
+      cache$incValueEffects <- incValue(cache$effects, input$decisionOptionCE1, 
+                input$decisionOptionCE0, cache)
+      
+      cache$confIntCE025effects <- confIntCE(cache$effects, input$decisionOptionCE0, 
+                input$decisionOptionCE1, 0.025, cache)
+      
+      cache$confIntCE975effects <- confIntCE(cache$effects, input$decisionOptionCE0, 
+                input$decisionOptionCE1, 0.975, cache)
+      
+      cache$pMorebenVal <- pMoreben(cache$effects, input$decisionOptionCE1, 
+                input$decisionOptionCE0, cache)
+      
+      cache$moreLessEffects <- moreLess(cache$effects, input$decisionOptionCE1, 
+                input$decisionOptionCE0, cache)
+      
       paste("The mean incremental benefit of ", input$decisionOptionCE1, " versus ", 
             input$decisionOptionCE0, " is ", 
-            incValue(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), 
+            cache$incValueEffects, 
             " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
-            moreLess(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), 
+            cache$moreLessEffects, 
               " beneficial. Again, there is uncertainty in the incremental benefit 
             due to uncertainty in the model parameters. The 97.5% 
             credible interval for the incremental benefit ranges from ", 
-            confIntCE(cache$effects, input$decisionOptionCE0, 
-                      input$decisionOptionCE1, 0.025, cache), " ", input$unitBens, "s to ", 
-            confIntCE(cache$effects, input$decisionOptionCE0, 
-                      input$decisionOptionCE1, 0.975, cache), " ", 
+            cache$confIntCE025effects, " ", input$unitBens, "s to ", 
+            cache$confIntCE975effects, " ", 
             input$unitBens,"s. The probability that ", input$decisionOptionCE1, 
             " is more beneficial than ", input$decisionOptionCE0, " is ", 
-            pMoreben(cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), ".", sep="")
+            cache$pMorebenVal, ".", sep="")
     })                        
     
     output$textCEplane3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
+      cache$pCEVal <- pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
+          input$lambdaOverall, cache)
+      
+      cache$iCERVal <- iCER(cache$costs, 
+          cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache)
+      
       paste("The expected incremental cost per ", input$unitBens," (ICER) is estimated at ", 
-            input$currency, iCER(cache$costs, 
-            cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache), 
-            ". There is a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
-                                                input$lambdaOverall, cache), 
+            input$currency, cache$iCERVal, 
+            ". There is a probability of ", cache$pCEVal, 
             " that ", input$decisionOptionCE1, " is more cost-effective than ", 
-            input$decisionOptionCE0, ".", sep="")
+            input$decisionOptionCE0, " at a threshold of ",
+            input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
     })                         
       
     output$textCEplane4 <- renderText({
@@ -595,15 +624,7 @@ shinyServer(
       paste(input$decisionOptionCE1, "versus", input$decisionOptionCE0)
     })
     
-    output$textCEplane5 <- renderText({
-      if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
-      
-      paste("There is a ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
-        input$lambdaOverall, cache), " probability that ", input$decisionOptionCE1, 
-        " is more cost-effective than ", input$decisionOptionCE0, " at a threshold of ",
-        input$currency, input$lambdaOverall," per ",input$unitBens, sep="")
-    })                       
+                
     
     # Table of Key Cost-Effectiveness Statistics
     output$tableCEplane <- renderTable({
@@ -649,24 +670,25 @@ shinyServer(
     ### CEAC
 
     # function that calculates ceac
-    observe({ 
+    ceac <- reactive({ 
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
-      cache$ceac.obj <- makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
+      makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
     })
 
     output$textCEAC1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
+      cache$bestCEVal <- bestCE(cache$costs, cache$effects, 
+             input$lambdaOverall, cache$nInt)
+      
       paste("This graph shows the cost-effectiveness acceptability curve for the 
             comparison of strategies. The results show that at a threshold 
             value for cost-effectiveness of ",input$currency, input$lambdaOverall,
             " per ",input$unitBens," the strategy with the highest 
-            probability of being most cost-effective is ", bestCE(cache$costs, cache$effects, 
-                                                                  input$lambdaOverall, cache$nInt), 
-            ", with a probability of ", pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
-                                            input$lambdaOverall, cache),
+            probability of being most cost-effective is ", cache$bestCEVal, 
+            ", with a probability of ", cache$pCEVal,
             ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
                  
@@ -674,11 +696,11 @@ shinyServer(
     output$plots2 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
-      
+      ceac.obj <- cache$ceac.obj <- ceac()
       cache$lambdaOverall <- input$lambdaOverall
-      makeCeacPlot(cache$ceac.obj, lambda=input$lambdaOverall,
+      makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
                    names=colnames(cache$costs))
-    })
+    })  
     
     
     
@@ -704,16 +726,22 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
+      cache$bestnetBenVal <- bestnetBen(cache$costs, 
+                 cache$effects, input$lambdaOverall, cache$nInt)
+      
+      cache$netBencostsVal <- netBencosts(cache$costs, cache$effects, 
+                  input$lambdaOverall, cache$nInt)
+      
+      cache$netBeneffectsVal <- netBeneffects(cache$costs, cache$effects, 
+                    input$lambdaOverall, cache$nInt)
+      
       paste("The plot below shows the expected net benefit of the ", cache$nInt, 
             " strategies, together with the 97.5% credible 
             interval for each one.  The strategy with highest expected net benefit is ", 
-            bestnetBen(cache$costs, 
-           cache$effects, input$lambdaOverall, cache$nInt), ", with an expected net benefit of 
-           ", input$currency, netBencosts(cache$costs, cache$effects, 
-            input$lambdaOverall, cache$nInt),
+            cache$bestnetBenVal, ", with an expected net benefit of 
+           ", input$currency, cache$netBencostsVal,
            " (equivalent to a net benefit on the effectiveness scale of ", 
-            netBeneffects(cache$costs, cache$effects, 
-           input$lambdaOverall, cache$nInt), " ", input$unitBens, "s). 
+           cache$netBeneffectsVal, " ", input$unitBens, "s). 
                 Net benefit and 97.5% credible intervals for all strategies 
            are presented in the above table. ", sep="")
     }) 

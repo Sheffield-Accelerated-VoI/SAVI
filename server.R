@@ -96,6 +96,19 @@ shinyServer(
     cache$ceac.obj <- NULL
     
     cache$textCEplane1 <- NULL
+    cache$calcEvpiVal <- NULL
+    cache$incValueCosts <- NULL
+    cache$incValueEffects <- NULL
+    cache$namesDecisions <- NULL
+    cache$moreLessCosts <- NULL
+    cache$confIntCE025costs <- NULL
+    cache$confIntCE975costs <- NULL
+    cache$confIntCE025effects <- NULL
+    cache$confIntCE975effects <- NULL
+    cache$pCostsavingVal <- NULL
+    cache$pMorebenVal <- NULL
+    cache$iCERVal <- NULL
+    cache$pCEVal <- NULL
     
     cache$counterAdd <- 0
     cache$setStore <- vector("list", 100) # up to 100 sets for the group inputs
@@ -830,7 +843,8 @@ shinyServer(
    # EVPI TAB #
    ############
    
-   
+  
+
    output$textEVPI1 <- renderText({
      if (!valuesImportedFLAG(cache, input)) return(NULL)
      dummy <- input$indSim # ensure update with ind sim box tick
@@ -847,10 +861,12 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
+      cache$calcEvpiVal <- calcEvpi(cache$costs, cache$effects, input$lambdaOverall)
+      
       paste("If the number of people affected by the decision per year is " , 
             input$annualPrev, ", then the overall EVPI per year is ", input$currency,
-            format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev, 
-                   digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
+            format(cache$calcEvpiVal * input$annualPrev, 
+              digits = 4, nsmall=2), " for ", input$jurisdiction, ".", sep="")
     }) 
 
     output$textEVPI3 <- renderText({
@@ -863,8 +879,8 @@ shinyServer(
             " years, then the overall expected value of removing 
             decision uncertainty for ", 
             input$jurisdiction, " would be ", input$currency, 
-            format(calcEvpi(cache$costs, cache$effects, 
-            input$lambdaOverall)*input$annualPrev*input$horizon, digits = 4, nsmall=2),".", sep="")
+            format(cache$calcEvpiVal * input$annualPrev * input$horizon, 
+            	digits = 4, nsmall=2),".", sep="")
     }) 
 
     output$textEVPI4 <- renderText({
@@ -877,8 +893,8 @@ shinyServer(
             health gain and cost savings resulting from enabling the decision maker to better 
             identify the best decision  option – is expected to be no higher than ",
             input$currency, 
-            format(calcEvpi(cache$costs, cache$effects, input$lambdaOverall)*input$annualPrev*input$horizon, 
-                   digits = 4, nsmall=2),".", sep="")  
+            format(cache$calcEvpiVal * input$annualPrev * input$horizon, 
+              digits = 4, nsmall=2),".", sep="")  
       }) 
 
     output$textEVPI5 <- renderText({
@@ -902,9 +918,9 @@ shinyServer(
       dummy2 <- input$lambdaOverall#
       
       tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
-      colnames(tableEVPI) <- c(paste("Overall EVPI monetary scale (", 
+      colnames(tableEVPI) <- c(paste("Overall EVPI (", 
                                      input$currency, ")", sep=""), 
-                               paste("Overall EVPI", input$unitBens, "scale"))
+                               paste("Overall EVPI (", input$unitBens, ")", sep=""))
       rownames(tableEVPI) <- c("Per Person Affected by the Decision", 
                               paste("Per Year in", input$jurisdiction, "Assuming", 
                                     input$annualPrev, "Persons Affected per Year"), 

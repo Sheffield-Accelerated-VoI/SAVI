@@ -540,16 +540,16 @@ fluidPage(
                 of seeing the cloud of dots on the cost-effectiveness plane 
                  (representing current uncertainty in costs and benefits) and 
                 having to choose, the decision maker now knows exactly which 
-                 "'"dot"'" is the true value (because all of the uncertainty is removed) 
+                 \'dot\' is the true value (because all of the uncertainty is removed) 
                 and so can be certain to choose the strategy which 
                  gives the greatest net benefit. In a two strategy comparison of new 
-                versus current care, if the "'"true dot"'" turns out to be 
+                versus current care, if the \'true dot\' turns out to be 
                  below and to the right of the threshold lambda line, then the 
-                decision maker would select the new strategy.  If the "'"true dot"'" 
+                decision maker would select the new strategy.  If the \'true dot\' 
                  is above and to the left, then current care would be selected.  
                 Under the current uncertainty, the decision maker will 
                  choose the strategy based on the expected costs and benefits 
-                (essentially on whether the "'"centre of gravity"'" of the cloud 
+                (essentially on whether the \'centre of gravity\' of the cloud 
                  is above or below the threshold line)."),
                br()
                

@@ -117,7 +117,6 @@ The Cost-Effectiveness Acceptability Curve (CEAC) shows the probability that all
 
 ```{r, echo=FALSE}
 
-ceac.obj <- try(get("ceac.obj"), silent = TRUE)
 if (!is.null(ceac.obj)) {
  makeCeacPlot(ceac.obj, lambda, colnames(costs))
 }

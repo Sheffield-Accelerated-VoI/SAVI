@@ -675,9 +675,8 @@ shinyServer(
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$indSim # ensure update with ind sim box tick
       
-      # ceac.obj <- cache$ceac.obj <- ceac()
       cache$lambdaOverall <- input$lambdaOverall
-      makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
+      makeCeacPlot(cache$ceac.obj, lambda=input$lambdaOverall,
                    names=colnames(cache$costs))
     })
     

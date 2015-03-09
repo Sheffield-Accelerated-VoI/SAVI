@@ -10,8 +10,6 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: pdf_document
 ---
 
-**The SAVI team are working to get the report functionality sorted out. Reports are for illustrative purposes only at present.** 
-
 # 1. Introduction
 Welcome to the Sheffield Accelerated Value of Information (SAVI) application report. The results of your Value of Information analyses in SAVI are reported below. The results are presented in a standardised format to help with the interpretation of your results and future reporting.
 
@@ -271,10 +269,6 @@ if(!is.null(costs) | !is.null(effects)) {
 ## 4.1 Single parameter EVPPI
 
 ```{r, echo=FALSE, results='asis'}
-print(tableEVPPI)
-print(dim(tableEVPPI))
-print(class(tableEVPPI))
-#print(lapply(tableEVPPI, function(x) class(x)))
 if(!is.null(tableEVPPI)) kable(tableEVPPI)
 ```
 

@@ -289,7 +289,7 @@ if(!is.null(pEVPI)) {
 
 ## 4.1 Group parameter EVPPI
 
-Although EVPPI information about individual parameters is useful, often it is more informative if EVPPI can be performed on groups of associated parameters e.g. all parameters associated with efficacy data. This will enable a maximum value to be put on further research to jointly inform this set of parameters. 
+Although EVPPI information about individual parameters is useful, often it is more informative if EVPPI can be computed for groups of associated parameters e.g. all parameters associated with efficacy data. This will enable a maximum value to be put on further research to jointly inform this set of parameters. 
 
 ```{r, echo=FALSE, results='asis'}
 if(!is.null(groupTable)) {
@@ -301,7 +301,7 @@ if(!is.null(groupTable)) {
 }
 ```
 
-The table above reports the group EVPPI for the parameter groups selected. For subsets with up to five parameters, the GAM regression method was used. For subsets with five or more parameters the GP regression method was used. See Strong, M *et al* (2014) for details.
+The table above reports the group EVPPI for the parameter groups selected. For subsets with up to five parameters, the GAM regression method was used. For subsets with five or more parameters the GP regression method was used. See Strong *et al* (2014) for details.
 
 ## References
 

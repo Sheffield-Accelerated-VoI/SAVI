@@ -21,11 +21,11 @@ The online application is hosted at http://savi.shef.ac.uk/SAVI/
 ### Citation
 
 
-    @Misc{SAVI2014,
+    @Misc{SAVI2015,
       author =   {Mark Strong and Penny Breeze and Chloe Thomas and Alan Brennan},
       title =    {{SAVI} - {S}heffield {A}ccelerated {V}alue of {I}nformation},
       howpublished = {\url{https://github.com/Sheffield-Accelerated-VoI/SAVI}},
-      year = {2014}
+      year = {2015}
     }
     
 ### Funding Acknowledgements

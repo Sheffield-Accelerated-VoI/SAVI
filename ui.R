@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.0.0 (2015-03-09)"),    
+    h4("Release version 2.0.1 (2015-03-13)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -62,11 +62,15 @@ fluidPage(
              a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=Register')),               
             p("We won't share your email address with anyone."),
             br(),
-            h3("Known issues"),            
+            h3("Known issues"),  
+            p("Sometimes SAVI will either not load, or will hang for a while. 
+              This is because SAVI can only deal with one set of computations at a time, 
+              even though SAVI allows multiple concurrent users. 
+              Be assurred that SAVI keeps concurrent users' data and results separate."),
             p("The \"Save session\" and \"Load previously saved session\" 
               facilities are temporarily out of action due to problems of backward compatibility 
               with SAVI version 1."),
-            p("The Report that SAVI generates is not quite as polished as we would like. We are working on this."),
+            p("The report that SAVI generates is not quite as polished as we would like. We are working on this."),
             br(),
             h3("New features and bug fixes"),
             strong("New in version 2.0.0"),

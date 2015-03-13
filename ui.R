@@ -94,7 +94,7 @@ fluidPage(
           
           mainPanel(  
             h3("What SAVI does"),
-            p(HTML("Using"),strong("only"), HTML("PSA results from your model")),
+            p(HTML("Using"), strong("only"), HTML("PSA results from your model")),
             p(HTML("In a matter of seconds from the SAVI online application you can generate:")),
             tags$ol(
              tags$li("Standardised assessment of uncertainty (C-E planes and CEACs)"), 

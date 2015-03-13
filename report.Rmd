@@ -288,10 +288,12 @@ Although EVPPI information about individual parameters is useful, often it is mo
 ```{r, echo=FALSE, results='asis'}
 if(!is.null(groupTable)) {
   numericContent <- unlist(groupTable[, -1])
-  numericContent <- matrix(numericContent, ncol=2)
+  numericContent <- matrix(numericContent, ncol=5)
   rownames(numericContent) <- paste("Set", 1:NROW(numericContent))
   df <- data.frame(Parameters = unname(unlist(groupTable[, 1])), numericContent)
-  kable(df, col.names = c("Parameters", "Per person EVPPI", "Standard error"))
+  kable(df, col.names = c("Parameters", "Per person EVPPI", "Approx Standard error", "Indexed to Overall EVPI", 
+    paste("EVPPI for ", jurisdiction, " Per Year (", currency, ")", sep=""), 
+    paste("EVPPI for ", jurisdiction, " over ", horizon, " years (", currency, ")", sep="")))
 }
 ```
 

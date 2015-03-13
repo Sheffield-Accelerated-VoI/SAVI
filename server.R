@@ -915,7 +915,7 @@ shinyServer(
     output$tableEVPI <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy1 <- input$indSim # ensure update with ind sim box tick
-      dummy2 <- input$lambdaOverall#
+      dummy2 <- input$lambdaOverall
       
       tableEVPI <- matrix(NA, nrow = 7, ncol = 2)
       colnames(tableEVPI) <- c(paste("Overall EVPI (", 
@@ -1167,7 +1167,7 @@ shinyServer(
       cache$subsetEvpiValues <- subsetEvpiValues
       cache$setStoreMatchEvpiValues <- setStore # cache these for the report in case they change
 
-      cache$groupTable <- buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues)
+      cache$groupTable <- buildSetStoreTable(setStore[1:counterAdd], subsetEvpiValues, cache)
       cache$groupTable
     }, sanitize.rownames.function = bold.allrows)
 
@@ -1179,7 +1179,14 @@ shinyServer(
         if(!is.null(contents)) {
           contents[, 1] <- as.character(contents[, 1])
           print(contents <- as.matrix(contents))
-          colnames(contents) <- c("Group", "EVPPI", "Standard error")
+          colnames(contents) <- c("Parameters", 
+            paste("Per Person EVPPI (", cache$currency, ")", sep=""), 
+            "Standard Error",
+            "Indexed to Overall EVPI", 
+            paste("EVPPI for ", cache$jurisdiction, 
+              " Per Year (", cache$currency, ")", sep=""), 
+            paste("EVPPI for ", cache$jurisdiction, 
+              " over ", cache$horizon, " years (", cache$currency, ")", sep=""))
         }
         write.csv(contents, file)
       },

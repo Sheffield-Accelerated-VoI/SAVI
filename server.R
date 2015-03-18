@@ -73,7 +73,7 @@ shinyServer(
     # This is where we will save values that need to persist, 
     # and that can be picked up and included in the report
     
-    if(exists("cache")) rm(cache) # we shouldn't need this
+    if(exists("cache")) rm(cache, inherits = TRUE) # we shouldn't need this
     cache <- new.env()
     
     cache$savedSession <- 0

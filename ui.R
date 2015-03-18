@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.0.2 (2015-03-13)"),    
+    h4("Release version 2.0.3 (2015-03-18)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     

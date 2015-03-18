@@ -119,20 +119,21 @@ fluidPage(
               target='_blank'>Mark Strong's website</a> or 
               <a href = 'http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a>.")), br(),
             p(HTML("The SAVI process has 4 steps (using the TABS from left to right)")),
-            p(HTML("Step 1: Save PSA inputs and outputs as .csv files")),
-              img(src = "step1_excel.png", height = 300, width = 300),
+            p(HTML("Step 1: Save PSA input parametes, costs and effects as separate .csv files")),
+              img(src = "step1_excel.png", style = "width:50%"),
             br(),
             br(),
-            p(HTML("Step 2: Input details about your model, import data, and check data")),
-              img(src = "step2_modelsetup.png", height = 267, width = 800),
+            p(HTML("Step 2: Input details about your model, then upload and check PSA samples")),
+              img(src = "step2_modelsetup.png", style = "width:100%"),
             br(),
             br(),
-            p(HTML("Step 3: View your uncertainty analysis")),
-              img(src = "step5_viewVOI.png", height = 300, width = 300),
+            p(HTML("Step 3: View your VoI analysis")),
+              img(src = "step5_viewVOI.png", style = "width:50%"),
             br(),
             br(),
-            p(HTML("Step 4: After you have viewed the VoI tabs download your results in PDF, HTML or word file")),
-              img(src = "step6_download.png", height = 300, width = 300),
+            p(HTML("Step 4: Download your results as .csv files. 
+                   Download a report as a PDF, HTML or word document")),
+              img(src = "step6_download.png", style = "width:50%"),
             br(),br(),
             
             h3("If you get stuck, or if something doesn't work, please let us know"),
@@ -754,7 +755,7 @@ fluidPage(
               target='_blank'>https://github.com/Sheffield-Accelerated-VoI/SAVI.</a>")),
        p(HTML("Please cite the method as")),
        p(HTML("<div style='border:1px solid
-              black;width:800px;padding-left: 1em'>Strong M, Oakley JE, Brennan A. 
+              black;width:67%;padding-left: 1em'>Strong M, Oakley JE, Brennan A. 
           Estimating multi-parameter partial Expected Value of 
           Perfect Information from a probabilistic sensitivity analysis sample: 
           a non-parametric regression approach. 

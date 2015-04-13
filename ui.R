@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.0.4 (2015-04-13)"),    
+    h4("Release version 2.0.5 (2015-04-13)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -73,6 +73,10 @@ fluidPage(
             p("The report that SAVI generates is not quite as polished as we would like. We are working on this."),
             br(),
             h3("New features and bug fixes"),
+            strong("Fix for version 2.0.5"),
+            p("We have found that, for individual level simulation models, the regression method works best
+              when a small number of individuals (rather than a single individual) are run per PSA sample. 
+              Instructions have been updated."), 
             strong("New in version 2.0.0"),
             p("SAVI now calculates value of information for individual level simulation 
               models where only a single individual is simulated per PSA sample. See 
@@ -104,7 +108,8 @@ fluidPage(
                      for single and groups of parameters")
             ),
             p("For individual-level simulation models you only need to simulate 
-                   a single individual per PSA sample. See the \"About your model\" tab."),
+                   a small number of individuals per PSA sample. 
+              See the \"About your model\" tab."),
             
             br(),
             p(HTML("Disclaimer: This application is based on peer-reviewed 
@@ -168,14 +173,16 @@ fluidPage(
             (conditional on the PSA parameters) then the optimum number of
             individuals to simulate per sample of the PSA parameters is <strong>1</strong>. 
             This will lead to the most efficient (lowest variance) estimators for the
-            mean costs, mean effects and mean net benefits." )),
+            mean costs, mean effects and mean net benefits (O\'Hagan et al., 2007)." )),
            p("However, by simulating only a single patient per PSA sample we cannot 
              calculate the overall EVPI, or construct the Cost-Effectiveness Plane
              or CEAC using standard methods."),
            p("We first need to partition the variation in the costs and effects
              into variation caused by individual level variation, and variation 
              caused by PSA level variation."), 
-           p("We can do this using non-parametric regression."),
+           p("We can do this using non-parametric regression. The regression works best 
+             when a small number of patients are run per PSA sample, 
+              rather than just a single patient. We recommend at least 30."),
            p("In SAVI, if \"Yes\" is selected below, an additive GAM 
               model is used to separate the sources of variation. The 
               GAM model fitted values are approximately equal to the values that would 
@@ -184,8 +191,10 @@ fluidPage(
              these GAM fitted values."),
            p(),
            radioButtons("indSim", label = h4("Is the model an individual level 
-            simulation with a single patient per PSA run?"), choices = c("No", "Yes"), inline=TRUE),                             
-           br()
+            simulation with a small number of patients per PSA run?"), 
+                        choices = c("No", "Yes"), inline=TRUE),                             
+           br(),
+           p(HTML("<small>O\'Hagan et al. (2007) Health Economics. 16: 1009-23</small>"))
            , width = 5),
          
          

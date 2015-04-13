@@ -271,7 +271,7 @@ shinyServer(
     observe({
       inFile <- input$parameterFile
       if (is.null(inFile)) return(NULL)
-      dat <- read.csv(inFile$datapath, sep=input$sep, dec=input$dec)
+      dat <- read.csv(inFile$datapath, sep=input$sep, dec=input$dec, encoding = 'UTF-8')
       cache$params <- dat
       cache$nParams <- NCOL(dat)
       cache$nIterate <- NROW(dat) # size of PSA
@@ -304,7 +304,7 @@ shinyServer(
     observe({
       inFile <- input$costsFile
       if (is.null(inFile)) return(NULL)
-      dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2)
+      dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2, encoding = 'UTF-8')
       cache$uploadedCosts <- cache$costs <- dat
       cache$namesDecisions <- paste(1:ncol(dat), ") ", colnames(dat), sep="") # defines the decision option names      
       cache$nInt <- NCOL(dat) # number of interventions
@@ -340,7 +340,7 @@ shinyServer(
       inFile <- input$effectsFile      
       if (is.null(inFile)) return(NULL)
       
-      dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3)
+      dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3, encoding = 'UTF-8')
       cache$uploadedEffects <- cache$effects <- dat
     })
   

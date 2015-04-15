@@ -87,7 +87,7 @@ makeCeac <- function(costs.int, effects.int, lambda, session) {
 
 calSubsetEvpi <- function(sets, lambda, cache, session) {
   numParams <- length(sets) # number of parameters in the set
-  regressionFunction <- ifelse(numParams > 4, "gpFunc", "gamFunc")
+  regressionFunction <- ifelse(numParams > 4, "gpFunc", "gamFunc") # change gp to ppr
   f <- formulaGenerator(sets)
   costs <- cache$costs
   effects <- cache$effects
@@ -96,6 +96,9 @@ calSubsetEvpi <- function(sets, lambda, cache, session) {
   output <- get(regressionFunction)(nb, sets, s=1000, cache, session)
   output
 }
+
+
+
 
 
 

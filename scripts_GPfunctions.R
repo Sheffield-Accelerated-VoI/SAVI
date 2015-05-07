@@ -146,6 +146,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
 
   
   m <- min(30 * p, 250)
+  m <- min(nrow(NB), m)
   setForHyperparamEst <- 1:m # sample(1:N, m, replace=FALSE)
   hyperparameters <- estimate.hyperparameters(NB[setForHyperparamEst, ], 
                                               input.matrix[setForHyperparamEst, ], session)

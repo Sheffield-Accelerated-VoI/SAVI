@@ -137,13 +137,21 @@ getModelledCostsAndEffects <- function(cache, session) {
   rm(fits)
 }
 
+getModelledCostsAndEffects <- function(cache, session) {
+  print("Computing modelled costs and effects")
+  p <- NCOL(cache$uploadedCosts)
+  cache$modelledCosts <- fitFullModelMARS(cache$uploadedCosts, cache, session)
+  cache$modelledEffects <- fitFullModelMARS(cache$uploadedEffects, cache, session)  
+}
+
 
 fitFullModelMARS <- function(outcomeVar, cache, session) {
   input.parameters <- cache$params[, ,drop=FALSE]
   
   applyEarth <- function(y) earth(input.parameters, y, degree = 5, fast.k=5)$fitted
   
-  mclapply(as.data.frame(outcomeVar), applyEarth)  
+  fits <- lapply(as.data.frame(outcomeVar), applyEarth)  
+  as.data.frame(fits)
 }
 
 

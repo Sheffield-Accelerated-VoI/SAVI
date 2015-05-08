@@ -29,6 +29,8 @@ library(mgcv)
 library(knitr)
 library(rmarkdown)
 library(xtable)
+library(earth)
+library(parallel)
 
 # source all the functions we need
 source("scripts.R")
@@ -1315,6 +1317,7 @@ shinyServer(
 
 
 ######################################################## ENDS #############################################
+
 
 
 

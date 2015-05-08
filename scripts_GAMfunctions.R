@@ -128,9 +128,25 @@ formulaGenerator <- function(namesList) {
 
 getModelledCostsAndEffects <- function(cache, session) {
   print("Computing modelled costs and effects")
-  cache$modelledCosts <- fitFullModel(cache$uploadedCosts, cache, session)
-  cache$modelledEffects <- fitFullModel(cache$uploadedEffects, cache, session)
+  p <- NCOL(cache$uploadedCosts)
+  # cache$modelledCosts <- fitFullModelMARS(cache$uploadedCosts, cache, session)
+  # cache$modelledEffects <- fitFullModelMARS(cache$uploadedEffects, cache, session)  
+  fits <- fitFullModelMARS(cbind(cache$uploadedCosts, cache$uploadedEffects), cache, session)
+  cache$modelledCosts <- fits[, 1:p]
+  cache$modelledEffects <- fits[, (p+1):(2*p)]
+  rm(fits)
 }
+
+
+fitFullModelMARS <- function(outcomeVar, cache, session) {
+  input.parameters <- cache$params[, ,drop=FALSE]
+  
+  applyEarth <- function(y) earth(input.parameters, y, degree = 5, fast.k=5)$fitted
+  
+  mclapply(as.data.frame(outcomeVar), applyEarth)  
+}
+
+
 
 fitFullModel <- function(outcomeVar, cache, session) {
 

@@ -17,7 +17,7 @@ getModelledCostsAndEffects <- function(cache, session) {
 
 applyEarth <- function(y, inputs) { 
   if(var(y) == 0 & sum(y) == 0) return(rep(0, length(y)))
-  earth(inputs, y, degree = 5, fast.k=5)$fitted
+  earth(inputs, y, degree = 5, fast.k=20)$fitted
 }
 
 

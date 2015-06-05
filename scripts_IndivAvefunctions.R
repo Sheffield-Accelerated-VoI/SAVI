@@ -22,9 +22,9 @@ applyEarth <- function(y, inputs) {
 
 
 fitFullModelMARS <- function(outcomeVar, cache, session) {
-  input.parameters <- as.matrix(cache$params[, ,drop=FALSE])
+  input.parameters <- as.matrix(cache$params[, , drop = FALSE])
   
-  paramSet <- cbind(input.parameters)
+  paramSet <- input.parameters
   sets <- colnames(input.parameters)
   
   constantParams <- (apply(paramSet, 2, var) == 0)
@@ -37,7 +37,7 @@ fitFullModelMARS <- function(outcomeVar, cache, session) {
   if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
   
   # check for linear dependence and remove 
-  paramSet <- cbind(cbind(input.parameters)[, sets, drop=FALSE]) # now with constants removed
+  paramSet <- cbind(input.parameters[, sets, drop=FALSE]) # now with constants removed
   rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[,-x])$rank)
   while(length(unique(rankifremoved)) > 1) {
     linearCombs <- which(rankifremoved == max(rankifremoved))

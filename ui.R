@@ -69,6 +69,7 @@ fluidPage(
               s.id=id;js.src=p+'://platform.twitter.com/widgets.js';
               fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>")),
             br(),
+            
             h3("Known issues"),  
             p("Sometimes SAVI will either not load, or will hang for a while. 
               This is because SAVI can only deal with one set of computations at a time, 
@@ -79,6 +80,7 @@ fluidPage(
               with SAVI version 1."),
             p("The report that SAVI generates is not quite as polished as we would like. We are working on this."),
             br(),
+            
             h3("New features and bug fixes"),
             strong("Fix for version 2.0.5"),
             p("We have found that, for individual level simulation models, the regression method works best

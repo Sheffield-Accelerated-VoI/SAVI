@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.0.6 (2015-06-11)"),    
+    h4("Release version 2.0.7 (2015-06-19)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -209,31 +209,32 @@ fluidPage(
          mainPanel(                
            h3("Specify details about your model here"),
            h5("These can changed at any time - results will automatically update"),
-           textInput("modelName", label = h5("Name of your model"), value ="Model name goes here"),
+           h5("Enter numeric values without a thousand separator comma, i.e. '15100', rather than '15,100'"),
+           textInput("modelName", label = h5(strong("Name of your model")), value ="Model name goes here"),
            #textInput("current", label = h5("Name of strategy considered to be current/standard care"), 
            #value ="Current Care"),
            #textInput("t3", label = h5("Names of other strategies"), value ="Intervention 1"),
            #Need some way of adding more than one name to box
            numericInput("lambdaOverall", 
-                     label = h5("Threshold value of one unit of health effect (lambda)"), 
+                     label = h5(strong("Threshold value of one unit of health effect (lambda)")), 
                      value = 20000, min = 0, step = 1000),
-           textInput("effectDef", label = h5("Definition of effectiveness measure"), 
+           textInput("effectDef", label = h5(strong("Definition of effectiveness measure")), 
                      value ="Discounted Lifetime QALYs"),
-           textInput("costDef", label = h5("Definition of cost measure"),
+           textInput("costDef", label = h5(strong("Definition of cost measure")),
                      value ="Discounted Lifetime Costs (£)"),
-           numericInput("annualPrev", label = h5("Annual prevalence within jurisdiction 
-                     (number of patients affected by the decision each year)"), 
+           numericInput("annualPrev", label = h5(strong("Annual prevalence within jurisdiction 
+                     (number of patients affected by the decision each year)")), 
                      value = 1000, min = 0, step = 10),
-           numericInput("horizon", label = h5("Decision relevance horizon 
+           numericInput("horizon", label = h5(strong("Decision relevance horizon 
                      (number of years that decision between these strategies 
-                     is likely to be relevant)"), value = 10, min = 1),
+                     is likely to be relevant)")), value = 10, min = 1),
            #numericInput("n1",label = h5("Number of strategies compared in the model 
            #(including current/standard care)"), value = 2, min = 2),
            #numericInput("nPeople",label = h5("If yes, how many individuals were run per PSA sample?"),
            #value = 0, min = 0, step = 100),
-           textInput("currency", label = h5("Units used for costs"), value ="£"),
-           textInput("unitBens", label = h5("Units used for benefits"), value ="QALY"),
-           textInput("jurisdiction", label = h5("Name of jurisdiction (e.g. country, region, city)"), 
+           textInput("currency", label = h5(strong("Units used for costs")), value ="£"),
+           textInput("unitBens", label = h5(strong("Units used for benefits")), value ="QALY"),
+           textInput("jurisdiction", label = h5(strong("Name of jurisdiction (e.g. country, region, city)")), 
                       value = "England")
            , width = 7)
        )     

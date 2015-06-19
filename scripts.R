@@ -30,8 +30,8 @@ createNb <- function(costs.int, effects.int, lambda) {
      return(nb)
 }
 
-calcEvpi <- function(costs.int, effects.int, lambda, cache, session) {
-  ## this function creates the NB matrix
+calcEvpi <- function(costs.int, effects.int, lambda) {
+  ## this function calculates EVPI
   nb <- data.frame(as.matrix(effects.int) * lambda - as.matrix(costs.int))
   evpi <- mean(do.call(pmax, nb)) - max(colMeans(nb))
   return(evpi)

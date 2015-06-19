@@ -932,7 +932,7 @@ shinyServer(
                               paste("Over Specified Decision Relevance Horizon (", 
                                     input$horizon, " years)", sep=""))
       overallEvpi <- calcEvpi(cache$costs, cache$effects, 
-                                           lambda=input$lambdaOverall, cache, session)
+                                           lambda=input$lambdaOverall)
       cache$overallEvpi <- overallEvpi
       cache$lambdaOverall <- input$lambdaOverall
       evpiVector <- c(overallEvpi, overallEvpi * input$annualPrev, overallEvpi * input$annualPrev * 5, 

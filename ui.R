@@ -32,9 +32,9 @@ fluidPage(
   headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' 
                     target='_blank'><img src = 'uni2.gif' width = '200' 
                    alt='University of Sheffield logo' /></a> 
-                    SAVI - Sheffield Accelerated Value of Information <a href='http://www.sheffield.ac.uk/' 
+                    SAVI - Sheffield Accelerated Value of Information <a href='http://www.nihr.ac.uk/' 
                     target='_blank'><img src = 'NIHR-stamp-fund.png' width = '100' 
-                   alt='University of Sheffield logo' /></a>")),
+                   alt='Funded by National Institute for Health Research' /></a>")),
   
   mainPanel(
     h4("Release version 2.0.8 (2015-06-19)"),    

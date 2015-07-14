@@ -108,8 +108,44 @@ formulaGenerator <- function(namesList) {
 }
 
 
+# This function for getting SE for a GAM fit. NOT USED AT PRESENT
+# works for a single decision option scenario with incremental net benefits
 
-
+calculateSEforGAM <- function(gam.obj, N=1000) {
+  #######################################################################
+  ## calculates SE of evsi / evpi obtained from GAM method
+  ## this works for two decision problem, where the inb has been modelled
+  ## 
+  ## arguments:
+  ## 	gam.obj: is GAM object
+  ## 	N: is number of samples from MVN for empirical SE calculation
+  ##
+  ## returns:
+  ##	SE: the standard error
+  ########################################################################
+  
+  Xp <- predict(gam.obj, type="lpmatrix", unconditional = TRUE)
+  mu <- coef(gam.obj)
+  V <- gam.obj$Vp
+  
+  n <- nrow(Xp)
+  
+  samp <- mvrnorm(N, mu, V)
+  
+  random.mu <- samp%*%t(Xp)
+  
+  sample.set <- matrix(pmax(0, random.mu), nrow=N)
+  evsi.samples <- rowMeans(sample.set)
+  
+  rm(sample.set); gc()
+  
+  baselines <- pmax(0, rowMeans(random.mu))
+  evppi <- evppi.samples - baselines
+  
+  SE <- sd(evsi)
+  
+  return(SE=SE)
+}
 
 
 

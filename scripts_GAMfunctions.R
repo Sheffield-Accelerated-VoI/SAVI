@@ -135,14 +135,14 @@ calculateSEforGAM <- function(gam.obj, N=1000) {
   random.mu <- samp%*%t(Xp)
   
   sample.set <- matrix(pmax(0, random.mu), nrow=N)
-  evsi.samples <- rowMeans(sample.set)
+  evppi.samples <- rowMeans(sample.set)
   
   rm(sample.set); gc()
   
   baselines <- pmax(0, rowMeans(random.mu))
   evppi <- evppi.samples - baselines
   
-  SE <- sd(evsi)
+  SE <- sd(evppi)
   
   return(SE=SE)
 }

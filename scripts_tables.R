@@ -75,7 +75,7 @@ buildSetStoreTable <- function(store, groupPartialEvpi, cache) {
   
   if (is.null(cache$overallEvpi)) {
     cache$overallEvpi <- calcEvpi(cache$costs, cache$effects, 
-                          lambda=cache$lambdaOverall, cache, session)
+                          lambda=cache$lambdaOverall)
   }
   groups <- sapply(store, function(x) {
     output <- paste(x, "+", sep="", collapse="")

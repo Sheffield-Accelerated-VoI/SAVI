@@ -128,7 +128,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
     NB <- cbind(0, NB)
   }
   
-  maxSample <- min(5000, nrow(NB)) # to avoid trying to invert huge matrix
+  maxSample <- min(7500, nrow(NB)) # to avoid trying to invert huge matrix
   NB <- as.matrix(NB[1:maxSample, ])
   D <- ncol(NB)
   

@@ -37,7 +37,7 @@ fluidPage(
                    alt='Funded by National Institute for Health Research' /></a>")),
   
   mainPanel(
-    h4("Release version 2.0.8 (2015-06-19)"),    
+    h4("Release version 2.0.9 (2015-08-11)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -84,6 +84,10 @@ fluidPage(
             br(),
             
             h3("New features and bug fixes"),
+            strong("Fix for version 2.0.9"),
+            p("We have added a note on the EVPPI Groups tab to say that the GP method for 
+              calculating partial EVPI for groups of five or more parameters uses only the first 
+              7,500 rows of the PSA."), 
             strong("Fix for version 2.0.5"),
             p("We have found that, for individual level simulation models, the regression method works best
               when a small number of individuals (rather than a single individual) are run per PSA sample. 
@@ -656,9 +660,6 @@ fluidPage(
           For subsets with five or more parameters the GP regression method is used. 
           See <a href='http://mdm.sagepub.com/content/34/3/311' 
                 target='_blank'>this paper</a> for details.")),
-         p(HTML("NOTE - Currently this table does not automatically 
-          update previously calculated EVPPI values
-          when model settings (e.g. lambda) are changed.")), 
          br(),
          sidebarLayout(
            sidebarPanel(
@@ -685,7 +686,16 @@ fluidPage(
              #tableOutput("selectedEvpiTable"),
              #   br(),
              #   actionButton("clearSubsetsEvpi", "Clear Selections"),
-             width=7))     
+             width=7)),
+         p("NOTES"),
+         p(tags$ul(
+           tags$li("Currently this table does not automatically 
+          update previously calculated EVPPI values
+          when model settings (e.g. lambda) are changed."), 
+           tags$li("The GP method must invert an n x n matrix where n is the number of 
+           rows in the PSA. This is very slow for large matrices, so only the first 7,500
+           rows of the PSA are used at present")
+         ))
       ),
       
       # Numerical summary of the dataset,

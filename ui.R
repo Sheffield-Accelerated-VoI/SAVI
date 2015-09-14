@@ -129,11 +129,11 @@ fluidPage(
             p(HTML("Disclaimer: This application is based on peer-reviewed 
                 statistical approximation methods.  
               It comes with no warranty and should be utilised at the user\'s own risk 
-                (see <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/DISCLAIMER.txt' 
+                (see <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/master/DISCLAIMER.txt' 
               target = '_blank'>here</a>).
               The <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI' 
                 target='_blank'>underlying code</a> is made available under the 
-              <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/LICENSE.txt' 
+              <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/master/LICENSE.txt' 
                    target = '_blank'>BSD 3-clause license</a>.")),                      
             p(HTML("For more information on the method see   
               <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 

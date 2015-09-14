@@ -128,7 +128,9 @@ fluidPage(
             br(),
             p(HTML("Disclaimer: This application is based on peer-reviewed 
                 statistical approximation methods.  
-              It comes with no warranty and should be utilised at the user\'s own risk.
+              It comes with no warranty and should be utilised at the user\'s own risk 
+                (see <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/DISCLAIMER.txt' 
+              target = '_blank'>here</a>).
               The <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI' 
                 target='_blank'>underlying code</a> is made available under the 
               <a href = 'https://github.com/Sheffield-Accelerated-VoI/SAVI/blob/master/LICENSE.txt' 

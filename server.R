@@ -571,7 +571,7 @@ shinyServer(
             input$decisionOptionCE1, " is ", 
             cache$moreLessCosts, " costly. 
               The incremental cost is uncertain because the model parameters are uncertain. 
-            The 97.5% credible interval for the incremental cost ranges from ", 
+            The 95% credible interval for the incremental cost ranges from ", 
               input$currency, cache$confIntCE025costs," to ", 
              input$currency, cache$confIntCE975costs,". The probability that ", 
              input$decisionOptionCE1, " is cost 
@@ -606,7 +606,7 @@ shinyServer(
             " ",input$unitBens, "s.  This suggests that ", input$decisionOptionCE1," is ", 
             cache$moreLessEffects, 
               " beneficial. Again, there is uncertainty in the incremental benefit 
-            due to uncertainty in the model parameters. The 97.5% 
+            due to uncertainty in the model parameters. The 95% 
             credible interval for the incremental benefit ranges from ", 
             cache$confIntCE025effects, " ", input$unitBens, "s to ", 
             cache$confIntCE975effects, " ", 
@@ -653,10 +653,10 @@ shinyServer(
                                   paste("Mean inc. Effect per Person (", input$unitBens, ")", sep=""), 
                                   paste("Mean inc. Cost per Person (", input$currency, ")", sep=""),
                                   paste("ICER Estimate (", input$currency, " per ", input$unitBens, ")", sep=""),
-                                  paste("2.5th CI for inc. Effects (", input$unitBens, ")", sep=""), 
-                                  paste("97.5th CI for inc. Effects (", input$unitBens, ")", sep=""),
-                                  paste("2.5th CI for inc. Costs (", input$currency, ")", sep=""),
-                                  paste("97.5th CI for inc. Costs (", input$currency, ")", sep=""),
+                                  paste("2.5th centile for inc. Effects (", input$unitBens, ")", sep=""), 
+                                  paste("97.5th centile for inc. Effects (", input$unitBens, ")", sep=""),
+                                  paste("2.5th centile for inc. Costs (", input$currency, ")", sep=""),
+                                  paste("97.5th centile for inc. Costs (", input$currency, ")", sep=""),
                                   "Probability intervention is cost saving", 
                                   "Probability intervention provides more benefit", 
                                   "Probability that intervention is cost-effective against comparator")
@@ -750,13 +750,13 @@ shinyServer(
                     input$lambdaOverall, cache$nInt)
       
       paste("The plot below shows the expected net benefit of the ", cache$nInt, 
-            " strategies, together with the 97.5% credible 
+            " strategies, together with the 95% credible 
             interval for each one.  The strategy with highest expected net benefit is ", 
             cache$bestnetBenVal, ", with an expected net benefit of 
            ", input$currency, cache$netBencostsVal,
            " (equivalent to a net benefit on the effectiveness scale of ", 
            cache$netBeneffectsVal, " ", input$unitBens, "s). 
-                Net benefit and 97.5% credible intervals for all strategies 
+                Net benefit and 95% credible intervals for all strategies 
            are presented in the above table. ", sep="")
     }) 
     

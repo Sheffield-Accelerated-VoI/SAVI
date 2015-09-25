@@ -72,6 +72,13 @@ fluidPage(
               fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>")),
             br(),
             
+            h3("News"),  
+            p(HTML("SAVI is now available as an R package, allowing you to run SAVI directly on your own machine. 
+              You can download instructions "), 
+              a("here.", target = '_blank',
+                href="https://www.shef.ac.uk/polopoly_fs/1.511325!/file/Instructions_for_SAVI-package.txt")),
+            br(),
+            
             h3("Known issues"),  
             p("Sometimes SAVI will either not load, or will hang for a while. 
               This is because SAVI can only deal with one set of computations at a time, 

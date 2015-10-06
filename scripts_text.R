@@ -16,6 +16,7 @@
 #   incBen
 # }
 
+
 # 3) Mean Incremental Cost/Benefit
 incValue <- function(samples, int, comp, cache) {
   int <- which(cache$namesDecisions%in%int)

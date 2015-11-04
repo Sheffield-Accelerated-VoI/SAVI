@@ -14,7 +14,7 @@ fluidPage(
   ###########
   
   tags$head(
-    tags$style("body {background-color: #F8F8F8; }")),
+    tags$style("body {background-color: #FFFFFF; }")),
   tags$style(type='text/css', '#textCheckTab {color: red;}'),
   tags$style(type='text/css', '#textCheckTabParams {color: red;}'),
   tags$style(type='text/css', '#textCheckTabCosts {color: red;}'),
@@ -32,12 +32,10 @@ fluidPage(
   headerPanel(HTML("<a href='http://www.sheffield.ac.uk/' 
                     target='_blank'><img src = 'uni2.gif' width = '200' 
                    alt='University of Sheffield logo' /></a> 
-                    SAVI - Sheffield Accelerated Value of Information <a href='http://www.nihr.ac.uk/' 
-                    target='_blank'><img src = 'NIHR-stamp-fund.png' width = '100' 
-                   alt='Funded by National Institute for Health Research' /></a>")),
+                    SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.0.10 (2015-09-24)"),    
+    h4("Release version 2.0.11 (2015-11-04)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -805,19 +803,30 @@ fluidPage(
           target='_top'> savi@sheffield.ac.uk</a>")),
        p("Please tell us about any bugs!"),
        br(),
-       h3("Acknowledgements"), 
+#        p(HTML("<a href='http://www.nihr.ac.uk/' 
+#                     target='_blank'><img src = 'NIHR-stamp-fund.png' width = '100' 
+#                    alt='Funded by National Institute for Health Research' /></a>"), align = "right"),
+#        
+       h3(HTML("Funding acknowledgement")), 
        p(HTML("The method for partial EVPI computation that is implemented in 
               this web application arose from independent research 
               supported by the National Institute for Health Research (Mark Strong, 
               postdoctoral fellowship PDF-2012-05-258). 
               The views expressed in this publication are those 
               of the authors and not necessarily those of the National Health Service, 
-              the National Institute for Health Research, or the Department of Health. ")),
-       
-       br(),
-       p(HTML("This website complies with The University of Sheffield's 
+              the National Institute for Health Research, or the Department of Health. 
+              ")),
+br(),  
+p(HTML("This website complies with The University of Sheffield's 
           <a href='http://www.sheffield.ac.uk/privacy' target='_blank'>Privacy
-         Policy</a>"))
+         Policy</a>")),       
+
+       p(HTML("<a href='http://www.nihr.ac.uk/' 
+                    target='_blank'><img src = 'NIHR-Logo.png' width = '200' 
+                   alt='Funded by National Institute for Health Research' /></a>"), align = "right")
+    
+
+
       )
       
       

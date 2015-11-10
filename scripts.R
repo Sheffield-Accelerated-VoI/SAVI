@@ -93,7 +93,7 @@ calSubsetEvpi <- function(sets, lambda, cache, session) {
   effects <- cache$effects
   nb <- effects * lambda - costs
   inb <- nb - nb[ ,1]
-  output <- get(regressionFunction)(nb, sets, s=250, cache, session)
+  output <- get(regressionFunction)(nb, sets, s=1000, cache, session)
   output
 }
 

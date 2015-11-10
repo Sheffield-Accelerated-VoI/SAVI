@@ -245,7 +245,7 @@ shinyServer(
       cache$currency <- input$currency
       cache$unitBens <- input$unitBens
       cache$jurisdiction <- input$jurisdiction
-      cache$indSim <- input$indSim
+      # cache$indSim <- input$indSim
     })
     
     
@@ -518,23 +518,23 @@ shinyServer(
     observe({
       # cache$indSim <- input$indSim
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      if (input$indSim == "Yes") {
-        if (is.null(cache$modelledCosts)) {
-          getModelledCostsAndEffects(cache, session)
-        }
-        cache$costs <- cache$modelledCosts
-        cache$effects <- cache$modelledEffects
-      } else {
+#       if (input$indSim == "Yes") {
+#         if (is.null(cache$modelledCosts)) {
+#           getModelledCostsAndEffects(cache, session)
+#         }
+#         cache$costs <- cache$modelledCosts
+#         cache$effects <- cache$modelledEffects
+#       } else {
         cache$costs <- cache$uploadedCosts
         cache$effects <- cache$uploadedEffects
-      }
+      #}
     })
     
     
     # CE plane
     output$plots1 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      cache$indSim <- input$indSim # ensure update with ind sim box tick / untick    
+      #cache$indSim <- input$indSim # ensure update with ind sim box tick / untick    
       cache$lambdaOverall <- input$lambdaOverall
       costs <- cache$costs
       effects <- cache$effects
@@ -547,7 +547,7 @@ shinyServer(
     # Functions that make reactive text to accompany plots
     output$textCEplane1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+      #dummy <- input$indSim # ensure update with ind sim box tick
       
       cache$pCostsavingVal <- pCostsaving(cache$costs, input$decisionOptionCE1, 
                 input$decisionOptionCE0, cache)
@@ -585,7 +585,7 @@ shinyServer(
     
     output$textCEplane2 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+      #dummy <- input$indSim # ensure update with ind sim box tick
       
       cache$incValueEffects <- incValue(cache$effects, input$decisionOptionCE1, 
                 input$decisionOptionCE0, cache)
@@ -619,7 +619,7 @@ shinyServer(
     
     output$textCEplane3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+      #dummy <- input$indSim # ensure update with ind sim box tick
       
       cache$pCEVal <- pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
           input$lambdaOverall, cache)
@@ -645,7 +645,7 @@ shinyServer(
     # Table of Key Cost-Effectiveness Statistics
     output$tableCEplane <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+      #dummy <- input$indSim # ensure update with ind sim box tick
       
       tableCEplane <- makeTableCePlane(lambda=input$lambdaOverall, input$decisionOptionCE0, cache)
       cache$lambdaOverall <- input$lambdaOverall
@@ -688,13 +688,13 @@ shinyServer(
     # function that calculates ceac
     ceac <- reactive({ 
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+      #dummy <- input$indSim # ensure update with ind sim box tick
       makeCeac(cache$costs, cache$effects, input$lambdaOverall, session)
     })
 
     output$textCEAC1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+     # dummy <- input$indSim # ensure update with ind sim box tick
       
       cache$bestCEVal <- bestCE(cache$costs, cache$effects, 
              input$lambdaOverall, cache$nInt)
@@ -711,7 +711,7 @@ shinyServer(
     # CEAC plot
     output$plots2 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+      #dummy <- input$indSim # ensure update with ind sim box tick
       ceac.obj <- cache$ceac.obj <- ceac()
       cache$lambdaOverall <- input$lambdaOverall
       makeCeacPlot(ceac.obj, lambda=input$lambdaOverall,
@@ -724,7 +724,7 @@ shinyServer(
     
     output$textNB1 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+     # dummy <- input$indSim # ensure update with ind sim box tick
       
       paste("Net benefit is a calculation that puts ", input$costDef, " and ", 
         input$effectDef, " onto the same scale.  This is done by calculating 
@@ -740,7 +740,7 @@ shinyServer(
     
     output$textNB3 <- renderText({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+     # dummy <- input$indSim # ensure update with ind sim box tick
       
       cache$bestnetBenVal <- bestnetBen(cache$costs, 
                  cache$effects, input$lambdaOverall, cache$nInt)
@@ -765,7 +765,7 @@ shinyServer(
     # Table of Summary of Absolute Net Benefit Statistics
     output$tableNetBenefit <- renderTable({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+      #dummy <- input$indSim # ensure update with ind sim box tick
       
       tableNetBenefit <- makeTableNetBenefit(cache$costs, cache$effects, 
                                              lambda=input$lambdaOverall, cache$nInt)
@@ -801,7 +801,7 @@ shinyServer(
     # EVPI INB bar plot
     output$plots5a <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+      #dummy <- input$indSim # ensure update with ind sim box tick
       
       makeInbOptBar(cache$costs, cache$effects, 
                    lambda=input$lambdaOverall)
@@ -810,7 +810,7 @@ shinyServer(
     # Absolute net benefit densities
     output$plots5 <- renderPlot({
       if (!valuesImportedFLAG(cache, input)) return(NULL)
-      dummy <- input$indSim # ensure update with ind sim box tick
+     # dummy <- input$indSim # ensure update with ind sim box tick
       
       make2wayDensity(cache$costs, cache$effects, 
                      lambda=input$lambdaOverall)

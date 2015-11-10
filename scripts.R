@@ -61,7 +61,7 @@ applyCalcSingleParamGam <- function(parameterDf, nb, session, cache) {
 
 makeCeac <- function(costs.int, effects.int, lambda, session) {
   ## generates the CEAC values
-  l.seq <- seq(0, lambda * 10, lambda / 2)
+  l.seq <- seq(0, lambda * 10, lambda / 5)
   d <- ncol(costs.int)
   p <- c()
   

@@ -943,7 +943,7 @@ shinyServer(
       tableEVPI[, 2] <- signif(evpiVector / input$lambdaOverall, 4)   
       cache$tableEVPI <- tableEVPI
       tableEVPI
-    }, digits=cbind(rep(0, 7), rep(0, 7), rep(2, 7))) 
+    }, digits=cbind(rep(1, 7), rep(1, 7), rep(2, 7))) 
    
     output$downloadTableEVPI <- downloadHandler(
       filename = "Overall\ EVPI.csv",

@@ -10,7 +10,7 @@
 
 # This function estimates EVPI and SE via GAM
 # S is the simulation size for the Monte Carlo computation of SE
-gamFunc <- function(NB, sets, s=1000, cache, session) {
+gamFunc <- function(NB, sets, s=250, cache, session) {
   
   if(!is.null(dim(NB))) {
     NB <- NB - NB[, 1]
@@ -111,7 +111,7 @@ formulaGenerator <- function(namesList) {
 # This function for getting SE for a GAM fit. NOT USED AT PRESENT
 # works for a single decision option scenario with incremental net benefits
 
-calculateSEforGAM <- function(gam.obj, N=1000) {
+calculateSEforGAM <- function(gam.obj, N=250) {
   #######################################################################
   ## calculates SE of evsi / evpi obtained from GAM method
   ## this works for two decision problem, where the inb has been modelled

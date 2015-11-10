@@ -61,7 +61,7 @@ applyCalcSingleParamGam <- function(parameterDf, nb, session, cache) {
 
 makeCeac <- function(costs.int, effects.int, lambda, session) {
   ## generates the CEAC values
-  l.seq <- seq(0, lambda * 10, lambda / 5)
+  l.seq <- seq(0, lambda * 10, lambda / 2)
   d <- ncol(costs.int)
   p <- c()
   
@@ -93,7 +93,7 @@ calSubsetEvpi <- function(sets, lambda, cache, session) {
   effects <- cache$effects
   nb <- effects * lambda - costs
   inb <- nb - nb[ ,1]
-  output <- get(regressionFunction)(nb, sets, s=1000, cache, session)
+  output <- get(regressionFunction)(nb, sets, s=250, cache, session)
   output
 }
 

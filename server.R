@@ -130,6 +130,8 @@ shinyServer(
     cache$currency <- NULL
     cache$unitBens <- NULL
     cache$jurisdiction <- NULL
+    
+    cache$indSim <- FALSE
 
     ########################
     # AUTOLOAD FOR TESTING #

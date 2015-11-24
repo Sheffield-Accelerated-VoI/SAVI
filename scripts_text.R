@@ -110,27 +110,53 @@ pCE <- function(int, comp, lambda, cache) {
 }
 
 
-# 12) Which most cost effective?
+# # 12) Which most cost effective?
+# bestCE <- function(costs, bens, lambda, nInt) {
+#     for (i in 1:nInt)
+#   bestCE <- which.max(as.matrix(length(which((bens[, i] - bens[, 1]) * lambda - (costs[, i] - costs[, 1]) > 0)) / length(costs[,1]))) + 1 # 1 added on to account for lack of baseline row in calculation
+#   bestCE <- colnames(costs[bestCE])
+#   bestCE
+# }
+
+# 12) Which has highest probability cost effective? 
 bestCE <- function(costs, bens, lambda, nInt) {
-  for (i in 1:nInt)
-  bestCE <- which.max(as.matrix(length(which((bens[, i] - bens[, 1]) * lambda - (costs[, i] - costs[, 1]) > 0)) / length(costs[,1]))) + 1 # 1 added on to account for lack of baseline row in calculation
-  bestCE <- colnames(costs[bestCE])
-  bestCE
+  nb <- bens * lambda - costs
+  bestCE <- which.max(as.vector(table(apply(nb, 1, which.max))))
+  colnames(costs)[bestCE]
 }
+
+
+# 
+# # 13) Net Benefit costs
+# netBencosts <- function(costs, bens, lambda, nInt) {
+#   for (i in 1:nInt)
+#   netBencosts <- format(max(as.matrix(mean(bens[, i] * lambda - costs[, i]))), digits = 2, nsmall = 2)
+#   netBencosts
+# }
 
 # 13) Net Benefit costs
 netBencosts <- function(costs, bens, lambda, nInt) {
-  for (i in 1:nInt)
-  netBencosts <- format(max(as.matrix(mean(bens[, i] * lambda - costs[, i]))), digits = 2, nsmall = 2)
-  netBencosts
+  nb <- bens * lambda - costs
+  maxnb <- max(colMeans(nb))
+  format(maxnb, digits = 2, nsmall = 2)
 }
+
+# 
+# # 14) Net Benefit effects
+# netBeneffects <- function(costs, bens, lambda, nInt) {
+#   for (i in 1:nInt)
+#   netBeneffects <- format(max(as.matrix(mean(bens[, i] - (costs[, i] / lambda)))), digits = 2, nsmall = 2)
+#   netBeneffects
+# }
+
 
 # 14) Net Benefit effects
 netBeneffects <- function(costs, bens, lambda, nInt) {
-  for (i in 1:nInt)
-  netBeneffects <- format(max(as.matrix(mean(bens[, i] - (costs[, i] / lambda)))), digits = 2, nsmall = 2)
-  netBeneffects
+  nb <- bens - costs / lambda
+  maxnb <- max(colMeans(nb))
+  format(maxnb, digits = 2, nsmall = 2)
 }
+
 
 # 15) Which best strategy?
 bestnetBen <- function(costs, bens, lambda, nInt) {

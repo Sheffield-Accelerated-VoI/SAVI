@@ -622,7 +622,7 @@ shinyServer(
       #dummy <- input$indSim # ensure update with ind sim box tick
       
       cache$pCEVal <- pCE(input$decisionOptionCE1, input$decisionOptionCE0, 
-          input$lambdaOverall, cache)
+          input$lambdaOverall, cache) 
       
       cache$iCERVal <- iCER(cache$costs, 
           cache$effects, input$decisionOptionCE1, input$decisionOptionCE0, cache)
@@ -699,12 +699,15 @@ shinyServer(
       cache$bestCEVal <- bestCE(cache$costs, cache$effects, 
              input$lambdaOverall, cache$nInt)
       
+      cache$highestpCE <- highestCE(cache$costs, cache$effects, 
+              input$lambdaOverall)
+      
       paste("This graph shows the cost-effectiveness acceptability curve for the 
             comparison of strategies. The results show that at a threshold 
             value for cost-effectiveness of ",input$currency, input$lambdaOverall,
             " per ",input$unitBens," the strategy with the highest 
             probability of being most cost-effective is ", cache$bestCEVal, 
-            ", with a probability of ", cache$pCEVal,
+            ", with a probability of ", cache$highestpCE,
             ". More details on how to interpret CEACs are available from the literature.", sep="")
     })                       
                  

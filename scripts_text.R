@@ -118,12 +118,21 @@ pCE <- function(int, comp, lambda, cache) {
 #   bestCE
 # }
 
+
+
 # 12) Which has highest probability cost effective? 
 bestCE <- function(costs, bens, lambda, nInt) {
   nb <- bens * lambda - costs
-  bestCE <- which.max(as.vector(table(apply(nb, 1, which.max))))
-  colnames(costs)[bestCE]
+  best <- which.max(as.vector(tabulate(apply(nb, 1, which.max), nbins = nInt)))
+  colnames(costs)[best]
 }
+
+# 12a) What is the porbability for the option which has highest probability of being cost effective? 
+highestCE <- function(costs, bens, lambda) {
+  nb <- bens * lambda - costs
+  max(table(apply(nb, 1, which.max))) / NROW(costs)
+}
+
 
 
 # 

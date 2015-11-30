@@ -554,11 +554,11 @@ shinyServer(
       cache$incValueCosts <- incValue(cache$costs, input$decisionOptionCE1, 
                input$decisionOptionCE0, cache)
       
-      cache$confIntCE025costs <- confIntCE(cache$costs, input$decisionOptionCE0, 
-                                             input$decisionOptionCE1, 0.025, cache)
+      cache$confIntCE025costs <- confIntCE(cache$costs, input$decisionOptionCE1, 
+                                             input$decisionOptionCE0, 0.025, cache)
       
-      cache$confIntCE975costs <- confIntCE(cache$costs, input$decisionOptionCE0, 
-                                             input$decisionOptionCE1, 0.975, cache)
+      cache$confIntCE975costs <- confIntCE(cache$costs, input$decisionOptionCE1, 
+                                             input$decisionOptionCE0, 0.975, cache)
       
       cache$moreLessCosts <- moreLess(cache$costs, input$decisionOptionCE1, 
                input$decisionOptionCE0, cache)
@@ -590,11 +590,11 @@ shinyServer(
       cache$incValueEffects <- incValue(cache$effects, input$decisionOptionCE1, 
                 input$decisionOptionCE0, cache)
       
-      cache$confIntCE025effects <- confIntCE(cache$effects, input$decisionOptionCE0, 
-                input$decisionOptionCE1, 0.025, cache)
+      cache$confIntCE025effects <- confIntCE(cache$effects, input$decisionOptionCE1, 
+                input$decisionOptionCE0, 0.025, cache)
       
-      cache$confIntCE975effects <- confIntCE(cache$effects, input$decisionOptionCE0, 
-                input$decisionOptionCE1, 0.975, cache)
+      cache$confIntCE975effects <- confIntCE(cache$effects, input$decisionOptionCE1, 
+                input$decisionOptionCE0, 0.975, cache)
       
       cache$pMorebenVal <- pMoreben(cache$effects, input$decisionOptionCE1, 
                 input$decisionOptionCE0, cache)

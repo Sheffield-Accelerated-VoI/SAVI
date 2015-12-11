@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.0.14 (2015-11-30)"),    
+    h4("Release version 2.0.15 (2015-12-11)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -147,10 +147,21 @@ fluidPage(
                 target='_blank'>underlying code</a> is made available under the 
               <a href = 'https://raw.githubusercontent.com/Sheffield-Accelerated-VoI/SAVI/master/LICENSE.txt' 
                    target = '_blank'>BSD 3-clause license</a>.")),                      
-            p(HTML("For more information on the method see   
-              <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
-              target='_blank'>Mark Strong's website</a> or 
-              <a href = 'http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a>.")), br(),
+           # p(HTML("For more information on the method see   
+           #   <a href='http://www.sheffield.ac.uk/scharr/sections/ph/staff/profiles/mark' 
+           #   target='_blank'>Mark Strong's website</a> or 
+           #   <a href = 'http://mdm.sagepub.com/content/34/3/311' target='_blank'>this paper</a>.")), 
+            p(HTML("<strong>If you use SAVI in your work please cite our paper</strong>")),   
+            p(HTML("<div style='border:1px solid
+              black;width:67%;padding-left: 1em'>Strong M, Oakley JE, Brennan A. 
+              Estimating multi-parameter partial Expected Value of 
+              Perfect Information from a probabilistic sensitivity analysis sample: 
+              a non-parametric regression approach. 
+              <em>Medical Decision Making.</em> 2014;<b>34(3)</b>:311-26. Available open access 
+              <a href='http://mdm.sagepub.com/content/34/3/311' target='_blank'>here.</a></div>")),
+
+
+            br(),
             p(HTML("The SAVI process has 4 steps (using the TABS from left to right)")),
             p(HTML("Step 1: Save PSA input parametes, costs and effects as separate .csv files")),
               img(src = "step1_excel.png", style = "width:50%"),

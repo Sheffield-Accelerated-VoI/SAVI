@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.0.15 (2015-12-11)"),    
+    h4("Release version 2.0.15 (2016-02-29)"),    
     h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
     
     
@@ -311,6 +311,7 @@ fluidPage(
            <br><br>
            SAVI assumes that the first row of the parameter file contains the parameter names.<br>
            SAVI assumes that the first row of the costs file holds the decision option names. <br>
+           Avoid using any special symbols (e.g. currency symbols) in the names.<br>
            The first row of the effects file should also hold names, but these names are not used by SAVI.
            <br><br>
            The csv files must each have the same number of rows, and the rows must correspond, i.e. 

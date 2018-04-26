@@ -298,7 +298,8 @@ makePSUBplot <- function(costs.int, effects.int, lambda, annualPrev,  benUnit, b
   }
   
   
-  legend("topright", inset=c(-0.21,0), xpd=TRUE,   col = rev(psubCols),y.intersp=2, pch=15, c("Payer Strategy Specific Risk\n Burden (PSB)", "Payer Uncertainty Burden\n (PUB aka EVPI)"))
+  legend("topright", inset=c(-0.21,0), xpd=TRUE,   col = rev(psubCols),y.intersp=2, pch=15, 
+   c("Payer Strategy-Specific Risk\n Burden (PSB)", "Payer Uncertainty Burden\n (PUB), equal to EVPI"))
   par(xpd=FALSE) 
   
   PUBmillion <- (.evpi * annualPrev)/10^6
@@ -307,11 +308,18 @@ makePSUBplot <- function(costs.int, effects.int, lambda, annualPrev,  benUnit, b
   psbsPop <-  (annualPrev * (psubs-.evpi))/10^6
   psbsPopQaly <-  annualPrev * (psubsHealth - .evpi/lambda)
   
-  mtext(side=1, paste("Population RISK: ", annualPrev ," people affected by decision p.a. in jurisdiction",sep=""), line=4, col="black",adj=0)
-  mtext(side=1, paste("Payer Uncertainty Burden p.a.  (PUB aka EVPI) = \u00A3",format(PUBmillion, digits=2, nsmall=2),"m    (",format(PUBQual, digits=2, nsmall=2), " QALYs worth of uncertainty p.a.)",sep=""), line=6, col="#4F81BD",adj=0)
-  mtext(side=1, expression(underline("PSBs if a strategy were approved")), line=8, col="red",adj=0)
-  mtext(side=1, paste("Payer Strategy Burden (PSB) = \u00A3",format(psbsPop[1], digits=2, nsmall=2),"m    (",format(psbsPopQaly[1], digits=2, nsmall=2)," QALYs)     for   ",names(costs.int)[1]," ",sep=""), line=9, col="#C0504D",adj=0)
-  mtext(side=1, paste("Payer Strategy Burden (PSB) = \u00A3",format(psbsPop[2], digits=2, nsmall=2),"m    (",format(psbsPopQaly[2], digits=2, nsmall=2)," QALYs)     for   ",names(costs.int)[2]," ",sep=""), line=10, col="#C0504D",adj=0)
+  mtext(side=1, paste("Population-level burdens: ", annualPrev ," people affected by decision p.a. in jurisdiction",sep=""), 
+    line=4, col="black",adj=0)
+  mtext(side=1, paste("Population PUB p.a. (EVPI) = \u00A3", format(PUBmillion, digits=2, nsmall=2), "m (", 
+    format(PUBQual, digits=2, nsmall=2), " QALYs worth of uncertainty p.a.)", sep=""), line=6, col="#4F81BD", adj=0)
+  mtext(side=1, expression(underline("Population Payer Strategy-Specific Risk Burdens for each strategy:")), 
+    line=8, col="red",adj=0)
+  
+  for (selectOption in 1:length(psbsPopQaly)) {
+  mtext(side=1, paste("Population PSB = \u00A3",format(psbsPop[selectOption], digits=2, nsmall=2), "m (", 
+    format(psbsPopQaly[1], digits=2, nsmall=2)," QALYs) for ", names(costs.int)[selectOption], " ", sep=""), 
+    line=selectOption+8, col="#C0504D", adj=0)
+  }
   
   par(mar=c(5.1,4.1,4.1,2.1))
 }

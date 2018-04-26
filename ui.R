@@ -742,8 +742,8 @@ fluidPage(
       ############
       
       tabPanel("Risk Analysis",
-               h3("The Payer Strategy and Uncertainty Burdens"),
-               p("The 'Payer Strategy Burden' (PSB) and 'Payer Uncertainty Burden' (PUB)
+               h3("The Payer Strategy-Specific and Uncertainty Burdens"),
+               p("The 'Payer Strategy-Specific Burden' (PSB) and 'Payer Uncertainty Burden' (PUB)
                              reflect the payer's financial risks."),
                p(HTML("The PSB for decision option <em>d</em> is the difference
                       between the expected net benefit of the most
@@ -760,19 +760,19 @@ fluidPage(
                             <a href = 'https://link.springer.com/article/10.1007%2Fs40273-017-0562-9' 
                            target='_blank'>this paper by Grimm et al</a>.")),
                br(),
-               h4("Table showing Payer Strategy and Uncertainty Burdens, relative to the most cost-effective option"),
+               h4("Table showing Payer Strategy-Specific and Uncertainty Burdens, relative to the most cost-effective option"),
                tableOutput("tablePSUB"),
                h4("Download table as a csv file"),
                downloadButton('downloadTablePSUB', 'Download table'),
                
                br(),
                br(),
-               h4("Stacked barchart showing Payer Strategy and Uncertainty Burdens,
+               h4("Stacked barchart showing Payer Strategy-Specific and Uncertainty Burdens,
                                 relative to the most cost-effective option"),
                plotOutput("plotsPSUBstacked", width="700px", height="600px"),
                br(),
                br(),
-               h4("Side-by-side barchart showing Payer Strategy and Uncertainty Burdens,
+               h4("Side-by-side barchart showing Payer Strategy-Specific and Uncertainty Burdens,
                                 relative to the most cost-effective option"),
                plotOutput("plotsPSUBsideBySide", width="700px", height="600px"),
                br()

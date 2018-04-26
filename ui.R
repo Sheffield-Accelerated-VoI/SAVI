@@ -35,8 +35,8 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.0.16 (2016-09-29)"),    
-    h6(HTML("Copyright &copy; 2015 University of Sheffield")),  
+    h4("Release version 2.1.0 (2018-04-26)"),    
+    h6(HTML("Copyright &copy; 2018 University of Sheffield")),  
     
     
     
@@ -78,6 +78,9 @@ fluidPage(
             br(),
             
             h3("New features and bug fixes"),
+            strong("New in version 2.1.0"),
+            p(HTML("We have added a new 'Risk Analysis' tab. SAVI now generates Risk Analysis charts as described in "), a("this
+              paper by Grimm et al.", target = '_blank', href = "https://link.springer.com/article/10.1007%2Fs40273-017-0562-9")),
             strong("Fix for version 2.0.9"),
             p("We have added a note on the EVPPI Groups tab to say that the GP method for 
               calculating partial EVPI for groups of five or more parameters uses only the first 
@@ -393,10 +396,13 @@ fluidPage(
                p("(only the first 5 first rows of each dataset are shown)"),br(),
                
                h4("Parameters"),
+               htmlOutput("textParamsTable"),
                tableOutput("checktable1"),
                h4("Costs"),
+               htmlOutput("textCostsTable"),
                tableOutput("checktable2"),
                h4("Effects"),
+               htmlOutput("textEffectsTable"),
                tableOutput("checktable3")
       ),
       
@@ -729,7 +735,51 @@ fluidPage(
       
       
       
+
+
+      ############
+      # PSUB TAB #
+      ############
       
+      tabPanel("Risk Analysis",
+               h3("The Payer Strategy and Uncertainty Burdens"),
+               p("The 'Payer Strategy Burden' (PSB) and 'Payer Uncertainty Burden' (PUB)
+                             reflect the payer's financial risks."),
+               p(HTML("The PSB for decision option <em>d</em> is the difference
+                      between the expected net benefit of the most
+                      cost-effective option, and the expected net benefit of decision option <em>d</em>.
+                      The PSB indicates to the Payer the risk of choosing an option
+                            that is not the most cost-effective option.")),
+               p("The PUB is equal to the overall Expected Value of Perfect Information.
+                            It indicates to the Payer the financial
+                             risk of making the decision with current evidence,
+                       relative to making the decision with perfect evidence."),
+               p(HTML("The concepts are explained in detail in this
+                            <a href = 'http://www.nicedsu.org.uk/Managed-Entry-Agreements-MEA(3026860).htm'
+                           target='_blank'>NICE Decision Support Unit Report</a>, and in 
+                            <a href = 'https://link.springer.com/article/10.1007%2Fs40273-017-0562-9' 
+                           target='_blank'>this paper by Grimm et al</a>.")),
+               br(),
+               h4("Table showing Payer Strategy and Uncertainty Burdens, relative to the most cost-effective option"),
+               tableOutput("tablePSUB"),
+               h4("Download table as a csv file"),
+               downloadButton('downloadTablePSUB', 'Download table'),
+               
+               br(),
+               br(),
+               h4("Stacked barchart showing Payer Strategy and Uncertainty Burdens,
+                                relative to the most cost-effective option"),
+               plotOutput("plotsPSUBstacked", width="700px", height="600px"),
+               br(),
+               br(),
+               h4("Side-by-side barchart showing Payer Strategy and Uncertainty Burdens,
+                                relative to the most cost-effective option"),
+               plotOutput("plotsPSUBsideBySide", width="700px", height="600px"),
+               br()
+               
+      ),
+
+
       
       
       
@@ -796,9 +846,9 @@ fluidPage(
               <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/watson_p' 
                 target='_blank'>Penny Breeze</a>, 
               <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/thomas_c' 
-                target='_blank'>Chloe Thomas</a> and 
+                target='_blank'>Chloe Thomas</a>, 
               <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/brennan_a' 
-                target='_blank'>Alan Brennan</a>.")), 
+                target='_blank'>Alan Brennan</a> and Christophe Stevens.")), 
        p(HTML("The regression-based method for approximating partial EVPI was developed by 
          <a href='https://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' 
           target='_blank'>Mark Strong</a>

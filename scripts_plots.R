@@ -35,7 +35,7 @@ makeCEPlanePlot <- function(costs.int, effects.int, lambda, intervention, compar
 
 makeCeacPlot <- function(ceac.int, lambda.int, names.int, ...) {
   ## makes the CEAC plot
-  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0, 1), , 
+  plot(ceac.int$l.seq, ceac.int$p[, 1], type="l", ylim=c(0, 1),  
        main="Cost-effectiveness Acceptability Curve", 
        xlab="Threshold willingness to pay", 
        ylab="Probability strategy is cost-effective", ...)
@@ -258,3 +258,61 @@ makeEvppiBar <- function(pEVPI.int, params) {
           xlab = "Partial EVPI per person", cex.main=0.9)  
   par(op)
 }
+
+
+
+
+
+
+
+
+
+
+############
+# PSUB TAB #
+############
+
+
+makePSUBplot <- function(costs.int, effects.int, lambda, annualPrev,  benUnit, beside) {
+  .nb <- colMeans(effects.int) * lambda - colMeans(costs.int)
+  psbs <- max(.nb) - .nb
+  .evpi <- calcEvpi(costs.int, effects.int, lambda)
+  dataForBarplot <- rbind(.evpi, psbs)
+  dataForBarplotHealthUnits <- dataForBarplot / lambda
+  psubs <- colSums(dataForBarplot)
+  psubsHealth <- psubs / lambda
+  
+  healthUnitsLabelsStack <- paste(format(psubsHealth, digits=2, nsmall=2), benUnit)
+  healthUnitsLabelsBeside <- paste(format(as.vector(dataForBarplotHealthUnits), digits=2, nsmall=2), benUnit)
+  
+  ylimMax <- ceiling(max(psubsHealth)) * lambda # max(psubs) * 1.2
+  colnames(dataForBarplot) <- names(costs.int)
+  
+  par(mar=c(12,4.1,4.1,9.1))
+  psubCols <- c("#4F81BD", "#C0504D")
+  x <- barplot(dataForBarplot, col = psubCols, ylim = c(0, ylimMax), ylab = "\u00A3", beside = beside)
+  if (beside) {
+    text(x, as.vector(dataForBarplot) + ylimMax / 20, healthUnitsLabelsBeside, cex = 0.9)
+  } else {
+    text(x, psubs + ylimMax / 20, healthUnitsLabelsStack, cex = 1.1)
+  }
+  
+  
+  legend("topright", inset=c(-0.21,0), xpd=TRUE,   col = rev(psubCols),y.intersp=2, pch=15, c("Payer Strategy Specific Risk\n Burden (PSB)", "Payer Uncertainty Burden\n (PUB aka EVPI)"))
+  par(xpd=FALSE) 
+  
+  PUBmillion <- (.evpi * annualPrev)/10^6
+  PUBQual <- (.evpi / lambda) * annualPrev
+  
+  psbsPop <-  (annualPrev * (psubs-.evpi))/10^6
+  psbsPopQaly <-  annualPrev * (psubsHealth - .evpi/lambda)
+  
+  mtext(side=1, paste("Population RISK: ", annualPrev ," people affected by decision p.a. in jurisdiction",sep=""), line=4, col="black",adj=0)
+  mtext(side=1, paste("Payer Uncertainty Burden p.a.  (PUB aka EVPI) = \u00A3",format(PUBmillion, digits=2, nsmall=2),"m    (",format(PUBQual, digits=2, nsmall=2), " QALYs worth of uncertainty p.a.)",sep=""), line=6, col="#4F81BD",adj=0)
+  mtext(side=1, expression(underline("PSBs if a strategy were approved")), line=8, col="red",adj=0)
+  mtext(side=1, paste("Payer Strategy Burden (PSB) = \u00A3",format(psbsPop[1], digits=2, nsmall=2),"m    (",format(psbsPopQaly[1], digits=2, nsmall=2)," QALYs)     for   ",names(costs.int)[1]," ",sep=""), line=9, col="#C0504D",adj=0)
+  mtext(side=1, paste("Payer Strategy Burden (PSB) = \u00A3",format(psbsPop[2], digits=2, nsmall=2),"m    (",format(psbsPopQaly[2], digits=2, nsmall=2)," QALYs)     for   ",names(costs.int)[2]," ",sep=""), line=10, col="#C0504D",adj=0)
+  
+  par(mar=c(5.1,4.1,4.1,2.1))
+}
+

@@ -1,4 +1,4 @@
-# Copyright (c) 2014, 2015 the SAVI authors (see AUTHORS.txt).
+# Copyright (c) 2014, 2015, 2018 the SAVI authors (see AUTHORS.txt).
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 
@@ -843,12 +843,14 @@ fluidPage(
                 target='_blank'>School of Health and Related Research</a> by 
               <a href='https://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' 
                 target='_blank'>Mark Strong</a>, 
-              <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/watson_p' 
+              <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/breeze_p' 
                 target='_blank'>Penny Breeze</a>, 
               <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/thomas_c' 
                 target='_blank'>Chloe Thomas</a>, 
               <a href='https://www.sheffield.ac.uk/scharr/sections/heds/staff/brennan_a' 
-                target='_blank'>Alan Brennan</a> and Christophe Stevens.")), 
+                target='_blank'>Alan Brennan</a> and 
+              <a href='http://www.imperial.ac.uk/people/christophe.stevens' 
+                target='_blank'>Christophe Stevens</a>.")), 
        p(HTML("The regression-based method for approximating partial EVPI was developed by 
          <a href='https://www.shef.ac.uk/scharr/sections/ph/staff/profiles/mark' 
           target='_blank'>Mark Strong</a>

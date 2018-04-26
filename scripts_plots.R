@@ -317,7 +317,7 @@ makePSUBplot <- function(costs.int, effects.int, lambda, annualPrev,  benUnit, b
   
   for (selectOption in 1:length(psbsPopQaly)) {
   mtext(side=1, paste("Population PSB = \u00A3",format(psbsPop[selectOption], digits=2, nsmall=2), "m (", 
-    format(psbsPopQaly[1], digits=2, nsmall=2)," QALYs) for ", names(costs.int)[selectOption], " ", sep=""), 
+    format(psbsPopQaly[selectOption], digits=2, nsmall=2)," QALYs) for ", names(costs.int)[selectOption], " ", sep=""), 
     line=selectOption+8, col="#C0504D", adj=0)
   }
   

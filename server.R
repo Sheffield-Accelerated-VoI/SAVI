@@ -277,10 +277,14 @@ shinyServer(
     observe({
       inFile <- input$parameterFile
       if (is.null(inFile)) return(NULL)
-      dat <- read.csv(inFile$datapath, sep=input$sep, dec=input$dec, encoding = 'UTF-8')
-      cache$params <- dat
-      cache$nParams <- NCOL(dat)
-      cache$nIterate <- NROW(dat) # size of PSA
+      dat <- try(read.csv(inFile$datapath, sep=input$sep, dec=input$dec, encoding = 'UTF-8'), silent = TRUE)
+      if(inherits(dat, "try-error")) {
+        cache$params <- dat
+      } else {
+        cache$params <- dat
+        cache$nParams <- NCOL(dat)
+        cache$nIterate <- NROW(dat) # size of PSA
+      }
     })
     
     # Function that checks sanity of parameter file
@@ -289,6 +293,9 @@ shinyServer(
       params <- cache$params
       if (is.null(params)) return(NULL)    
       
+      if (inherits(params, "try-error")) return("There is something wrong with the parameters csv file. Probably formatting. 
+                                                Please check and remove all formatting")
+
       if (sum(is.na(params)) > 0) {
         return("There are missing values - please check data and reload")
       }
@@ -310,11 +317,14 @@ shinyServer(
     observe({
       inFile <- input$costsFile
       if (is.null(inFile)) return(NULL)
-      dat <- read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2, encoding = 'UTF-8')
-      cache$uploadedCosts <- cache$costs <- dat
-      cache$namesDecisions <- paste(1:ncol(dat), ") ", colnames(dat), sep="") # defines the decision option names      
-      cache$nInt <- NCOL(dat) # number of interventions
-
+      dat <- try(read.csv(inFile$datapath, sep=input$sep2, dec=input$dec2, encoding = 'UTF-8'), silent = TRUE)
+      if(inherits(dat, "try-error")) { 
+        cache$uploadedCosts <- dat
+      } else {
+        cache$uploadedCosts <- cache$costs <- dat
+        cache$namesDecisions <- paste(1:ncol(dat), ") ", colnames(dat), sep="") # defines the decision option names      
+        cache$nInt <- NCOL(dat) # number of interventions
+      }
     })
 
     # Function that checks sanity of costs file
@@ -322,7 +332,10 @@ shinyServer(
       x2 <- input$costsFile 
     
       costs <- cache$uploadedCosts
-      if (is.null(costs)) return(NULL)      
+      if (is.null(costs)) return(NULL)    
+      
+      if (inherits(costs, "try-error")) return("There is something wrong with the costs csv file. Probably formatting. 
+                                      Please check and remove all formatting")
       
       if (sum(is.na(costs)) > 0) return("There are missing values - please check data and reload")
       
@@ -346,7 +359,7 @@ shinyServer(
       inFile <- input$effectsFile      
       if (is.null(inFile)) return(NULL)
       
-      dat <- read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3, encoding = 'UTF-8')
+      dat <- try(read.csv(inFile$datapath, sep=input$sep3, dec=input$dec3, encoding = 'UTF-8'), silent = TRUE)
       cache$uploadedEffects <- cache$effects <- dat
     })
   
@@ -355,6 +368,9 @@ shinyServer(
       x3 <- input$effectsFile 
       effects <- cache$uploadedEffects
       if (is.null(effects)) return(NULL)
+      
+      if (inherits(effects, "try-error")) return("There is something wrong with the effects csv file. Probably formatting. 
+                                         Please check and remove all formatting")
       
       if (sum(is.na(effects)) > 0) return("There are missing values - please check data and reload")
       
@@ -381,6 +397,9 @@ shinyServer(
       params <- cache$params
       costs <- cache$uploadedCosts
       effects <- cache$uploadedEffects
+      
+      if (inherits(params, "try-error") | inherits(costs, "try-error") | inherits(effects, "try-error")) return(NULL)
+      
       if(!((NROW(params) == NROW(costs)) & (NROW(effects) == NROW(costs)))) {
         return("Loaded files have different numbers of rows - please check data and reload")
       } 
@@ -1137,7 +1156,7 @@ shinyServer(
       x <- input$parameterFile
       y <- input$loadSession
       params <- cache$params
-      if (is.null(params)) return(NULL)
+      if (!valuesImportedFLAG(cache, input)) return(NULL)
       namesParams <- colnames(params)
       namesParams <- paste(1:ncol(params), ") ", namesParams, sep="")
       updateCheckboxGroupInput(session, "pevpiParameters", 

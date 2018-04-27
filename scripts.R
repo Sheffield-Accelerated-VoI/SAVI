@@ -13,7 +13,10 @@ valuesImportedFLAG <- function(cache, input){
   if (
       is.null(cache$params) | 
       is.null(cache$uploadedCosts) | 
-      is.null(cache$uploadedEffects)) {return(FALSE)} else {return (TRUE)}
+      is.null(cache$uploadedEffects) |
+      inherits(cache$params, "try-error") |
+      inherits(cache$uploadedCosts, "try-error") |
+      inherits(cache$uploadedEffects, "try-error")) {return(FALSE)} else {return (TRUE)}
 }
 
 

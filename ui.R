@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.1.0 (2018-04-26)"),    
+    h4("Release version 2.1.1 (2018-04-27)"),    
     h6(HTML("Copyright &copy; 2018 University of Sheffield")),  
     
     
@@ -324,6 +324,8 @@ fluidPage(
            than incremental (i.e. there must be 
            the same number of columns as decision options, including the baseline decision).<br>
            <br>
+           <strong>The cells in the uploaded csv files must be free of formatting, i.e. no pound / euro / dollar signs, 
+           and no thousands separator.</strong>
            </div>")),
            
            h3("Parameter importation"),

@@ -35,7 +35,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.1.1 (2018-04-27)"),    
+    h4("Release version 2.1.2 (2018-05-21)"),    
     h6(HTML("Copyright &copy; 2018 University of Sheffield")),  
     
     
@@ -57,11 +57,10 @@ fluidPage(
             #  with SAVI version 1."),
             #fileInput('loadSession', label = h4('Load previously saved session')),
             #br(),br(),
-            h3("Sign up for SAVI news and updates"),
-            p(HTML("Send a blank email to"), 
+            h3("Contact Us"),
+            p(HTML("For any queries or to report a bug please send an email to "), 
              a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=Register')),               
-            p("We won't share your email address with anyone."),
-            p("Also, you can now follow SAVI on Twitter. The SAVI team tweet regular updates and new features."),
+            p("You can follow SAVI on Twitter"),
             p(HTML("<a href='https://twitter.com/SheffieldSAVI' class='twitter-follow-button' data-show-count
               ='false' data-size='large'>Follow @SheffieldSAVI</a><script>!function(d,s,id)
               {var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
@@ -88,7 +87,7 @@ fluidPage(
             strong("Fix for version 2.0.5"),
             p("We have found that, for individual level simulation models, the regression method works best
               when a small number of individuals (rather than a single individual) are run per PSA sample. 
-              Instructions have been updated."), 
+              Instructions have been updated. Note - the individual level simulation model feature is currently disabled."), 
             strong("New in version 2.0.0"),
             p("SAVI now calculates value of information for individual level simulation 
               models where only a single individual is simulated per PSA sample. See 

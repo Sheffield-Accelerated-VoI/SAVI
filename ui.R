@@ -59,7 +59,7 @@ fluidPage(
             #br(),br(),
             h3("Contact Us"),
             p(HTML("For any queries or to report a bug please send an email to "), 
-             a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk?Subject=Register')),               
+             a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk')),               
             p("You can follow SAVI on Twitter"),
             p(HTML("<a href='https://twitter.com/SheffieldSAVI' class='twitter-follow-button' data-show-count
               ='false' data-size='large'>Follow @SheffieldSAVI</a><script>!function(d,s,id)

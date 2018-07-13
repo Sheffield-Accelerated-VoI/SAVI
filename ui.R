@@ -68,8 +68,8 @@ fluidPage(
               s.id=id;js.src=p+'://platform.twitter.com/widgets.js';
               fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>")),
             br(),
-            
             h3("News"),  
+
             p(HTML("<strong>SAVI is now available as an R package</strong>, allowing you to run SAVI directly on your own machine. 
               You can download instructions "), 
               a("here.", target = '_blank',
@@ -125,6 +125,7 @@ fluidPage(
           
 
           mainPanel(  
+            p(HTML("<strong><em>NOTE - SAVI will be offline on the morning of the 28th of July for up to 4 hours between 0830 and 1230 UK time.</em></strong>")), 
             h3("What SAVI does"),
             p(HTML("Using"), strong("only"), HTML("PSA results from your model")),
             p(HTML("In a matter of seconds from the SAVI online application you can generate:")),

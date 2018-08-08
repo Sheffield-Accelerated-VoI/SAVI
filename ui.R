@@ -13,8 +13,20 @@ fluidPage(
   # STYLING #
   ###########
   
-  tags$head(
-    tags$style("body {background-color: #FFFFFF; }")),
+  tags$head(HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src='https://www.googletagmanager.com/gtag/js?id=UA-56590985-1'></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-56590985-1');
+    </script>
+    ")),
+  
+  
+  #tags$head(
+    tags$style("body {background-color: #FFFFFF; }"),#),
   tags$style(type='text/css', '#textCheckTab {color: red;}'),
   tags$style(type='text/css', '#textCheckTabParams {color: red;}'),
   tags$style(type='text/css', '#textCheckTabCosts {color: red;}'),

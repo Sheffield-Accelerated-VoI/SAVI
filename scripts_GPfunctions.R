@@ -3,6 +3,12 @@
 
 # this file holds the functions to calculate the GP
 
+## NOTE
+## Bug fix 25th Jan 2019
+## There was a bug in the code for computing the upward bias of the GP derived EVPPI estimate
+## This would have had an unpredictable effect on the upward bias (including making it negative)
+
+
 dinvgamma <- function(x, alpha, beta) {
   (beta ^ alpha) / gamma(alpha) * x ^ (-alpha - 1) * exp(-beta / x)
 }
@@ -192,7 +198,7 @@ gpFunc <- function(NB, sets, s=1000, cache, session) {
   
   print("Computing standard error via Monte Carlo")
   tilde.g <- vector("list", D)
-  tilde.g[[1]] <- matrix(0, nrow=s, ncol=N)     
+  tilde.g[[1]] <- matrix(0, nrow=s, ncol=min(N, 1000))   # bug fix 25.1.19   
   
   progress2 <- shiny::Progress$new(session, min=1, max=D)
   #on.exit(progress2$close())

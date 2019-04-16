@@ -11,7 +11,6 @@
 # This function estimates EVPI and SE via GAM
 # S is the simulation size for the Monte Carlo computation of SE
 gamFunc <- function(NB, sets, s=1000, cache, session) {
-  print(lsos())
   if(!is.null(dim(NB))) {
     NB <- NB - NB[, 1]
   } else {

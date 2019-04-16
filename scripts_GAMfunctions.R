@@ -11,7 +11,7 @@
 # This function estimates EVPI and SE via GAM
 # S is the simulation size for the Monte Carlo computation of SE
 gamFunc <- function(NB, sets, s=1000, cache, session) {
-  
+  print(lsos())
   if(!is.null(dim(NB))) {
     NB <- NB - NB[, 1]
   } else {
@@ -64,9 +64,11 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
     f <- update(formula(dependent~.), formula(paste(".~", regression.model)))
     model <- gam(f, data=data.frame(input.parameters)) 
     g.hat[[d]] <- model$fitted
-    beta.hat[[d]] <- model$coef
-    Xstar[[d]] <- predict(model,type="lpmatrix")
-    V[[d]] <- model$Vp
+    #beta.hat[[d]] <- model$coef
+    #Xstar[[d]] <- predict(model,type="lpmatrix")
+    #V[[d]] <- model$Vp
+    sampled.coef <- mvrnorm(s, model$coef, model$Vp)
+    tilde.g[[d]] <- tcrossprod(sampled.coef, predict(model, type="lpmatrix"))
   }
   
   perfect.info <- mean(do.call(pmax, g.hat)) 
@@ -74,22 +76,22 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   partial.evpi <- perfect.info - baseline ## estimate EVPI
   rm(g.hat); gc()
   
-  print("computing standard error via Monte Carlo")
-  for(d in 2:D) {
-    sampled.coef <- mvrnorm(s, beta.hat[[d]], V[[d]])
-    tilde.g[[d]] <- sampled.coef%*%t(Xstar[[d]])  
-  }
+#  print("computing standard error via Monte Carlo")
+#  for(d in 2:D) {
+#    sampled.coef <- mvrnorm(s, beta.hat[[d]], V[[d]])
+#    tilde.g[[d]] <- sampled.coef%*%t(Xstar[[d]])  
+#  }
   
   tilde.g[[1]] <- matrix(0, nrow=s, ncol=N)
-  rm(V, beta.hat, Xstar, sampled.coef);gc()
-  
+  #rm(V, beta.hat, Xstar, sampled.coef);gc()
+  rm(sampled.coef);gc()
   sampled.perfect.info <- rowMeans(do.call(pmax, tilde.g))
   sampled.baseline <- do.call(pmax, lapply(tilde.g, rowMeans)) 
   rm(tilde.g); gc()
   sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
   SE <- sd(sampled.partial.evpi)
   #upward.bias <- mean(sampled.partial.evpi) - partial.evpi
-  
+  rm(sampled.partial.evpi, sampled.perfect.info, sampled.baseline); gc()
   return(list(EVPI=partial.evpi, SE=SE)) #,upward.bias=upward.bias))
   
 }

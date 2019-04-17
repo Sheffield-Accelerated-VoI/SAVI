@@ -137,8 +137,6 @@ fluidPage(
           
 
           mainPanel(  
-            h3("NOTE: SAVI is undergoing essential maintenance at 06:30 GMT on Wednesday 17th April."),
-            p("Please consider SAVI at risk until 12:00 GMT on the 17th April."),
             h3("What SAVI does"),
             p(HTML("Using"), strong("only"), HTML("PSA results from your model")),
             p(HTML("In a matter of seconds from the SAVI online application you can generate:")),

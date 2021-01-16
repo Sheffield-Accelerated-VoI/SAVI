@@ -21,7 +21,7 @@ rm(list=ls())
 options(shiny.maxRequestSize=1024*1024^2) # Max upload 1Gb
 
 # debugging option. Only set to true for debugging. MUST BE FALSE FOR LIVE USE
-options(shiny.reactlog=TRUE)
+options(shiny.reactlog=FALSE)
 
 # select old style progress bar (needed since Shiny upversion to 0.14)
 shinyOptions(progress.style = "old") 

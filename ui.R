@@ -47,7 +47,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.1.2 (2018-05-21)"),    
+    h4("Release version 2.1.3 (2021-01-31)"),    
     h6(HTML("Copyright &copy; 2018 University of Sheffield")),  
     
     
@@ -89,6 +89,8 @@ fluidPage(
             br(),
             
             h3("New features and bug fixes"),
+            strong("Fix for version 2.1.3"),
+            p("We have fixed a bug in the 'Download Summary Report' function that caused an incorrect plot of overall EVPI against the threshold value."), 
             strong("New in version 2.1.0"),
             p(HTML("We have added a new 'Risk Analysis' tab. SAVI now generates Risk Analysis charts as described in "), a("this
               paper by Grimm et al.", target = '_blank', href = "https://link.springer.com/article/10.1007%2Fs40273-017-0562-9")),

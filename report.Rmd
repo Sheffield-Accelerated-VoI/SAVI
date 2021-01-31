@@ -199,10 +199,10 @@ if(!is.null(costs) | !is.null(effects)) {
   for (lambda.int in l.seq) {
     inb.int <- data.frame(as.matrix(effects) * lambda.int - as.matrix(costs))
 
-    evpi <- mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))
+    evpi <- (mean(do.call(pmax, inb.int)) - max(colMeans(inb.int)))
     p <- c(p, evpi)
   }
-  plot(l.seq, p, type="l", main = paste("Overall EVPI per person ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))
+  plot(l.seq, p, type="l", main = paste0("Overall EVPI per person (", input$currency, ")"), xlab = "Threshold willingness to pay", ylab = paste0("Per-person EVPI (", input$currency, ")"))
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
   #text(lambda, p[which(l.seq == lambda)], round(p[which(l.seq == lambda)],2), pos=1, offset=0.1)
@@ -216,13 +216,13 @@ if(!is.null(costs) | !is.null(effects)) {
   l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
-    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
-    inb.int <- inb.int - inb.int[, 1]
-    #inb.int
-    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int)))*annualPrev
+    inb.int <- data.frame(as.matrix(effects) * lambda.int - as.matrix(costs))
+
+    evpi <- (mean(do.call(pmax, inb.int)) - max(colMeans(inb.int)))
+    evpi <- evpi / lambda.int
     p <- c(p, evpi)
   }  
-  plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))
+  plot(l.seq, p, type="l", main = paste0("Overall EVPI per person (", input$unitBens, ")"), xlab = "Threshold willingness to pay", ylab = paste0("Per-person EVPI (", input$unitBens, ")"))
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
   }
@@ -235,14 +235,12 @@ if(!is.null(costs) | !is.null(effects)) {
   l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
-    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
-    inb.int <- inb.int - inb.int[, 1]
-    #inb.int
-    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))) * input$annualPrev
-    evpi <- evpi / lambda.int
+    inb.int <- data.frame(as.matrix(effects) * lambda.int - as.matrix(costs))
+    evpi <- (mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))) * input$annualPrev* input$horizon
+   
     p <- c(p, evpi)
   }  
-  plot(l.seq, p, type="l", main = paste("Overall EVPI per annual prevalence ", input$unitBens), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$unitBens))
+  plot(l.seq, p, type="l", main = paste0("Overall population EVPI (", input$currency, ")"), xlab = "Threshold willingness to pay", ylab = paste0("Overall population EVPI (", input$currency, ")"))
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
   }
@@ -253,13 +251,12 @@ if(!is.null(costs) | !is.null(effects)) {
   l.seq <- seq(0, lambda * 10, lambda / 20)
   p <- c()
   for (lambda.int in l.seq) {
-    inb.int <- as.matrix(effects) * lambda.int - as.matrix(costs)
-    inb.int <- inb.int - inb.int[, 1]
-    #inb.int
-    evpi <- (mean(pmax(inb.int[, 2], inb.int[, 1])) - max(colMeans(inb.int))) * input$annualPrev * input$horizon
-    p <- c(p, evpi)
+    inb.int <- data.frame(as.matrix(effects) * lambda.int - as.matrix(costs))
+    evpi <- (mean(do.call(pmax, inb.int)) - max(colMeans(inb.int))) * input$annualPrev * input$horizon
+     evpi <- evpi / lambda.int
+     p <- c(p, evpi)
   }  
-  plot(l.seq, p, type="l", main = paste("Overall EVPI over decision relevance ", input$currency), xlab = "Threshold willingness to pay", ylab = paste("Annual population EVPI ", input$currency))
+  plot(l.seq, p, type="l", main = paste0("Overall population EVPI (", input$unitBens, ")"), xlab = "Threshold willingness to pay", ylab = paste0("Overall population EVPI (", input$unitBens, ")"))
   abline(v=lambda, lty=2)
   points(lambda, p[which(l.seq == lambda)], pch=20, col="black")
   }

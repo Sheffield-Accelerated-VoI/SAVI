@@ -56,15 +56,20 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
   progress$set(message = 'Calculating conditional expected net benefits',
                detail = 'Please wait...')
   
-  for(d in 2:D) {
-    progress$set(value = d-1)
+  for (d in 2:D) {
+    progress$set(value = d - 1)
     print(paste("estimating g.hat for incremental NB for option", d ,"versus 1"))
     dependent <- NB[, d]
     f <- update(formula(dependent~.), formula(paste(".~", regression.model)))
-    model <- gam(f, data=data.frame(input.parameters)) 
+    try_model <- try(model <- gam(f, data = data.frame(input.parameters))) 
+    if (inherits(try_model, "try-error")) {
+      regression.model <- formulaGenerator_s(colnames(input.parameters)[sets])
+      f <- update(formula(dependent~.), formula(paste(".~", regression.model)))
+      model <- gam(f, data = data.frame(input.parameters))
+    }
     g.hat[[d]] <- model$fitted
     beta.hat[[d]] <- model$coef
-    Xstar[[d]] <- predict(model,type="lpmatrix")
+    Xstar[[d]] <- predict(model,type = "lpmatrix")
     V[[d]] <- model$Vp
     #sampled.coef <- mvrnorm(s, model$coef, model$Vp)
     #tilde.g[[d]] <- tcrossprod(sampled.coef, predict(model, type="lpmatrix"))
@@ -98,16 +103,31 @@ gamFunc <- function(NB, sets, s=1000, cache, session) {
 # This function generates the GAM model formulas from the list of parameter names
 
 formulaGenerator <- function(namesList) {
-  form <- paste(namesList, ",", sep="", collapse="")
+  form <- paste(namesList, ",", sep = "", collapse = "")
   form <- substr(form, 1, nchar(form) - 1)
   if (length(namesList) == 4) {
-    form <- paste("te(", form, ",k=4)", sep="") # restrict to 4 knots if 4 params
+    form <- paste("te(", form, ", k = 4)", sep = "") # restrict to 4 knots if 4 params
   } else {
-    form <- paste("te(", form, ")", sep="")    
+    form <- paste("te(", form, ")", sep = "")    
   }
   form
 }
 
+formulaGenerator_s <- function(namesList) {
+  form <- paste0(namesList, ",", collapse = "")
+  form <- substr(form, 1, nchar(form) - 1)
+  if (length(namesList) == 4) {
+    form <- paste0("te(", form, ", k = 4)") # restrict to 4 knots if 4 params
+    return(form)
+  }
+  if (length(namesList) == 1) {
+    form <- paste0("s(", form, ")") # if single GAM and try error
+    print(form)
+    return(form)
+  }
+  form <- paste0("te(", form, ")")    
+  return(form)
+}
 
 # This function for getting SE for a GAM fit. NOT USED AT PRESENT
 # works for a single decision option scenario with incremental net benefits

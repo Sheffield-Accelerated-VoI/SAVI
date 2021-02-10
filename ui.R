@@ -47,8 +47,8 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.1.3 (2021-01-31)"),    
-    h6(HTML("Copyright &copy; 2018 University of Sheffield")),  
+    h4("Release version 2.1.4 (2021-02-10)"),    
+    h6(HTML("Copyright &copy; 2014-2021 The Authors")),  
     
     
     
@@ -89,6 +89,8 @@ fluidPage(
             br(),
             
             h3("New features and bug fixes"),
+            strong("Fix for version 2.1.4"),
+            p("We have applied a patch to avoid numerical problems in the regression estimation if parameters are very highly skewed"), 
             strong("Fix for version 2.1.3"),
             p("We have fixed a bug in the 'Download Summary Report' function that caused an incorrect plot of overall EVPI against the threshold value."), 
             strong("New in version 2.1.0"),

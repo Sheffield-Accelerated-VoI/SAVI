@@ -141,6 +141,10 @@ fluidPage(
           
 
           mainPanel(  
+            h2("UPCOMING MAINTENANCE !"),
+            h4("SAVI will be undergoing essential maintenance on and off until the end of June 2021."),
+            h4("We will give as much warning as possible before taking SAVI offline."),
+            h4("We will keep downtime to a minumum. Our apologies !"),
             h3("What SAVI does"),
             p(HTML("Using"), strong("only"), HTML("PSA results from your model")),
             p(HTML("In a matter of seconds from the SAVI online application you can generate:")),

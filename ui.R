@@ -89,6 +89,11 @@ fluidPage(
             br(),
             
             h3("New features and bug fixes"),
+            strong("New for version 2.2.0"),
+            p(HTML("SAVI now has a new web address"), a("https://savi.shef.ac.uk/SAVI/", href = "https://savi.shef.ac.uk/SAVI/")), 
+            p(HTML("This means that traffic to and from SAVI is now encrypted. The old"), 
+              a("http://savi.shef.ac.uk/SAVI/", href = "https://savi.shef.ac.uk/SAVI/"), 
+              ("address should redirect to the new address.")), 
             strong("Fix for version 2.1.4"),
             p("We have applied a patch to avoid numerical problems in the regression estimation if parameters are very highly skewed"), 
             strong("Fix for version 2.1.3"),

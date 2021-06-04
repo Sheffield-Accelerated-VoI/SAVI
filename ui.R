@@ -47,7 +47,7 @@ fluidPage(
                     SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.1.4 (2021-02-10)"),    
+    h4("Release version 2.2.0 (2021-06-04)"),    
     h6(HTML("Copyright &copy; 2014-2021 The Authors")),  
     
     

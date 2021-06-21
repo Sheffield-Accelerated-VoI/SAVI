@@ -72,13 +72,13 @@ fluidPage(
             h3("Contact Us"),
             p(HTML("For any queries or to report a bug please send an email to "), 
              a("savi@sheffield.ac.uk", href='mailto:savi@sheffield.ac.uk')),               
-            p("You can follow SAVI on Twitter"),
-            p(HTML("<a href='https://twitter.com/SheffieldSAVI' class='twitter-follow-button' data-show-count
-              ='false' data-size='large'>Follow @SheffieldSAVI</a><script>!function(d,s,id)
-              {var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
-              if(!d.getElementById(id)){js=d.createElement(s);
-              s.id=id;js.src=p+'://platform.twitter.com/widgets.js';
-              fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>")),
+            #p("You can follow SAVI on Twitter"),
+            #p(HTML("<a href='https://twitter.com/SheffieldSAVI' class='twitter-follow-button' data-show-count
+            #  ='false' data-size='large'>Follow @SheffieldSAVI</a><script>!function(d,s,id)
+            #  {var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+            #  if(!d.getElementById(id)){js=d.createElement(s);
+            #  s.id=id;js.src=p+'://platform.twitter.com/widgets.js';
+            #  fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>")),
             br(),
             h3("News"),  
 

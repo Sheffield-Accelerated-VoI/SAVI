@@ -85,7 +85,7 @@ fluidPage(
             p(HTML("<strong>SAVI is now available as an R package</strong>, allowing you to run SAVI directly on your own machine. 
               You can download instructions "), 
               a("here.", target = '_blank',
-                href="https://www.shef.ac.uk/polopoly_fs/1.511325!/file/Instructions_for_SAVI-package.txt")),
+                href="https://www.sheffield.ac.uk/media/12465/download?attachment")),
             br(),
             
             h3("New features and bug fixes"),

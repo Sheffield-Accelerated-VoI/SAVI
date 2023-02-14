@@ -23,7 +23,7 @@ fluidPage(
   #    gtag('config', 'UA-56590985-1');
   #  </script>
   #  ")),
-  
+  tags$head(includeHTML(("google-analytics.html"))),
   
   #tags$head(
     tags$style("body {background-color: #FFFFFF; }"),#),

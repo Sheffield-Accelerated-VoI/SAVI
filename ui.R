@@ -13,16 +13,7 @@ fluidPage(
   # STYLING #
   ###########
   
-  #tags$head(HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
-  #  <script async src='https://www.googletagmanager.com/gtag/js?id=UA-56590985-1'></script>
-  #  <script>
-  #    window.dataLayer = window.dataLayer || [];
-  #    function gtag(){dataLayer.push(arguments);}
-  #    gtag('js', new Date());
-  #  
-  #    gtag('config', 'UA-56590985-1');
-  #  </script>
-  #  ")),
+
   tags$head(includeHTML(("google-analytics.html"))),
   
   #tags$head(

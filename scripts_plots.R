@@ -251,11 +251,15 @@ make4wayEvpiPlot <- function(costs.int, effects.int, lambda, prevalence, horizon
 
 
 makeEvppiBar <- function(pEVPI.int, params) {
-  EVPPI <- matrix(pEVPI.int[order(pEVPI.int)], ncol = length(pEVPI.int), nrow = 1)
-  colnames(EVPPI) <- colnames(params[order(pEVPI.int)])
-  op <- par(mar = c(5, 15, 4, 2) + 0.1, pty = "m")
-  barplot(EVPPI, horiz = TRUE, cex.names=0.7, las=1, main= "Single parameter Partial EVPI per person", 
-          xlab = "Partial EVPI per person", cex.main=0.9)  
+  nn <- length(pEVPI.int)
+  EVPPI <- matrix(pEVPI.int[order(pEVPI.int)], ncol = nn, nrow = 1)
+  colnames(EVPPI) <- colnames(params)[order(pEVPI.int)]
+  op <- par(mar = c(5, 13, 2, 1) + 0.1, pty = "m")
+  barplot(EVPPI, horiz = TRUE, cex.names = 1, las = 1, 
+          main = "Single parameter Partial EVPI per person", 
+          xlab = "Partial EVPI per person",
+          space = rep(0.3, nn), 
+          col = 2, xlim = c(0, max(EVPPI) * 1.1))  
   par(op)
 }
 

@@ -46,8 +46,8 @@ fluidPage(
                   SAVI - Sheffield Accelerated Value of Information")),
   
   mainPanel(
-    h4("Release version 2.2.0 (2021-06-04)"),    
-    h6(HTML("Copyright &copy; 2014-2021 The Authors")),  
+    h4("Release version 2.2.1 (2025-02-11)"),    
+    h6(HTML("Copyright &copy; 2014-2025 The Authors")),  
     
     
     
@@ -81,6 +81,8 @@ fluidPage(
             br(),
             
             h3("New features and bug fixes"),
+            strong("Fix for version 2.2.1"),
+            p("We have fixed a bug that caused the labels on the single parameter partial EVPI barchart to be unreadable when the number of parameters was large."), 
             strong("New for version 2.2.0"),
             p(HTML("SAVI now has a new web address"), a("https://savi.shef.ac.uk/SAVI/", href = "https://savi.shef.ac.uk/SAVI/")), 
             p(HTML("This means that traffic to and from SAVI is now encrypted. The old"), 
@@ -669,7 +671,7 @@ fluidPage(
          #tableOutput("summary"),
          
          h3("Partial EVPI barplot for single parameters"),
-         plotOutput("plot7", width = "500px", height = "500px")
+         plotOutput("plot7", width = "1000px", height = "1000px")
                
       ),
       

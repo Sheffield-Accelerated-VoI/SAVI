@@ -1111,10 +1111,11 @@ shinyServer(
 
     # EVPPi horizontal bar chart
     output$plot7 <- renderPlot({
+      print(nrow(cache$pEVPI) * 50)
       if (!valuesImportedFLAG(cache, input)) return(NULL)
       dummy <- input$lambdaOverall
       makeEvppiBar(cache$pEVPI[, 1], cache$params)
-    })
+    }, height = function() nrow(cache$pEVPI) * 50)
   
 
    

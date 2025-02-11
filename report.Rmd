@@ -272,7 +272,7 @@ if(!is.null(tableEVPPI)) kable(tableEVPPI)
 ```{r, echo=FALSE, fig.height = max(5, NROW(pEVPI) / 5), fig.width = 10}
 if(!is.null(pEVPI)) {
   ord <- order(pEVPI[, 1])
-  EVPPI <- matrix(pEVPI[ord, 1], ncol = nn, nrow = 1)
+  EVPPI <- matrix(pEVPI[ord, 1], ncol = NROW(pEVPI), nrow = 1)
   colnames(EVPPI) <- colnames(params)[ord]
   op <- par(mar = c(5, 8, 2, 1) + 0.1, pty = "m")
   barplot(EVPPI, horiz = TRUE, cex.names = 0.8, las = 1, 

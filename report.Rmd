@@ -278,7 +278,7 @@ if(!is.null(pEVPI)) {
   barplot(EVPPI, horiz = TRUE, cex.names = 0.8, las = 1, 
           main = "Single parameter Partial EVPI per person", 
           xlab = "Partial EVPI per person",
-          space = rep(0.3, NROW(pEVPI)), col = 2)  
+          space = rep(0.3, NROW(pEVPI)), col = 2, xlim = c(0, max(pEVPI[, 1]) * 1.1))  
   par(op)
   }
 ```

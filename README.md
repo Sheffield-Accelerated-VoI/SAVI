@@ -46,4 +46,4 @@ Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 ### Privacy
 
-The SAVI website http://savi.shef.ac.uk/SAVI/ complies with The University of Sheffield's <a href='http://www.sheffield.ac.uk/privacy' target='_blank'>Privacy Policy</a>
+The SAVI website http://savi.shef.ac.uk/SAVI/ complies with The University of Sheffield's <a href='https://www.sheffield.ac.uk/privacy' target='_blank'>Privacy Policy</a>
